@@ -1,4 +1,5 @@
-Django
 lxml
 psycopg2
 sqlalchemy
+Flask
+Flask-Session
