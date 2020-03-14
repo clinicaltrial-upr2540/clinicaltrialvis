@@ -1,6 +1,6 @@
-PROCESSED_FILE=json_to_csv.csv 
+PROCESSED_FILE=zinc_smiles.csv 
 
-cat raw_json_out.txt > $PROCESSED_FILE 
+cat ./raw_downloads/page_2*.txt > $PROCESSED_FILE 
 sed -i 's/},{/\n/g' $PROCESSED_FILE
 sed -i 's/\[{/\n/g' $PROCESSED_FILE
 sed -i 's/}\]/\n/g' $PROCESSED_FILE
