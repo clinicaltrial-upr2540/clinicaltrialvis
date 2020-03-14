@@ -1,6 +1,6 @@
 PROCESSED_FILE=zinc_smiles.csv 
 
-cat ./raw_downloads/page_2*.txt > $PROCESSED_FILE 
+cat ./raw_downloads/page_*.txt > $PROCESSED_FILE 
 sed -i 's/},{/\n/g' $PROCESSED_FILE
 sed -i 's/\[{/\n/g' $PROCESSED_FILE
 sed -i 's/}\]/\n/g' $PROCESSED_FILE
