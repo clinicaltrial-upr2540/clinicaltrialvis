@@ -1,1 +1,4 @@
 Django
+lxml
+psycopg2
+sqlalchemy
