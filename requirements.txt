@@ -3,3 +3,4 @@ psycopg2
 sqlalchemy
 Flask
 Flask-Session
+xmltodict
