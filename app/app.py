@@ -23,8 +23,8 @@ db = SQLAlchemy(app)
 # Route to homepage
 @app.route("/")
 def index():
-	print(app.config['SQLALCHEMY_DATABASE_URI'])
-	return render_template('home.html')
+	print(db)
+	return render_template('home.html', db=db)
 
 @app.route("/test")
 def test():
