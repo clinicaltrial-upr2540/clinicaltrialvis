@@ -11,7 +11,7 @@ export FLASK_DEBUG=1
 IP_addr=$(curl http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null)
 
 # Kill all old instances of the server
-ps aux | grep 'flask run' | grep -v grep | grep $(whoami) | awk '{print $2}' | xargs kill
+ps aux | grep 'flask run' | grep -v grep | grep $(whoami) | awk '{print $2}' | xargs kill 2> /dev/null
 
 # Start the server
 python3 -m flask run --host=0.0.0.0 --port={{ flask_port }} >> ~/flask.txt 2>&1 &
