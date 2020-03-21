@@ -1,6 +1,9 @@
 # Mac files
 .DS_Store
 
+# Directory for staging data files
+**/data/*
+
 # Local .terraform directories
 **/.terraform/*
 
