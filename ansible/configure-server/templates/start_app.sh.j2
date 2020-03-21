@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Colors
+BGrn=$(tput setaf 2)
+NC=$(tput sgr 0)
+
+# Set Flask server parameters
+export FLASK_APP=~/clinicaltrialvis/app/app.py
+export FLASK_DEBUG=1
+
+IP_addr=$(curl http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null)
+
+# Kill all old instances of the server
+ps aux | grep 'flask run' | grep -v grep | grep $(whoami) | awk '{print $2}' | xargs kill
+
+# Start the server
+python3 -m flask run --host=0.0.0.0 --port={{ flask_port }} >> ~/flask.txt 2>&1 &
+
+echo ${BGrn}Started server on port {{ flask_port }}
+echo Access it by going to http://$IP_addr:{{ flask_port }}$NC
+
+exit 0
