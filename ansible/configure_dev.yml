@@ -1,0 +1,17 @@
+---
+- hosts: dev
+  vars:
+    users:
+      - gabe
+      - max
+      - jelena
+      - lu
+      - sishir
+    flask_port: 5000
+
+  roles:
+  - configure-server
+
+  become: true
+ 
+  gather_facts: true

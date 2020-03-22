@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, redirect, request
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 application = Flask(__name__)
 
@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.config['TESTING'] = True
 
 if __name__ == "__main__":
-	app.run(debug=True)
+    app.run(debug=True)
 
 ############################################
 # Startup tasks go here (load/check data)
@@ -20,13 +20,14 @@ db = SQLAlchemy(app)
 # Routes to web pages go here
 ############################################
 
+
 # Route to homepage
 @app.route("/")
 def index():
-	print(db)
-	return render_template('home.html', db=db)
+    print(db)
+    return render_template('home.html', db=db)
+
 
 @app.route("/test")
 def test():
-	return render_template('test.html')
-
+    return render_template('test.html')

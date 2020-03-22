@@ -9,6 +9,9 @@
 
 # Also omit python compiled files
 **/__pycache__/*
+__pycache__/
+*.py[cod]
+*$py.class
 
 # .tfstate files
 *.tfstate

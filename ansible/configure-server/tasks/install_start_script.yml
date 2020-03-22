@@ -1,0 +1,12 @@
+---
+# tasks to install the script to start the flask dev server
+- name: Increment port number
+  set_fact: flask_port={{ flask_port | int + 1 }}
+
+- name: Template a file to /etc/files.conf
+  template:
+    src: start_app.sh.j2
+    dest: /home/{{ user }}/start_app.sh
+    owner: "{{ user }}"
+    group: admin
+    mode: '0755'

@@ -1,0 +1,69 @@
+---
+# tasks file for configure-users
+- name: Enable universe repository
+  apt_repository:
+    repo: "{{ item }}"
+  loop:
+    - "deb http://archive.ubuntu.com/ubuntu/ bionic universe"
+    - "deb http://archive.ubuntu.com/ubuntu/ bionic-updates universe"
+    - "deb http://security.ubuntu.com/ubuntu/ bionic-security universe"
+
+- name: Install apt dependencies
+  apt:
+    update_cache: yes
+    pkg:
+    - python3
+    - python3-pip
+    - libpq-dev
+
+- name: Install Python dependencies
+  pip:
+    executable: pip3
+    name:
+    - lxml
+    - psycopg2
+    - sqlalchemy
+    - Flask
+    - Flask-Session
+    - flask_sqlalchemy
+    - xmltodict
+
+- name: Create user accounts
+  user:
+    name: "{{ item }}"
+    # password: "{{ item | password_hash('sha512') }}"
+    shell: /bin/bash
+    group: admin
+  with_items: "{{ users }}"
+
+- name: Create .ssh directories
+  file:
+    path: /home/{{ item }}/.ssh
+    state: directory
+    owner: "{{ item }}"
+    group: admin
+    mode: '0700'
+  with_items: "{{ users }}"
+
+- name: Add deploy key for repository
+  copy:
+    src: ~/.ssh/DrugDeployKey
+    dest: "/home/{{ item }}/.ssh/DrugDeployKey"
+    owner: "{{ item }}"
+    group: admin
+    mode: '0600'
+  with_items: "{{ users }}"
+
+- name: Deploy the git repo to all homedirs
+  git:
+    repo: 'git@github.com:clinicaltrial-upr2540/clinicaltrialvis.git'
+    accept_hostkey: yes
+    force: yes
+    key_file: "/home/{{ item }}/.ssh/DrugDeployKey"
+    dest: "/home/{{ item }}/clinicaltrialvis"
+  become_user: "{{ item }}"
+  with_items: "{{ users }}"
+
+- name: Install server start script
+  include: install_start_script.yml user={{ item }}
+  with_items: "{{ users }}"
