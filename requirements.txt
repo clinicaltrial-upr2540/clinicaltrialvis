@@ -1,4 +1,4 @@
-lxml
+requests
 psycopg2
 sqlalchemy
 Flask
