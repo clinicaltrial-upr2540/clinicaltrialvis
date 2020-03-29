@@ -69,7 +69,7 @@ def table_name(table_name):
     table_data = []
 
     # Query tables in the 'curated' schema and serialize
-    result = db.execute(f"SELECT * FROM curated.product LIMIT 100")
+    result = db.execute(f"SELECT * FROM curated.{table_name} LIMIT 100")
     result = [dict(row) for row in result]
 
     # Loop through and pull out table names
