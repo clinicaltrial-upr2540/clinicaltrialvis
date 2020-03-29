@@ -78,8 +78,8 @@ def table_name(table_name):
 
     # Return table name as JSON object
     # return(json.dumps(table_data, indent=4, separators=(',', ': ')))
-    return render_template('table.html', dict=result)
-
+    # return render_template('table.html', dict=result)
+    return(result)
 
 @app.route("/data/views", methods=['GET'])
 def views():
@@ -95,7 +95,8 @@ def views():
 
     # Return table name as JSON object
     # return(json.dumps(table_data, indent=4, separators=(',', ': ')))
-    return render_template('table.html', dict=result)
+    # return render_template('table.html', dict=result)
+    return(result)
 
 if __name__ == "__main__":
     app.run(debug=True)
