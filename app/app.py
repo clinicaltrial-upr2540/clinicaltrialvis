@@ -66,7 +66,7 @@ def data_tables():
 
 @app.route("/data/tables/<table_name>", methods=['GET'])
 def table_name(table_name):
-    table_data = []
+    # table_data = []
 
     # Query tables in the 'curated' schema and serialize
     result = db.execute(f"SELECT * FROM curated.{table_name} LIMIT 100")
@@ -78,7 +78,24 @@ def table_name(table_name):
 
     # Return table name as JSON object
     # return(json.dumps(table_data, indent=4, separators=(',', ': ')))
-    return(json.dumps(result))
+    return render_template('table.html', dict=result)
+
+
+@app.route("/data/views", methods=['GET'])
+def views():
+    # view_data = []
+
+    # Query tables in the 'curated' schema and serialize
+    result = db.execute(f"SELECT * FROM information_schema.views")
+    result = [dict(row) for row in result]
+
+    # Loop through and pull out table names
+    # for table in result:
+    #     table_data.append(table["table_list"])
+
+    # Return table name as JSON object
+    # return(json.dumps(table_data, indent=4, separators=(',', ': ')))
+    return render_template('table.html', dict=result)
 
 if __name__ == "__main__":
     app.run(debug=True)
