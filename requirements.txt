@@ -1,3 +1,4 @@
+tables
 requests
 psycopg2
 sqlalchemy

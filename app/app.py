@@ -3,9 +3,8 @@
 import json
 import sqlalchemy
 
-from flask import Flask, render_template
+from flask import Flask, render_template, abort, jsonify
 from sqlalchemy.orm import scoped_session, sessionmaker
-
 
 app = Flask(__name__)
 app.config['TESTING'] = True
@@ -45,6 +44,22 @@ def render_visualizations():
     return render_template('visualizations.html', page_title="Visualizations")
 
 
+@app.route("/report")
+def render_report():
+    table_list = []
+
+    try:
+        connection = engine.connect()
+        q1 = 'SELECT trim(column_name) FROM information_schema.columns\r\n WHERE table_schema = \'curated\' AND table_name = \'report\''
+        report = connection.execute(q1)
+        for table in report:
+            table_list.append(table[0])
+        result = [row for row in report]
+        return render_template("report.html", table=table_list)
+    except Exception as e:
+        return str(e)
+
+
 ############################################
 # Routes to API endpoints go here
 ############################################
@@ -62,7 +77,7 @@ def data_tables():
         table_list.append(table["table_name"])
 
     # Return table name as JSON object
-    return(json.dumps(table_list, indent=4, separators=(',', ': ')))
+    return (json.dumps(table_list, indent=4, separators=(',', ': ')))
 
 
 if __name__ == "__main__":

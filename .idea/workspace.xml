@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1d2e6973-314a-46a7-b9c7-6a17a0ed60ff" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1ZmFLs1gIdZBbTyoAkPF6vdJ89P" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../python code/project1-mshirva1-master" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Development\School\CSCI-E 599\code\capstone\app\static" />
+      <recent name="C:\Development\School\CSCI-E 599\code\capstone\app\templates" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="capstone" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/app.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.app" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1d2e6973-314a-46a7-b9c7-6a17a0ed60ff" name="Default Changelist" comment="" />
+      <created>1585436309626</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1585436309626</updated>
+      <workItem from="1585436325130" duration="14283000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="233" y="0" key="#Notifications" timestamp="1585461951378">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state x="233" y="0" key="#Notifications/0.0.1280.680@0.0.1280.680" timestamp="1585461951378" />
+    <state x="740" y="275" key="FileChooserDialogImpl" timestamp="1585511065671">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="275" key="FileChooserDialogImpl/-3360.-10.1280.693/0.0.1920.1040/-1440.177.1440.860@0.0.1920.1040" timestamp="1585511065671" />
+    <state width="1877" height="221" key="GridCell.Tab.0.bottom" timestamp="1585511162893">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="221" key="GridCell.Tab.0.bottom/-3360.-10.1280.693/0.0.1920.1040/-1440.177.1440.860@0.0.1920.1040" timestamp="1585511162893" />
+    <state width="1237" height="221" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1585465802525" />
+    <state width="1877" height="221" key="GridCell.Tab.0.center" timestamp="1585511162893">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="221" key="GridCell.Tab.0.center/-3360.-10.1280.693/0.0.1920.1040/-1440.177.1440.860@0.0.1920.1040" timestamp="1585511162893" />
+    <state width="1237" height="221" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1585465802525" />
+    <state width="1877" height="221" key="GridCell.Tab.0.left" timestamp="1585511162893">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="221" key="GridCell.Tab.0.left/-3360.-10.1280.693/0.0.1920.1040/-1440.177.1440.860@0.0.1920.1040" timestamp="1585511162893" />
+    <state width="1237" height="221" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1585465802525" />
+    <state width="1877" height="221" key="GridCell.Tab.0.right" timestamp="1585511162893">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="221" key="GridCell.Tab.0.right/-3360.-10.1280.693/0.0.1920.1040/-1440.177.1440.860@0.0.1920.1040" timestamp="1585511162893" />
+    <state width="1237" height="221" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1585465802525" />
+    <state width="1877" height="221" key="GridCell.Tab.1.bottom" timestamp="1585511162810">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="221" key="GridCell.Tab.1.bottom/-3360.-10.1280.693/0.0.1920.1040/-1440.177.1440.860@0.0.1920.1040" timestamp="1585511162810" />
+    <state width="1237" height="221" key="GridCell.Tab.1.bottom/0.0.1280.680@0.0.1280.680" timestamp="1585465823084" />
+    <state width="1877" height="221" key="GridCell.Tab.1.center" timestamp="1585511162810">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="221" key="GridCell.Tab.1.center/-3360.-10.1280.693/0.0.1920.1040/-1440.177.1440.860@0.0.1920.1040" timestamp="1585511162810" />
+    <state width="1237" height="221" key="GridCell.Tab.1.center/0.0.1280.680@0.0.1280.680" timestamp="1585465823084" />
+    <state width="1877" height="221" key="GridCell.Tab.1.left" timestamp="1585511162810">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="221" key="GridCell.Tab.1.left/-3360.-10.1280.693/0.0.1920.1040/-1440.177.1440.860@0.0.1920.1040" timestamp="1585511162810" />
+    <state width="1237" height="221" key="GridCell.Tab.1.left/0.0.1280.680@0.0.1280.680" timestamp="1585465823084" />
+    <state width="1877" height="221" key="GridCell.Tab.1.right" timestamp="1585511162810">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="221" key="GridCell.Tab.1.right/-3360.-10.1280.693/0.0.1920.1040/-1440.177.1440.860@0.0.1920.1040" timestamp="1585511162810" />
+    <state width="1237" height="221" key="GridCell.Tab.1.right/0.0.1280.680@0.0.1280.680" timestamp="1585465823084" />
+    <state x="341" y="164" key="com.intellij.ide.util.TipDialog" timestamp="1585436325123">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state x="341" y="164" key="com.intellij.ide.util.TipDialog/0.0.1280.680@0.0.1280.680" timestamp="1585436325123" />
+    <state x="800" y="59" width="914" height="981" key="find.popup" timestamp="1585510120222">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="800" y="59" width="914" height="981" key="find.popup/-3360.-10.1280.693/0.0.1920.1040/-1440.177.1440.860@0.0.1920.1040" timestamp="1585510120222" />
+    <state x="0" y="0" width="609" height="680" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1585465643429" />
+    <state x="601" y="246" width="700" height="530" key="recent.locations.popup" timestamp="1585440206642">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="601" y="246" width="700" height="530" key="recent.locations.popup/-3360.-10.1280.693/0.0.1920.1040/-1440.177.1440.860@0.0.1920.1040" timestamp="1585440206642" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/app/static/assets/js/argon.js</url>
+          <line>491</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="table[0]" language="Python" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/capstone$app.coverage" NAME="app Coverage Results" MODIFIED="1585511162758" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+  </component>
+</project>
