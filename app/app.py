@@ -64,6 +64,20 @@ def data_tables():
     # Return table name as JSON object
     return(json.dumps(table_list, indent=4, separators=(',', ': ')))
 
+@app.route("/data/tables/table_name")
+def table_names():
+    # table_list = []
+
+    # # Query tables in the 'curated' schema and serialize
+    # result = db.execute(f"SELECT * FROM information_schema.tables WHERE table_schema = \'curated\';")
+    # result = [dict(row) for row in result]
+
+    # # Loop through and pull out table names
+    # for table in result:
+    #     table_list.append(table["table_name"])
+
+    # # Return table name as JSON object
+    # return(json.dumps(table_list, indent=4, separators=(',', ': ')))
 
 if __name__ == "__main__":
     app.run(debug=True)
