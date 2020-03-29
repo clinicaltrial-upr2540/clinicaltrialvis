@@ -26,10 +26,10 @@
 
 <body>
 
-	<nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-light bg-white" id="sidenav-main">
+	<nav class="sidenav navbar navbar-vertical fixed-left navbar-expand-xs navbar-light bg-white" id="sidenav-main">
 		<div class="scrollbar-inner">
 			<!-- Brand -->
-			<div class="sidenav-header  align-items-center">
+			<div class="sidenav-header align-items-center mb-3">
 				<a class="navbar-brand" href="javascript:void(0)">
 					<img src="{{ url_for('static', filename='img/brand/harvard.png') }}" class="navbar-brand-img" alt="...">
 				</a>
@@ -40,27 +40,27 @@
 					<!-- Nav items -->
 					<ul class="navbar-nav">
 						<li class="nav-item">
-							<a class="nav-link" href="dashboard.html">
+							<a class="nav-link" href="/">
 								<i class="ni ni-tv-2 text-primary"></i>
-								<span class="nav-link-text">Dashboard</span>
+								<span class="nav-link-text">Home</span>
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link active" href="icons.html">
+							<a class="nav-link active" href="/report">
 								<i class="ni ni-planet text-orange"></i>
 								<span class="nav-link-text">Report</span>
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="tables.html">
+							<a class="nav-link" href="">
 								<i class="ni ni-bullet-list-67 text-default"></i>
 								<span class="nav-link-text">Drug</span>
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="https://demos.creative-tim.com/argon-dashboard/docs/plugins/charts.html" target="_blank">
+							<a class="nav-link" href="/visualizations">
 								<i class="ni ni-chart-pie-35"></i>
-								<span class="nav-link-text">Visualization</span>
+								<span class="nav-link-text">Visualizations</span>
 							</a>
 						</li>
 					</ul>
@@ -192,57 +192,10 @@
 								<a href="#!" class="dropdown-item text-center text-primary font-weight-bold py-3">View all</a>
 							</div>
 						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								<i class="ni ni-ungroup"></i>
-							</a>
-							<div class="dropdown-menu dropdown-menu-lg dropdown-menu-dark bg-default  dropdown-menu-right ">
-								<div class="row shortcuts px-4">
-									<a href="#!" class="col-4 shortcut-item">
-										<span class="shortcut-media avatar rounded-circle bg-gradient-red">
-											<i class="ni ni-calendar-grid-58"></i>
-										</span>
-										<small>Calendar</small>
-									</a>
-									<a href="#!" class="col-4 shortcut-item">
-										<span class="shortcut-media avatar rounded-circle bg-gradient-orange">
-											<i class="ni ni-email-83"></i>
-										</span>
-										<small>Email</small>
-									</a>
-									<a href="#!" class="col-4 shortcut-item">
-										<span class="shortcut-media avatar rounded-circle bg-gradient-info">
-											<i class="ni ni-credit-card"></i>
-										</span>
-										<small>Payments</small>
-									</a>
-									<a href="#!" class="col-4 shortcut-item">
-										<span class="shortcut-media avatar rounded-circle bg-gradient-green">
-											<i class="ni ni-books"></i>
-										</span>
-										<small>Reports</small>
-									</a>
-									<a href="#!" class="col-4 shortcut-item">
-										<span class="shortcut-media avatar rounded-circle bg-gradient-purple">
-											<i class="ni ni-pin-3"></i>
-										</span>
-										<small>Maps</small>
-									</a>
-									<a href="#!" class="col-4 shortcut-item">
-										<span class="shortcut-media avatar rounded-circle bg-gradient-yellow">
-											<i class="ni ni-basket"></i>
-										</span>
-										<small>Shop</small>
-									</a>
-								</div>
-							</div>
-						</li>
 					</ul>
 				</div>
 			</div>
 		</nav>
-
-
 
 		<!-- Header -->
 		<div class="header bg-primary pb-6">
