@@ -64,6 +64,7 @@ def render_report():
 # Routes to API endpoints go here
 ############################################
 
+# API endpoint to list available tables in the curated dataset
 @app.route("/data/tables")
 def data_tables():
     table_list = []
@@ -79,20 +80,28 @@ def data_tables():
     # Return table name as JSON object
     return (json.dumps(table_list, indent=4, separators=(',', ': ')))
 
-@app.route("/data/tables/table_name")
-def table_names():
-    table_list = []
 
+# API endpoint to query sample data from each table in the curated dataset
+@app.route("/data/tables/<table_name>", methods=['GET'])
+def table_name(table_name):
     # Query tables in the 'curated' schema and serialize
-    result = db.execute(f"SELECT * FROM information_schema.tables WHERE table_schema = \'curated\';")
-    result = [dict(row) for row in result]
+    result = db.execute(f"SELECT * FROM curated.{table_name} LIMIT 100")
+    table_data = [dict(row) for row in result]
 
-    # Loop through and pull out table names
-    for table in result:
-        table_list.append(table["table_name"])
+    # Return as JSON object
+    return(json.dumps(table_data, indent=4, separators=(',', ': ')))
 
-    # Return table name as JSON object
-    return(json.dumps(table_list, indent=4, separators=(',', ': ')))
+
+# API endpoint to list available views in the curated dataset
+@app.route("/data/views", methods=['GET'])
+def views():
+    # Query tables in the 'curated' schema and serialize
+    result = db.execute(f"SELECT * FROM information_schema.views")
+    views = [dict(row) for row in result]
+
+    # Return list of views as JSON object
+    return(json.dumps(views, indent=4, separators=(',', ': ')))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
