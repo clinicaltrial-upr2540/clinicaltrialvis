@@ -1,6 +1,9 @@
 # Mac files
 .DS_Store
 
+# Pycharm IDE files
+**/.idea/*
+
 # Directory for staging data files
 **/data/*
 
