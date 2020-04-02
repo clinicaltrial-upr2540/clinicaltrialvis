@@ -49,7 +49,10 @@
 	</div>
 
 
-		<script src="{{ url_for('static', filename='js-visualizations/dotChartSetup.js') }}"></script>
+		<script type="text/javascript">
+            var d='{{ data|tojson }}';
+        </script>
+		<script src="{{ url_for('static', filename='js-visualizations/chartSetup.js') }}"></script>
 		<script src="{{ url_for('static', filename='js-visualizations/radarChart.js') }}"></script>
 		<script src="{{ url_for('static', filename='js-visualizations/dotMatrix.js') }}"></script>
 
