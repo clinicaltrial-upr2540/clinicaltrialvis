@@ -1,0 +1,56 @@
+{% extends "master.html" %}
+{% block body %}
+
+	<div class="row">
+		<div class="col">
+			<div class="card card-chart">
+				<div class="card-header card-header-danger">
+					<div class="ct-chart">
+						
+
+						<div class="row">
+					  		<div class="col">Total Companies</div>
+					  		<div class="col">
+					  			<form id="companies_form">
+									<div class="row checkBoxContainer">
+									</div>
+									<button type="submit" class="btn btn-primary">Submit</button>
+								</form>
+							</div>
+							<div class="col">
+								<div></div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div class="radarChart"></div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div id="dotMatrixChart"></div>
+							</div>
+						</div>
+
+
+					</div>
+				</div>
+				<div class="card-body">
+					<h4 class="card-title">{{ vis_title }}</h4>
+					<!-- <p class="card-category">Some cool stuff about drugs</p> -->
+				</div>
+				<div class="card-footer">
+					<div class="stats">
+						<i class="material-icons">bar_chart</i> Created with data from ZINC15
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+		<script src="{{ url_for('static', filename='js-visualizations/dotChartSetup.js') }}"></script>
+		<script src="{{ url_for('static', filename='js-visualizations/radarChart.js') }}"></script>
+		<script src="{{ url_for('static', filename='js-visualizations/dotMatrix.js') }}"></script>
+
+{% endblock %}

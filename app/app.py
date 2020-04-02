@@ -40,8 +40,16 @@ def render_test():
 
 
 @app.route("/visualizations")
-def render_visualizations():
+def render_visualizations_page():
     return render_template('visualizations.html', page_title="Visualizations")
+
+
+@app.route("/visualization/<vis_id>")
+def render_visualization(vis_id):
+
+    vis_title = "Drug targets by companies"
+
+    return render_template('visualization.html', page_title="Visualization", vis_title=vis_title)
 
 
 @app.route("/report")
