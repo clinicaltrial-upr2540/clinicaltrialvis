@@ -49,7 +49,14 @@ def render_visualization(vis_id):
 
     vis_title = "Drug targets by companies"
 
-    return render_template('visualization.html', page_title="Visualization", vis_title=vis_title)
+    query_result = db.execute("SELECT * FROM application.cdcdata ").fetchall()
+    query_result = [dict(row) for row in query_result]
+
+    # Store values in a var to pass to js
+    data = {}
+    data["data"] = query_result
+
+    return render_template('visualization.html', page_title="Visualization", vis_title=vis_title, data=data)
 
 
 @app.route("/report")
