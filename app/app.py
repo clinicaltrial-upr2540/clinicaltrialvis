@@ -40,8 +40,16 @@ def render_test():
 
 
 @app.route("/visualizations")
-def render_visualizations():
+def render_visualizations_page():
     return render_template('visualizations.html', page_title="Visualizations")
+
+
+@app.route("/visualization/<vis_id>")
+def render_visualization(vis_id):
+
+    vis_title = "Drug targets by companies"
+
+    return render_template('visualization.html', page_title="Visualization", vis_title=vis_title)
 
 
 @app.route("/report")
@@ -58,6 +66,21 @@ def render_report():
         return render_template("report.html", table=table_list)
     except Exception as e:
         return str(e)
+
+
+############################################
+# Routes to visualization data go here
+############################################
+@app.route("/vis/<vis_id>")
+def get_visualization_data(vis_id):
+    query_result = db.execute(f"SELECT * FROM application.{vis_id}").fetchall()
+    query_result = [dict(row) for row in query_result]
+
+    # Store values in a var to pass to js
+    data = {}
+    data["data"] = query_result
+
+    return(json.dumps(data))
 
 
 ############################################

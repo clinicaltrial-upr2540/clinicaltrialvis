@@ -1,0 +1,59 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    fill: #242424;
+    text-align: center;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+    cursor: default;
+}
+/*for dotMatrixChart, from https://github.com/arpitnarechania/d3-dotmatrix/blob/master/dist/DotMatrix.css*/
+
+path {
+  stroke: steelblue;
+  stroke-width: 2;
+  fill: none;
+}
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+.tooltip {
+    background: #eee;
+    box-shadow: 0 0 5px #999999;
+    color: #333;
+    font-size: 12px;
+    left: 30px;
+    padding: 10px;
+    position: absolute;
+    text-align: center;
+    top: 5px;
+    z-index: 10;
+    display: block;
+    opacity: 0;
+    fill: #333333;
+}
+.title{
+    font-size:16px;
+    }
+
+g.tick{
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+text .tick {
+    height: 1.2em; /* exactly one lines */
+    width: 10px;  
+    text-overflow: ellipsis;
+    }
+/*for radarChart*/
+.legend {
+    width: 300px;
+    font-family: 'Raleway', sans-serif;
+    fill: #333333;
+}

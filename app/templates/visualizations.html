@@ -2,21 +2,23 @@
 {% block body %}
 
 	<div class="row">
-		<div class="col-md-6">
-			<div class="card card-chart">
-				<div class="card-header card-header-danger">
-					<div class="ct-chart"></div>
-				</div>
-				<div class="card-body">
-					<h4 class="card-title">Example Visualization</h4>
-					<p class="card-category">Some cool stuff about drugs</p>
-				</div>
-				<div class="card-footer">
-					<div class="stats">
-						<i class="material-icons">bar_chart</i> Created with data from ZINC15
+		<div class="col-md-4">
+			<a href="/visualization/1">
+				<div class="card card-chart">
+					<div class="card-header card-header-info">
+						<div class="ct-chart"><img src="{{ url_for('static', filename='img/previews/vis1.png') }}" class="img-fluid"></div>
+					</div>
+					<div class="card-body">
+						<h4 class="card-title">Drug Targets By Companies</h4>
+						<p class="card-category">Radar Chart</p>
+					</div>
+					<div class="card-footer">
+						<div class="stats">
+							<i class="material-icons">bar_chart</i> Created with data from ZINC15
+						</div>
 					</div>
 				</div>
-			</div>
+			</a>
 		</div>
 	</div>
 
