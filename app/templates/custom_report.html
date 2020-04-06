@@ -1,0 +1,105 @@
+
+{% extends "master.html" %}
+{% block body %}
+
+<!-- Page content -->
+   <div class="row">
+               <div class="col-xl-12">
+                  <div class="card">
+                     <!-- Card header -->
+                     <div class="card-header">
+                        <h3 class="mb-0">Create a report</h3>
+                     </div>
+                     <div class="row">
+                        <div class="col-xl-4" style="padding-right: 0px;">
+                         <form role="form" method="POST" action="/report/create" >
+                           <div class="card">
+                              <!-- Card header -->
+                              <div class="card-header border-0">
+                                 <div class="row">
+                                    <div class="col-6">
+                                       <h3 class="mb-0">Curated Views</h3>
+                                    </div>
+
+                                    <div class="col-6 text-right">
+                                        <button class="btn btn-sm btn-danger btn-round btn-icon" type="submit">Update Descriptor List</button>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="table-responsive">
+                                 <table class="table align-items-center table-flush table-hover">
+                                    <thead class="thead-light">
+                                       <tr>
+                                          <th>Curated View</th>
+                                          <th>Select</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for view in view_list %}
+                                       <tr class="table-">
+                                          <td>
+                                             <a href="#!" class="font-weight-bold">{{view['view_name']}}</a>
+                                          </td>
+                                          <td>
+                                             <label class="custom-toggle">
+                                             <input type="checkbox" id="checkbox2" name="{{view['view_name']}}" {{view['selected_view']}}>
+                                             <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+                                             </label>
+                                          </td>
+                                       </tr>
+                                     {% endfor %}
+                                    </tbody>
+                                 </table>
+                              </div>
+                           </div>
+                         </form>
+                        </div>
+                        <div class="col-xl-8" style="padding-left: 0px; padding-bottom: -25px;">
+                         <form role="form" method="POST" action="{{ url_for('export') }}">
+                           <div class="card" style="margin-bottom:0px;">
+                              <!-- Card header -->
+                              <div class="card-header border-0">
+                                 <div class="row">
+                                    <div class="col-6">
+                                       <h3 class="mb-0">Descriptor List</h3>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                         <button class="btn btn-sm btn-danger btn-round btn-icon" type="submit">Export to Excel</button>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="table-responsive py-4">
+                                 <table class="table table-flush" id="datatable-basic">
+                                    <thead>
+                                       <tr>
+                                          <th>View Name</th>
+                                          <th>Column Name</th>
+                                           <th>Select</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                     {% for col in col_list %}
+                                       <tr>
+                                          <td name="view_name">{{col['view_name']}}</td>
+                                          <td>{{col['col_name']}}</td>
+                                          <td>
+                                             <label class="custom-toggle">
+                                             <input type="checkbox" id="checkbox4" name="ck[]" value="{{col['col_name']}} : {{col['view_name']}}" {{col['selected_column']}}>
+                                             <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+                                             </label>
+                                          </td>
+                                       </tr>
+                                       {% endfor %}
+                                    </tbody>
+                                 </table>
+                              </div>
+                           </div>
+                         </form>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+{% endblock %}
