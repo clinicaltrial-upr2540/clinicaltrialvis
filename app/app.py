@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
 import json
-import os
 import pandas
 import sqlalchemy
 import pathlib
 
-from flask import Flask, render_template, send_from_directory, current_app, request
+from flask import Flask, render_template, request, make_response
 from sqlalchemy.orm import scoped_session, sessionmaker
 from configparser import ConfigParser
 
@@ -106,7 +105,6 @@ def get_visualization_data(vis_data_name, data_format):
 
 @app.route("/report/create", methods=['GET', 'POST'])
 def create_custom_report():
-    selected_views = ""
     try:
         view_list = get_all_view_names()
         if request.method == 'POST':
@@ -126,17 +124,26 @@ def render_report():
     table_list = []
     test_string = ""
     try:
+        # Does this block do anything?
         if request.method == 'POST':
             table_list = request.form.getlist('checks[]')
             test_string = ','.join(map(str, table_list))
-            connection = engine.connect()
-            q1 = 'select drug_name, ' + test_string + ' from curated.m_report'
-            result = connection.execute(q1)
+
+            # Pull data from database
+            result = db.execute('select drug_name, ' + test_string + ' from curated.m_report')
             result = [dict(row) for row in result]
-            df = pandas.DataFrame(result)
-            df.to_csv("./file.csv", sep=',', index=False)
-            uploads = os.path.join(current_app.root_path)
-            return send_from_directory(directory=uploads, filename="file.csv", as_attachment=True)
+
+            # Create CSV as a multi-line string
+            csv_output = ",".join(result[0].keys())
+            for row in result:
+                csv_output = csv_output + "\n" + ",".join(map(str, row.values()))
+
+            # Create a response object and set headers so it will download as file
+            response = make_response(csv_output)
+            response.headers['Content-Type'] = "application/octet-stream"
+            response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
+
+            return(response)
         else:
             connection = engine.connect()
             q1 = 'SELECT trim(column_name) FROM information_schema.columns\r\n WHERE table_schema = \'curated\' AND table_name = \'report\''
@@ -170,9 +177,21 @@ def export():
     parameters = ','.join(map(str, col_list))
     query = 'select distinct ' + parameters + ' ' + join_condition
 
-    uploads = generate_report(query)
+    # Pull requested data from database
+    result = db.execute(query)
+    result = [dict(row) for row in result]
 
-    return send_from_directory(directory=uploads, filename="file.csv", as_attachment=True)
+    # Create CSV as a multi-line string
+    csv_output = ",".join(result[0].keys())
+    for row in result:
+        csv_output = csv_output + "\n" + ",".join(map(str, row.values()))
+
+    # Create a response object and set headers so it will download as file
+    response = make_response(csv_output)
+    response.headers['Content-Type'] = "application/octet-stream"
+    response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
+
+    return(response)
 
 
 ############################################
@@ -222,7 +241,6 @@ def views():
 ############################################
 
 def get_all_view_names():
-    view_list = []
     connection = engine.connect()
     q1 = 'select trim(matviewname) as view_name, \'checked\' as selected_view from pg_matviews where schemaname = \'curated\' AND trim(matviewname) <> \'m_report\' '
     report = connection.execute(q1)
@@ -265,16 +283,6 @@ def get_init_list(view_names):
     report = [dict(row) for row in report]
     connection.close()
     return report
-
-
-def generate_report(query):
-    connection = engine.connect()
-    result = connection.execute(query)
-    result = [dict(row) for row in result]
-    df = pandas.DataFrame(result)
-    df.to_csv("./file.csv", sep=',', index=False)
-    uploads = os.path.join(current_app.root_path)
-    return uploads
 
 
 if __name__ == "__main__":
