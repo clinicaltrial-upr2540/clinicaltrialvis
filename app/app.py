@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 
-import csv
 import json
 import os
-import sys
-from configparser import ConfigParser
-
 import pandas
 import sqlalchemy
+import pathlib
 
-from flask import Flask, render_template, abort, jsonify, send_from_directory, current_app, request
+from flask import Flask, render_template, send_from_directory, current_app, request
 from sqlalchemy.orm import scoped_session, sessionmaker
+from configparser import ConfigParser
 
 app = Flask(__name__)
 app.config['TESTING'] = True
@@ -28,8 +26,9 @@ DATABASE_URL = "postgresql://postgres:y9fBsh5xEeYvkUkCQ5q3@drugdata.cgi8bzi5jc1o
 engine = sqlalchemy.create_engine(DATABASE_URL)
 db = scoped_session(sessionmaker(bind=engine))
 
+# What does this config do? Let's eliminate it if possible
 config = ConfigParser()
-config.readfp(open(os.path.join(os.path.dirname(sys.path[0]), 'app\\config') + '\\' + 'configuration.conf'))
+config.readfp(open(f"{pathlib.Path(__file__).parent.absolute()}/config/configuration.conf"))
 
 
 ############################################
@@ -43,11 +42,13 @@ def render_index():
     return render_template('home.html', page_title="Home")
 
 
+# Route to test page. TODO: Remove!
 @app.route("/test")
 def render_test():
     return render_template('test.html', page_title="Test Page")
 
 
+# Menu to present all visualizations
 @app.route("/visualizations")
 def render_visualizations_page():
     # Query for full list of visualizations
@@ -57,6 +58,7 @@ def render_visualizations_page():
     return render_template('visualizations.html', page_title="Visualizations", result=result)
 
 
+# Page to show a single d3 visualization
 @app.route("/visualization/<vis_id>")
 def render_visualization(vis_id):
     # Query for full list of visualizations
