@@ -4,35 +4,45 @@
 
 <!-- Page content -->
 <div class="row justify-content-center">
-    <div class=" col ">
-        <div class="card">
+        <form role="form" method="POST">
+        <div class=" col ">
+          <div class="card">
+
             <div class="card-header bg-transparent">
-                <h3 class="mb-0">Descriptor</h3>
+              <h3 class="mb-0">Descriptor</h3>
                 <br>
-                <a href="#" class="btn btn-sm btn-neutral">Export To CSV</a>
+
+
+{#                      <a class="btn btn-sm btn-neutral" href="/export">Sign In</a>#}
+{#                     <a href="#" class="btn btn-sm btn-neutral">Export To CSV</a>#}
+                     <button class="btn btn-lg btn-block btn-success text-uppercase" type="submit">Export to CSV</button>
+{#                <a href="#" class="btn btn-sm btn-neutral">Filters</a>#}
 
 
             </div>
             <div class="card-body">
-                <div class="row icon-examples">
+              <div class="row icon-examples">
 
-                    {% for channel in table %}
+                  {% for channel in table %}
 
-                    <div class="col-lg-3 col-md-6">
+                        <div class="col-lg-3 col-md-6">
                         <button type="button" class="btn-icon-clipboard" data-clipboard-text="ungroup" title="Select Descriptor To Export">
-                            <div>
-                                <input type="checkbox" name="checks[]" value="{{ channel }}" />
-                                <span>{{channel}}</span>
-                            </div>
-                        </button>
-                    </div>
-
-                    {% endfor %}
-
-
+                        <div>
+                          <input type="checkbox"  id="checkbox" name="checks[]" value="{{ channel }}" />
+{#                          <i class="ni ni-ungroup"></i>#}
+                          <span>{{channel}}</span>
+                        </div>
+                  </button>
                 </div>
+
+            {% endfor %}
+
+
+              </div>
             </div>
+          </div>
         </div>
-    </div>
+        </form>
+      </div>
 
 {% endblock %}
