@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
 import json
-import os
 import pandas
 import sqlalchemy
 import pathlib
 
-from flask import Flask, render_template, send_from_directory, current_app, request, make_response
+from flask import Flask, render_template, request, make_response
 from sqlalchemy.orm import scoped_session, sessionmaker
 from configparser import ConfigParser
 
@@ -106,7 +105,6 @@ def get_visualization_data(vis_data_name, data_format):
 
 @app.route("/report/create", methods=['GET', 'POST'])
 def create_custom_report():
-    selected_views = ""
     try:
         view_list = get_all_view_names()
         if request.method == 'POST':
@@ -145,8 +143,6 @@ def render_report():
             response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
 
             return(response)
-
-            # return send_from_directory(directory=uploads, filename="file.csv", as_attachment=True)
         else:
             connection = engine.connect()
             q1 = 'SELECT trim(column_name) FROM information_schema.columns\r\n WHERE table_schema = \'curated\' AND table_name = \'report\''
@@ -245,7 +241,6 @@ def views():
 ############################################
 
 def get_all_view_names():
-    view_list = []
     connection = engine.connect()
     q1 = 'select trim(matviewname) as view_name, \'checked\' as selected_view from pg_matviews where schemaname = \'curated\' AND trim(matviewname) <> \'m_report\' '
     report = connection.execute(q1)
@@ -289,15 +284,6 @@ def get_init_list(view_names):
     connection.close()
     return report
 
-
-# def generate_report(query):
-#     connection = engine.connect()
-#     result = connection.execute(query)
-#     result = [dict(row) for row in result]
-#     df = pandas.DataFrame(result)
-#     df.to_csv("./file.csv", sep=',', index=False)
-#     uploads = os.path.join(current_app.root_path)
-#     return uploads
 
 if __name__ == "__main__":
     app.run(debug=True)
