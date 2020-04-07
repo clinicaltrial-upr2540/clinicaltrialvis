@@ -124,6 +124,7 @@ def render_report():
     table_list = []
     test_string = ""
     try:
+        # Does this block do anything?
         if request.method == 'POST':
             table_list = request.form.getlist('checks[]')
             test_string = ','.join(map(str, table_list))
@@ -191,7 +192,6 @@ def export():
     response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
 
     return(response)
-    # return send_from_directory(directory=uploads, filename="file.csv", as_attachment=True)
 
 
 ############################################
