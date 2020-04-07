@@ -1,5 +1,5 @@
-Plotly.d3.csv('splom_data_C14.csv', function(err, rows){
-
+// Plotly.d3.csv('splom_data_C14.csv', function(err, rows){
+Plotly.d3.json('/vis/splomdata/json', function(err, rows){
 
 var companies = d3.map(rows, function(d){return d.group;}).keys();
 
