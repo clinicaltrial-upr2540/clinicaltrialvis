@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/ >
+		<title>Plotly SPLOM</title>
+
+		<!-- Google fonts -->
+		<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+
+		<!-- jQuery.js -->
+		<script
+		src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+
+		<!-- D3.js -->
+		<script src="https://d3js.org/d3.v4.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.3.0/d3-legend.js" charset="utf-8"></script>
+
+		<!-- Load color palettes -->
+		<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+		<!-- Bootstrap v4.1.1 -->
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+		<!-- Plotly.js -->
+		<script src="https://cdn.plot.ly/plotly-latest.js" charset="utf-8"></script>
+		
+		<style>
+			body {
+				font-family: 'Open Sans', sans-serif;
+				font-size: 11px;
+				font-weight: 300;
+				fill: #242424;
+				text-align: center;
+				text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+				cursor: default;
+			}
+			/*for dotMatrixChart, from https://github.com/arpitnarechania/d3-dotmatrix/blob/master/dist/DotMatrix.css*/
+
+			path {
+			  stroke: steelblue;
+			  stroke-width: 2;
+			  fill: none;
+			}
+			.axis path,
+			.axis line {
+				fill: none;
+				stroke: grey;
+				stroke-width: 1;
+				shape-rendering: crispEdges;
+			}
+			
+			/*.tooltip {
+				background: #eee;
+				box-shadow: 0 0 5px #999999;
+				color: #333;
+				font-size: 12px;
+				left: 30px;
+				padding: 10px;
+				position: absolute;
+				text-align: center;
+				top: 5px;
+				z-index: 10;
+				display: block;
+				opacity: 0;
+				fill: #333333;
+			}*/
+
+			.tooltip{
+				color: black;
+				background-color: white;
+				background: white;
+				position: absolute;
+				align-content: center;
+				margin-right: 10%;
+				margin-left: 10%;
+				border: green;
+				}
+
+			.title{
+				font-size:16px;
+				}
+			g{
+				visibility: visible;
+			}
+
+			.xScale > g{
+				white-space: nowrap;
+  				overflow: hidden;
+			}
+
+			.xScale > g >text{
+				height: 1.2em; /* exactly one lines */
+  				width: 70px;
+  				display: inline-block;
+  				text-align: center;
+  				white-space: nowrap;
+  				overflow: hidden;
+  				text-overflow: ellipsis;
+				}
+			/*for radarChart*/
+			.legend {
+				width: 300px;
+				font-family: 'Raleway', sans-serif;
+				fill: #333333;
+			}
+			/*for the heatmap from http://bl.ocks.org/tjdecke/5558084*/
+			rect.bordered {
+		        stroke: #E6E6E6;
+		        stroke-width:2px;   
+		      }
+
+		      text.mono {
+		        font-size: 9pt;
+		        font-family: Consolas, courier;
+		        fill: #aaa;
+		      }
+
+		      text.axis-workweek {
+		        fill: #000;
+		      }
+
+		      text.axis-worktime {
+		        fill: #000;
+		      }
+		</style>
+	
+	</head>
+	<body>
+	  <div class="container-fluid">
+		<div class="row">
+			<div class="col-12">
+				<div id="splom-plot"></div>
+			</div>
+		</div>
+	 </div>
+	 	 <!-- DotMatrix.js - from http://jsfiddle.net/hrabinowitz/ZW528/14/ -->
+	 	<script src="splom.js"></script>
+	</body>
+</html>
