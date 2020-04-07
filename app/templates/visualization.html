@@ -23,34 +23,43 @@
 						</div>
 						<div class="row">
 							<div class="col-12">
-								<div class="radarChart"></div>
+								<div id="{{ result['class'] }}"></div>
 							</div>
 						</div>
-						<div class="row">
+<!-- 						<div class="row">
 							<div class="col-12">
 								<div id="dotMatrixChart"></div>
 							</div>
 						</div>
 
 
+						<div class="container-fluid">
+							<div class="row">
+								<div class="col-12">
+									<div id="bubble-plot-3d"></div>
+								</div>
+							</div>
+						 </div> -->
+
+
+
 					</div>
 				</div>
 				<div class="card-body">
-					<h4 class="card-title">{{ vis_title }}</h4>
+					<h4 class="card-title">{{ result['title'] }}</h4>
 					<!-- <p class="card-category">Some cool stuff about drugs</p> -->
 				</div>
 				<div class="card-footer">
 					<div class="stats">
-						<i class="material-icons">bar_chart</i> Created with data from ZINC15
+						<i class="material-icons">bar_chart</i> Created with data from ChemBL
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-
-		<script src="{{ url_for('static', filename='js-visualizations/chartSetup.js') }}"></script>
-		<script src="{{ url_for('static', filename='js-visualizations/radarChart.js') }}"></script>
-		<script src="{{ url_for('static', filename='js-visualizations/dotMatrix.js') }}"></script>
+	{% for script in result['scripts'].split(',') %}
+	<script src="/static/js-visualizations/{{ result['name'] }}/{{ script }}"></script>
+	{% endfor %}
 
 {% endblock %}

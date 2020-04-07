@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import csv
 import json
 import os
 import sys
@@ -49,28 +50,52 @@ def render_test():
 
 @app.route("/visualizations")
 def render_visualizations_page():
-    return render_template('visualizations.html', page_title="Visualizations")
+    # Query for full list of visualizations
+    result = db.execute("SELECT * FROM application.visualizations;").fetchall()
+    result = [dict(row) for row in result]
+
+    return render_template('visualizations.html', page_title="Visualizations", result=result)
 
 
 @app.route("/visualization/<vis_id>")
 def render_visualization(vis_id):
-    vis_title = "Drug targets by companies"
-    return render_template('visualization.html', page_title="Visualization", vis_title=vis_title)
+    # Query for full list of visualizations
+    result = db.execute(f"SELECT * FROM application.visualizations WHERE id = {vis_id};").fetchone()
+    result = dict(result)
+
+    return render_template('visualization.html', page_title="Visualization", result=result)
 
 
 ############################################
 # Routes to visualization data go here
 ############################################
-@app.route("/vis/<vis_id>")
-def get_visualization_data(vis_id):
-    query_result = db.execute(f"SELECT * FROM application.{vis_id}").fetchall()
+@app.route("/vis/<vis_data_name>/<data_format>")
+def get_visualization_data(vis_data_name, data_format):
+    query_result = db.execute(f"SELECT * FROM application.{vis_data_name}").fetchall()
     query_result = [dict(row) for row in query_result]
 
-    # Store values in a var to pass to js
-    data = {}
-    data["data"] = query_result
+    popped_result = []
 
-    return (json.dumps(data))
+    # We don't want to IDs
+    for item in query_result:
+        item.pop("id")
+        popped_result.append(item)
+
+    # Return as a json file
+    if data_format == "json":
+        # Store values in a var to pass to js
+        data = {}
+        data["data"] = popped_result
+
+        return(json.dumps(data))
+    # Return as a CSV
+    else:
+        csv_output = ",".join(popped_result[0].keys())
+
+        for row in popped_result:
+            csv_output = csv_output + "\n" + ",".join(map(str, row.values()))
+
+        return(csv_output)
 
 
 ############################################
