@@ -28,6 +28,11 @@
 	<!-- Plotly js -->
 	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
+	{% if result is defined %}
+	<!-- Visualization-specific CSS -->
+	<link rel="stylesheet" href="/static/css/visualizations/{{ result['name'] }}.css" type="text/css">
+	{% endif %}
+
 	<title>Clinical Trial Capstone</title>
 	<link rel="icon" href="{{ url_for('static', filename='img/brand/favicon.png') }}"   type="image/png">
 </head>

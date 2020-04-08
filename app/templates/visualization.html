@@ -6,21 +6,6 @@
 			<div class="card card-chart">
 				<div class="card-header card-header-danger">
 					<div class="ct-chart">
-						
-
-						<div class="row">
-					  		<div class="col">Total Companies</div>
-					  		<div class="col">
-					  			<form id="companies_form">
-									<div class="row checkBoxContainer">
-									</div>
-									<button type="submit" class="btn btn-primary">Submit</button>
-								</form>
-							</div>
-							<div class="col">
-								<div></div>
-							</div>
-						</div>
 
 						{% for id in result['classes'].split(',') %}
 						<div class="row">
@@ -30,11 +15,21 @@
 						</div>
 						{% endfor %}
 
+						<div class="row">
+							<div class="col-10"></div>
+					  		<div class="col-2">
+					  			<form id="companies_form">
+									<div class="row checkBoxContainer"></div>
+									<button type="submit" class="btn btn-primary">Submit</button>
+								</form>
+							</div>
+						</div>
 
 					</div>
 				</div>
 				<div class="card-body">
 					<h4 class="card-title">{{ result['title'] }}</h4>
+					<p class="card-category">{{ result['description'] }}</p>
 				</div>
 				<div class="card-footer">
 					<div class="stats">
