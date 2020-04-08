@@ -10,12 +10,8 @@
 	<!--     Fonts and icons     -->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
-	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css"> -->
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/nucleo/css/nucleo.css') }}"  type="text/css">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/@fortawesome/fontawesome-free/css/all.min.css') }}" type="text/css">
-
-	<!--   Material Dashboard CSS   -->
-	<!-- <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/material-dashboard.min.css') }}"> -->
 
 	<!-- Argon CSS -->
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/argon.css') }}" type="text/css">
@@ -24,12 +20,18 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.3.0/d3-legend.js" charset="utf-8"></script>
 
-	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
 	<!-- Load color palettes -->
 	<script src="https://d3js.org/d3-color.v1.min.js"></script>
 	<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
 	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+	<!-- Plotly js -->
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+	{% if result is defined %}
+	<!-- Visualization-specific CSS -->
+	<link rel="stylesheet" href="/static/css/visualizations/{{ result['name'] }}.css" type="text/css">
+	{% endif %}
 
 	<title>Clinical Trial Capstone</title>
 	<link rel="icon" href="{{ url_for('static', filename='img/brand/favicon.png') }}"   type="image/png">
@@ -164,60 +166,6 @@
 							<a class="nav-link" href="#" data-action="search-show" data-target="#navbar-search-main">
 								<i class="ni ni-zoom-split-in"></i>
 							</a>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								<i class="ni ni-bell-55"></i>
-							</a>
-							<div class="dropdown-menu dropdown-menu-xl  dropdown-menu-right  py-0 overflow-hidden">
-								<!-- Dropdown header -->
-								<div class="px-3 py-3">
-									<h6 class="text-sm text-muted m-0">You have <strong class="text-primary">13</strong> notifications.</h6>
-								</div>
-								<!-- List group -->
-								<div class="list-group list-group-flush">
-									<a href="#!" class="list-group-item list-group-item-action">
-										<div class="row align-items-center">
-											<div class="col-auto">
-												<!-- Avatar -->
-												<img alt="Image placeholder" src="{{ url_for('static', filename='img/theme/team-4.jpg') }}" class="avatar rounded-circle">
-											</div>
-											<div class="col ml--2">
-												<div class="d-flex justify-content-between align-items-center">
-													<div>
-														<h4 class="mb-0 text-sm">John Snow</h4>
-													</div>
-													<div class="text-right text-muted">
-														<small>2 hrs ago</small>
-													</div>
-												</div>
-												<p class="text-sm mb-0">Let's meet at Starbucks at 11:30. Wdyt?</p>
-											</div>
-										</div>
-									</a>
-									<a href="#!" class="list-group-item list-group-item-action">
-										<div class="row align-items-center">
-											<div class="col-auto">
-												<!-- Avatar -->
-												<img alt="Image placeholder" src="{{ url_for('static', filename='img/theme/team-5.jpg') }}" class="avatar rounded-circle">
-											</div>
-											<div class="col ml--2">
-												<div class="d-flex justify-content-between align-items-center">
-													<div>
-														<h4 class="mb-0 text-sm">John Snow</h4>
-													</div>
-													<div class="text-right text-muted">
-														<small>3 hrs ago</small>
-													</div>
-												</div>
-												<p class="text-sm mb-0">A new issue has been reported for Argon.</p>
-											</div>
-										</div>
-									</a>
-								</div>
-								<!-- View all -->
-								<a href="#!" class="dropdown-item text-center text-primary font-weight-bold py-3">View all</a>
-							</div>
 						</li>
 					</ul>
 				</div>

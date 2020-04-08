@@ -52,9 +52,9 @@ def render_test():
 def render_visualizations_page():
     # Query for full list of visualizations
     result = db.execute("SELECT * FROM application.visualizations;").fetchall()
-    result = [dict(row) for row in result]
+    result_list = [dict(row) for row in result]
 
-    return render_template('visualizations.html', page_title="Visualizations", result=result)
+    return render_template('visualizations.html', page_title="Visualizations", result_list=result_list)
 
 
 # Page to show a single d3 visualization
@@ -68,7 +68,7 @@ def render_visualization(vis_id):
 
 
 ############################################
-# Routes to visualization data go here
+# Routes to visualization data
 ############################################
 @app.route("/vis/<vis_data_name>/<data_format>")
 def get_visualization_data(vis_data_name, data_format):
@@ -77,7 +77,7 @@ def get_visualization_data(vis_data_name, data_format):
 
     popped_result = []
 
-    # We don't want to IDs
+    # We don't want to include IDs
     for item in query_result:
         item.pop("id")
         popped_result.append(item)

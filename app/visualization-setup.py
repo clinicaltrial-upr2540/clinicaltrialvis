@@ -10,7 +10,7 @@ visualization_list = [
         "title": "Drug Targets by Companies",
         "description": "Radar Chart",
         "thumbnail": "radar.png",
-        "class": "radarChart",
+        "classes": "radarChart",
         "dataset": "cdcdata",
         "data_format": "json",
         "scripts": "chartSetup.js,dotMatrix.js,radarChart.js"
@@ -20,17 +20,17 @@ visualization_list = [
         "title": "Drug Targets by Companies",
         "description": "Dot Matrix Diagram",
         "thumbnail": "dotmatrix.png",
-        "class": "dotMatrixChart",
+        "classes": "dotMatrixChart",
         "dataset": "cdcdata",
         "data_format": "json",
         "scripts": "chartSetup.js,dotMatrix.js,radarChart.js"
     },
     {
         "name": "3d_bubbles",
-        "title": "Drug Targets by Companies",
+        "title": "Molecular Descriptors",
         "description": "3D Bubble Chart",
         "thumbnail": "3d_bubbles.png",
-        "class": "radarChart",
+        "classes": "bubble-plot-3d",
         "dataset": "splomdata",
         "data_format": "csv",
         "scripts": "bubble_plot_3d.js"
@@ -40,7 +40,7 @@ visualization_list = [
         "title": "Drug Targets by Companies",
         "description": "Box and Whisker Chart",
         "thumbnail": "box-whisker.png",
-        "class": "radarChart",
+        "classes": "box-whisker-plotly",
         "dataset": "heatmapdata",
         "data_format": "csv",
         "scripts": "box_whisker_plotly.js"
@@ -50,17 +50,17 @@ visualization_list = [
         "title": "Drug Targets by Companies",
         "description": "Heat Map",
         "thumbnail": "heatmap.png",
-        "class": "radarChart",
+        "classes": "heatmap,dataset-picker",
         "dataset": "heatmapdata",
         "data_format": "csv",
         "scripts": "heatmap.js"
     },
     {
         "name": "splom",
-        "title": "Drug Targets by Companies",
-        "description": "Radar Chart",
+        "title": "Molecular Descriptors",
+        "description": "Scatterplot Matrix",
         "thumbnail": "splom.png",
-        "class": "radarChart",
+        "classes": "splom-plot",
         "dataset": "splomdata",
         "data_format": "csv",
         "scripts": "splom.js"
@@ -87,15 +87,15 @@ db.execute("CREATE TABLE visualizations (id SERIAL PRIMARY KEY, \
                                 title VARCHAR NOT NULL, \
                                 description VARCHAR, \
                                 thumbnail VARCHAR, \
-                                class VARCHAR, \
+                                classes VARCHAR, \
                                 dataset VARCHAR, \
                                 data_format VARCHAR, \
                                 scripts VARCHAR);")
 db.commit()
 
 for visualization in visualization_list:
-    db.execute(f"INSERT INTO {SCHEMA_NAME}.visualizations (\"name\", title, description, thumbnail, class, dataset, data_format, scripts) VALUES \
-                (\'{visualization['name']}\', \'{visualization['title']}\', \'{visualization['description']}\', \'{visualization['thumbnail']}\', \'{visualization['class']}\', \'{visualization['dataset']}\', \'{visualization['data_format']}\', \'{visualization['scripts']}\')")
+    db.execute(f"INSERT INTO {SCHEMA_NAME}.visualizations (\"name\", title, description, thumbnail, classes, dataset, data_format, scripts) VALUES \
+                (\'{visualization['name']}\', \'{visualization['title']}\', \'{visualization['description']}\', \'{visualization['thumbnail']}\', \'{visualization['classes']}\', \'{visualization['dataset']}\', \'{visualization['data_format']}\', \'{visualization['scripts']}\')")
     db.commit()
 
 db.close()

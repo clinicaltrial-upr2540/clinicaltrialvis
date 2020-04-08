@@ -1,5 +1,5 @@
 // Plotly.d3.csv('splom_data_C14.csv', function(err, rows){
-Plotly.d3.json('/vis/splomdata/json', function(err, rows){
+Plotly.d3.csv('/vis/splomdata/csv', function(err, rows){
 
 var companies = d3.map(rows, function(d){return d.group;}).keys();
 
@@ -24,7 +24,7 @@ var sumstat = d3.nest() // nest function allows to group the calculation per lev
     })
     .entries(rows);
 
-    console.log(sumstat[1].value);
+    // console.log(sumstat[1].value);
 
 
 var dataFor3D = [];

@@ -1,7 +1,7 @@
 {% extends "master.html" %}
 {% block body %}
 
-	{% for row in result|batch(3) %}
+	{% for row in result_list|batch(3) %}
 	<div class="row">
 		{% for visualization in row %}
 		<div class="col-md-4">

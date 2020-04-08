@@ -15,7 +15,7 @@ var svg = d3.select("#heatmap")
         "translate(" + margin.left + "," + margin.top + ")");
 
 //Read the data
-d3.csv("heatmap_data_CO6.csv", function(data) {
+d3.csv("/vis/heatmapdata/csv", function(data) {
 
   // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
   var myGroups = d3.map(data, function(d){return d.group;}).keys();

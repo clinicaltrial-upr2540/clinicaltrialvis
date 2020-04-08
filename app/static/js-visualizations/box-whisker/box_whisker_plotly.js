@@ -17,7 +17,7 @@ var svg = d3.select("#box-whisker")
           "translate(" + margin.left + "," + margin.top + ")");
 
 // Read the data and compute summary statistics for each specie
-d3.csv("heatmap_data_CO6.csv", function(data) {
+d3.csv("/vis/heatmapdata/csv", function(data) {
 
   // Compute quartiles, median, inter quantile range min and max --> these info are then used to draw the box.
   var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
