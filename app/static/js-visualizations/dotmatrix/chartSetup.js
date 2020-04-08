@@ -45,7 +45,7 @@
 			  w: width,
 			  h: height,
 			  margin: margin,
-			  maxValue: 60,
+			  maxValue: 10,
 			  levels: 6,
 			  roundStrokes: true,
 			  color: d3.scaleOrdinal(d3.schemeCategory10),
