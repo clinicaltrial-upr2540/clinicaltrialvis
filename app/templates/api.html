@@ -105,24 +105,24 @@
                             <th colspan="3" class="table-active">Output JSON keys, values, and purposes</td>
                         </tr>
                         <tr>
-                            <th>Key</th>
-                            <th>Values</th>
-                            <th>Notes</th>
+                            <td>Key</td>
+                            <td>Values</td>
+                            <td>Notes</td>
                         </tr>
                         <tr>
-                            <th>download</th>
-                            <th>boolean</th>
-                            <th>Defaults to true to avoid rendering huge datasets on clients.</th>
+                            <td>download</td>
+                            <td>boolean</td>
+                            <td>Defaults to true to avoid rendering huge datasets on clients.</td>
                         </tr>
                         <tr>
-                            <th>files_to_prepare</th>
-                            <th>Int 0 or greater</th>
-                            <th>Optional. Valid values are integers 0 or greater. Defaults to 1.</th>
+                            <td>files_to_prepare</td>
+                            <td>Int 0 or greater</td>
+                            <td>Optional. Valid values are integers 0 or greater. Defaults to 1.</td>
                         </tr>
                         <tr>
-                            <th>data</th>
-                            <th>JSON</th>
-                            <th>List of JSON objects representing the dataset to render or datasets to download</th>
+                            <td>data</td>
+                            <td>JSON</td>
+                            <td>List of JSON objects representing the dataset to render or datasets to download</td>
                         </tr>
                     </table>
                     <p>The purpose of this endpoint is to support exploration of the data. The client supplies a list of view columns that they want to retrieve from the application as well as parameters specifying joining style and download formats when relevant. The client can also specify conditions upon which to filter the requested data. This is by far the most important endpoint because it allows users who do not know SQL to explore the data. </p>
