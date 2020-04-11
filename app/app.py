@@ -47,6 +47,12 @@ def render_test():
     return render_template('test.html', page_title="Test Page")
 
 
+# Route to API doc page
+@app.route("/api")
+def render_api_doc():
+    return render_template('api.html', page_title="API Documentation")
+
+
 # Menu to present all visualizations
 @app.route("/visualizations")
 def render_visualizations_page():

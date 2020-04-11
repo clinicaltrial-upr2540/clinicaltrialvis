@@ -1,0 +1,245 @@
+{% extends "master.html" %}
+{% block body %}
+
+    <div class="row">
+        <div class="col">
+
+            <div class="card card-chart">
+                <a data-toggle="collapse" href="#collapseEndpoint1" role="button" aria-expanded="false" aria-controls="collapseEndpoint1">
+                    <div class="card-header">
+                        <span class="h3">/data/views</span>
+                        <small class="text-muted">Click to expand</small>
+                    </div>
+                </a>
+                <div class="card-body collapse" id="collapseEndpoint1">
+                    <p>This API endpoint returns information about what views are available for the client.</p>
+                    <p>Example output:</p>
+                    <code>
+                        <pre id="json">
+{ 
+    "views": [ 
+        &lt;view_name&gt;, 
+        &lt;view_name&gt;, 
+        &lt;view_name&gt; 
+    ] 
+}
+                        </pre>
+                    </code>
+                </div>
+            </div>
+
+            <div class="card card-chart">
+                <a data-toggle="collapse" href="#collapseEndpoint2" role="button" aria-expanded="false" aria-controls="collapseEndpoint2">
+                    <div class="card-header">
+                        <span class="h3">/data/view/&lt;view_name&gt;</span>
+                        <small class="text-muted">Click to expand</small>
+                    </div>
+                </a>
+                <div class="card-body collapse" id="collapseEndpoint2">
+                    <p> This endpoint provides more information about a specific view. Information may include the view name, column names, and column types. Since the column list is an array of JSONs, additional information for the views or the columns can be included.</p>
+                    <p>Example output:</p>
+                    <code>
+                        <pre id="json">
+
+{
+    "view": {
+        "view_name": &lt;view_name&gt;,
+        "columns": [
+            {
+                "column_name": &lt;column_name&gt;, 
+                "column_type": &lt;int or text&gt;
+            }, 
+            {
+                "column_name": &lt;column_name&gt;, 
+                "column_type": &lt;int or text&gt;
+            }, 
+            {
+                "column_name": &lt;column_name&gt;, 
+                "column_type": &lt;int or text&gt;
+            }
+        ]
+    }
+}
+                        </pre>
+                    </code>
+                </div>
+            </div>
+
+            <div class="card card-chart">
+                <a data-toggle="collapse" href="#collapseEndpoint3" role="button" aria-expanded="false" aria-controls="collapseEndpoint3">
+                    <div class="card-header">
+                        <span class="h3">/data/explore</span>
+                        <small class="text-muted">Click to expand</small>
+                    </div>
+                </a>
+                <div class="card-body collapse" id="collapseEndpoint3">
+                    <table class="table table-bordered mb-4">
+                        <tr>
+                            <th class="table-active">Endpoint</th>
+                            <td colspan="2">/data/explore</td>
+                        </tr>
+                        <tr>
+                            <th colspan="3" class="table-active">Payload Keys, values, and purposes</th>
+                        </tr>
+                        <tr>
+                            <td>data_list</td>
+                            <td>JSON</td>
+                            <td>A list of JSON objects prepared by selecting items on the UI</td>
+                        </tr>
+                        <tr>
+                            <td>join_style</td>
+                            <td>text</td>
+                            <td>Optional. Valid values: inner, left. Defaults to inner</td>
+                        </tr>
+                        <tr>
+                            <td>export</td>
+                            <td>Boolean</td>
+                            <td>Optional. valid values: true, false. Defaults to false</td>
+                        </tr>
+                        <tr>
+                            <td>single_file</td>
+                            <td>Boolean</td>
+                            <td>Optional. valid values: true, false. Defaults to false</td>
+                        </tr>
+                        <tr>
+                            <th colspan="3" class="table-active">Output JSON keys, values, and purposes</td>
+                        </tr>
+                        <tr>
+                            <td>Key</td>
+                            <td>Values</td>
+                            <td>Notes</td>
+                        </tr>
+                        <tr>
+                            <td>download</td>
+                            <td>boolean</td>
+                            <td>Defaults to true to avoid rendering huge datasets on clients.</td>
+                        </tr>
+                        <tr>
+                            <td>files_to_prepare</td>
+                            <td>Int 0 or greater</td>
+                            <td>Optional. Valid values are integers 0 or greater. Defaults to 1.</td>
+                        </tr>
+                        <tr>
+                            <td>data</td>
+                            <td>JSON</td>
+                            <td>List of JSON objects representing the dataset to render or datasets to download</td>
+                        </tr>
+                    </table>
+                    <p>The purpose of this endpoint is to support exploration of the data. The client supplies a list of view columns that they want to retrieve from the application as well as parameters specifying joining style and download formats when relevant. The client can also specify conditions upon which to filter the requested data. This is by far the most important endpoint because it allows users who do not know SQL to explore the data. </p>
+                    <p>Example input payload (formatted as JSON):</p>
+                    <code>
+                        <pre id="json">
+{
+    "data_list": [
+        {
+            "view_name": &lt;view_name&gt;,
+            "column_list": [
+                &lt;column_name&gt;,
+                &lt;column_name&gt;,
+                &lt;column_name&gt;
+            ] 
+            "filters": [
+                {
+                    "column_name": &lt;column_name&gt;, 
+                    "search_token": &lt;search_token&gt;
+                }
+            ]
+        }, 
+        {
+            "view_name": &lt;view_name&gt;,
+            "column_list": [
+                &lt;column_name&gt;,
+                &lt;column_name&gt;
+            ] 
+        }, 
+    ], 
+    "join_style": "inner",
+    "export": "false",
+    "single_file": "false"   
+}
+                        </pre>
+                    </code>
+
+                    <p>Output Data Payload (Formatted as JSON):</p>
+                    <p>This payload is in response to a request for download in a JSON Format while keeping the requested datasets separated. In this example there are two datasets. The first dataset has three columns, the second two columns.</p>
+                    <code>
+                        <pre id="json">
+{
+    "download": true,  
+    "single_file": false,   
+    "data": [ 
+        { 
+            "view_names": [ &lt;view_name&gt; ], 
+            "column_names": [ &lt;colname&gt;, &lt;colname&gt;, &lt;colname&gt; ], 
+            "data": [
+                [&lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;],  // first row of data
+                [&lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;],
+                [&lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;]
+            ], 
+        }, // end first dataset 
+        { 
+            "view_names": [ &lt;view_name&gt; ], 
+            "column_names": [ &lt;colname&gt;, &lt;colname&gt; ], 
+            "data": [
+                [ &lt;datum&gt;, &lt;datum&gt; ],  // first row of data
+                [ &lt;datum&gt;, &lt;datum&gt; ],
+                [ &lt;datum&gt;, &lt;datum&gt; ]
+            ], 
+        } // end second dataset 
+    ] // end data array 
+}
+                        </pre>
+                    </code>
+                    <p>If the original request had set single_file to true but was otherwise the same request, then the resulting data object will have 5 columns.</p>
+                    <code>
+                        <pre id="json">
+{
+    "download": true,  
+    "single_file": true,   
+    data": [ 
+        { 
+            "view_names": [ &lt;view_name&gt;, &lt;view_name&gt; ], 
+            "column_names": [ &lt;colname&gt;, &lt;colname&gt;, &lt;colname&gt; ], 
+            "data": [
+                [ &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt; ], // first row of data
+                [ &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt; ],
+                [ &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt; ]
+            ], 
+        }, // end first dataset which contains data from two views
+    ], // end data array 
+}
+                        </pre>
+                    </code>
+                    <p>This payload is in response to a request for rendering of data samples on the client. If by accident multiple datasets were included in the "data" key, then only the first entry will be rendered in the data viewer element.</p>
+                    <code>
+                        <pre id="json">
+{
+    "download": false,    
+    "files_to_prepare": 0,    
+    "data": [                     
+        { 
+            "view_names": [ &lt;view_name&gt;, &lt;view_name&gt; ]
+            "column_names": [ 
+                &lt;colname&gt;, 
+                &lt;colname&gt;, 
+                &lt;colname&gt;,
+                &lt;colname&gt;, 
+                &lt;colname&gt;
+            ], 
+            "data": [
+                [ &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt; ], 
+                [ &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt; ],
+                [ &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt;, &lt;datum&gt; ]
+            ], 
+        } // end first dataset 
+          // additional datasets will be ignored if download is false 
+    ] // end data array 
+}
+                        </pre>
+                    </code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
