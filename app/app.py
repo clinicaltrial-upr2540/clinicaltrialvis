@@ -73,6 +73,12 @@ def render_visualization(vis_id):
     return render_template('visualization.html', page_title="Visualization", result=result)
 
 
+# Page to explore and explort data
+@app.route("/explore")
+def render_explorer():
+    return render_template('explore.html', page_title="Explore")
+
+
 ############################################
 # Routes to visualization data
 ############################################

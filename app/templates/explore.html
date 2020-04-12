@@ -1,0 +1,214 @@
+{% extends "master.html" %}
+{% block body %}
+
+<div class="row">
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-3">
+                        <p class="h3">Select fields to export:</p>
+
+                        <table class="table table-sm table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>View name</th>
+                                    <th>Enabled</th>
+                                </tr>
+                            </thead>
+
+                            <tr>
+                                <td data-toggle="collapse" data-target="#productfields" class="accordion-toggle">product <small class="text-muted">click to expand</small></td>
+                                <td>
+                                    <label class="custom-toggle">
+                                        <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
+                                        <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+                                    </label>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="hiddenRow" colspan="2">
+
+                                    <table class="table table-sm accordion-body collapse ml-3" id="productfields">
+                                        <tr>
+                                            <td class="text-muted">drug_id</td>
+                                            <td>
+                                                <label class="custom-toggle">
+                                                    <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
+                                                    <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">product_name</td>
+                                            <td>
+                                                <label class="custom-toggle">
+                                                    <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
+                                                    <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">labeller</td>
+                                            <td>
+                                                <label class="custom-toggle">
+                                                    <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
+                                                    <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>patent <small class="text-muted">click to expand</td>
+                                <td>
+                                    <label class="custom-toggle">
+                                        <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
+                                        <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+                                    </label>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>compound <small class="text-muted">click to expand</td>
+                                <td>
+                                    <label class="custom-toggle">
+                                        <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
+                                        <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+                                    </label>
+                                </td>
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                    <div class="col-9">
+                        <div class="row">
+                            <div class="col">
+                                <p class="h3">Preview data:</p>
+                            </div>
+                            <div class="col">
+                                <div class="float-right">
+                                    <button class="btn btn-lg btn-primary" type="submit">Update preview</button>
+                                    <button class="btn btn-lg btn-danger" type="submit">Export</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <table class="table table-sm table-responsive">
+                                <thead>
+                                    <th>drug_id</th>
+                                    <th>product_name</th>
+                                    <th>labeller</th>
+                                    <th>another_col</th>
+                                    <th>another_col</th>
+                                    <th>another_col</th>
+                                    <th>another_col</th>
+                                    <th>another_col</th>
+                                    <th>another_col</th>
+                                    <th>another_col</th>
+                                </thead>
+                                <tr>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                </tr>
+                                <tr>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                </tr>
+                                <tr>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                </tr>
+                                <tr>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                </tr>
+                                <tr>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                </tr>
+                                <tr>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                </tr>
+                                <tr>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
