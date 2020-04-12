@@ -9,6 +9,8 @@ from flask import Flask, render_template, request, make_response
 from sqlalchemy.orm import scoped_session, sessionmaker
 from configparser import ConfigParser
 
+import random
+
 app = Flask(__name__)
 app.config['TESTING'] = True
 
@@ -241,6 +243,51 @@ def views():
     # Return list of views as JSON object
     return (json.dumps(views, indent=4, separators=(',', ': ')))
 
+@app.route("/data/explore", methods=['GET', 'POST']) 
+def explore_data(): 
+    # if method is POST 
+    # get JSON payload
+    # apply algorithm to create a dictionary object
+    # json dump string response
+
+    # if the method is GET, then retrieve one of several sample responses. 
+    # useful for development and testing of frontne 
+    if request.method == 'GET': 
+       
+        list_of_responses = [
+            {'message': 'Outputs for explore_data()'},
+            {
+                "download": true,
+                "single_file": false,
+                "data":
+                [
+                    {
+                        "view_names": [<view_name>],
+                        "column_names": [ <colname>, <colname>, <colname>],
+                        "data":
+                        [
+                            [<datum>, <datum>, <datum>],  // first row of data
+                            [<datum>, <datum>, <datum>],
+                            [<datum>, <datum>, <datum>],
+                        ],
+                    }, # end first dataset
+                    {
+                        "view_names": [<view_name>],
+                        "column_names": [ <colname>, <colname>],
+                        "data":
+                        [
+                            [<datum>, <datum>],  // first row of data
+                            [<datum>, <datum>],
+                            [<datum>, <datum>],
+                        ],
+                    } #  end second dataset
+                ] ,  # end data array
+            }
+
+
+                ] 
+        response_str = random.choice(list_of_responses)
+        return (json.dumps(response_str, indent=4)) 
 
 ############################################
 # Utility Functions
