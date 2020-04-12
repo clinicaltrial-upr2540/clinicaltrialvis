@@ -257,35 +257,62 @@ def explore_data():
         list_of_responses = [
             {'message': 'Outputs for explore_data()'},
             {
-                "download": true,
-                "single_file": false,
+                "download": True,
+                "single_file": False,
                 "data":
                 [
                     {
-                        "view_names": [<view_name>],
-                        "column_names": [ <colname>, <colname>, <colname>],
+                        "view_names": ['view_name'],
+                        "column_names": [ 'colname', 'colname', 'colname'],
                         "data":
                         [
-                            [<datum>, <datum>, <datum>],  // first row of data
-                            [<datum>, <datum>, <datum>],
-                            [<datum>, <datum>, <datum>],
+                            ['datum', 'datum', 'datum'],  # first row of data
+                            ['datum', 'datum', 'datum'],
+                            ['datum', 'datum', 'datum'],
                         ],
                     }, # end first dataset
                     {
-                        "view_names": [<view_name>],
-                        "column_names": [ <colname>, <colname>],
+                        "view_names": ['view_name'],
+                        "column_names": [ 'colname', 'colname'],
                         "data":
                         [
-                            [<datum>, <datum>],  // first row of data
-                            [<datum>, <datum>],
-                            [<datum>, <datum>],
+                            ['datum', 'datum'],  # first row of data
+                            ['datum', 'datum'],
+                            ['datum', 'datum'],
                         ],
                     } #  end second dataset
+                ] ,  # end data array
+            }, 
+
+            {
+            "download": False,
+            "files_to_prepare": 0,
+            "data":
+            [
+            {
+                "view_names": ['view_name', 'view_name'], 
+                "column_names":
+                [
+                    'colname',
+                    'colname',
+                    'colname',
+                    'colname',
+                    'colname'
+                ],
+                "data":
+                [
+                    ['datum', 'datum', 'datum', 'datum', 'datum'],
+                    ['datum', 'datum', 'datum', 'datum', 'datum'],
+                    ['datum', 'datum', 'datum', 'datum', 'datum'],
+                ],
+                }, # end first dataset
+                # additional datasets will be ignored if download is false
                 ] ,  # end data array
             }
 
 
-                ] 
+
+        ] 
         response_str = random.choice(list_of_responses)
         return (json.dumps(response_str, indent=4)) 
 
