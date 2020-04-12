@@ -9,15 +9,15 @@
                     <div class="col-3">
                         <p class="h3">Select fields to export:</p>
 
-                        <table class="table table-sm table-responsive">
-                            <thead>
+                        <table class="table table-sm table-responsive" id="selection-sidebar">
+                            <!-- <thead>
                                 <tr>
                                     <th>View name</th>
                                     <th>Enabled</th>
                                 </tr>
-                            </thead>
+                            </thead> -->
 
-                            <tr>
+                            <!-- <tr>
                                 <td data-toggle="collapse" data-target="#productfields" class="accordion-toggle">product <small class="text-muted">click to expand</small></td>
                                 <td>
                                     <label class="custom-toggle">
@@ -25,7 +25,7 @@
                                         <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
                                     </label>
                                 </td>
-                            </tr>
+                            </tr> -->
 
                             <tr>
                                 <td class="hiddenRow" colspan="2">
@@ -64,7 +64,7 @@
                             </tr>
 
 
-                            <tr>
+<!--                             <tr>
                                 <td>patent <small class="text-muted">click to expand</td>
                                 <td>
                                     <label class="custom-toggle">
@@ -82,7 +82,7 @@
                                         <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
                                     </label>
                                 </td>
-                            </tr>
+                            </tr> -->
 
                         </table>
 
@@ -209,6 +209,6 @@
     </div>
 </div>
 
-
+<script src="{{ url_for('static', filename='js/explore.js') }}"></script>
 
 {% endblock %}
