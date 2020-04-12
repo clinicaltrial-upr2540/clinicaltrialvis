@@ -243,6 +243,16 @@ def views():
     # Return list of views as JSON object
     return (json.dumps(views, indent=4, separators=(',', ': ')))
 
+
+@app.route("/data/view/<view_name>", methods=['GET'])
+def view_info(view_name): 
+    
+    from test_responses import sample_view_info
+
+    response_obj = random.choice(sample_view_info)
+    return (json.dumps(response_obj, indent=4)) 
+
+
 @app.route("/data/explore", methods=['GET', 'POST']) 
 def explore_data(): 
     # if method is POST 
@@ -251,13 +261,13 @@ def explore_data():
     # json dump string response
 
     # if the method is GET, then retrieve one of several sample responses. 
-    # useful for development and testing of frontne 
+    # useful for development and testing of frontend
     if request.method == 'GET': 
        
         from test_responses import list_of_responses 
 
-        response_str = random.choice(list_of_responses)
-        return (json.dumps(response_str, indent=4)) 
+        response_obj = random.choice(list_of_responses)
+        return (json.dumps(response_obj, indent=4)) 
 
 ############################################
 # Utility Functions
