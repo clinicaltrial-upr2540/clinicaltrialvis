@@ -2,7 +2,7 @@ sample_view_info = [
     {
         "view":  
         {
-            "view_name": 'view_name',
+            "view_name": 'view_name_1',
             "columns": 
             [
                 {
@@ -19,8 +19,38 @@ sample_view_info = [
                 }, 
             ]
         }
-    } 
+    }, 
 
+
+    {
+        "view":  
+        {
+            "view_name": 'view_name_2',
+            "columns": 
+            [
+                {
+                    "column_name": 'column_name', 
+                    "column_type": 'int'
+                }, 
+                {
+                    "column_name": 'column_name', 
+                    "column_type": 'text'
+                }, 
+                {
+                    "column_name": 'column_name', 
+                    "column_type": 'text'
+                }, 
+                {
+                    "column_name": 'column_name', 
+                    "column_type": 'int'
+                }, 
+                {
+                    "column_name": 'column_name', 
+                    "column_type": 'text'
+                }, 
+            ]
+        }
+    } 
 
 ]
 
