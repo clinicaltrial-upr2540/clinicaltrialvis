@@ -237,11 +237,15 @@ def table_name(table_name):
 @app.route("/data/views", methods=['GET'])
 def views():
     # Query tables in the 'curated' schema and serialize
-    result = db.execute(f"SELECT * FROM information_schema.views")
-    views = [dict(row) for row in result]
-
+    result = db.execute("""
+        SELECT table_name 
+        FROM information_schema.views 
+        WHERE table_schema like 'curated'; 
+    """)
+    views = [dict(row).get("table_name") for row in result]
+    response = {"views": views} 
     # Return list of views as JSON object
-    return (json.dumps(views, indent=4, separators=(',', ': ')))
+    return (json.dumps(response, indent=4, separators=(',', ': ')))
 
 
 @app.route("/data/view/<view_name>", methods=['GET'])
