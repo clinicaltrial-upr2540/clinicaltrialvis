@@ -21,7 +21,7 @@ app.config['TESTING'] = True
 # Connect to the database
 # Set the DB URL and schema to use
 # URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
-DATABASE_URL = "postgresql://postgres:y9fBsh5xEeYvkUkCQ5q3@drugdata.cgi8bzi5jc1o.us-east-1.rds.amazonaws.com:5432/drugdata"
+DATABASE_URL = "postgresql://app_user:flask_app_user_role@drugdata.cgi8bzi5jc1o.us-east-1.rds.amazonaws.com:5432/drugdata"
 
 # Set up and establish connection
 engine = sqlalchemy.create_engine(DATABASE_URL)
@@ -245,12 +245,25 @@ def views():
 
 
 @app.route("/data/view/<view_name>", methods=['GET'])
-def view_info(view_name): 
-    
+def view_info(view_name):
     from test_responses import sample_view_info
 
-    response_obj = random.choice(sample_view_info)
-    return (json.dumps(response_obj, indent=4)) 
+    params={"viewname": view_name} 
+
+    result = db.execute("""
+        SELECT table_name as view_name, column_name, data_type 
+        FROM information_schema.columns
+        WHERE table_name LIKE :viewname
+        and table_schema like 'curated'
+        ;
+    """, params)
+
+    columns = [dict(row) for row in result]
+    view_name = view_name 
+
+    return_data = {"view_name": view_name, "columns": columns} 
+
+    return (json.dumps(return_data, indent=4))
 
 
 @app.route("/data/explore", methods=['GET', 'POST']) 
