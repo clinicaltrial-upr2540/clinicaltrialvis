@@ -251,7 +251,7 @@ def view_info(view_name):
     params={"viewname": view_name} 
 
     result = db.execute("""
-        SELECT table_name as view_name, column_name, data_type 
+        SELECT table_name as column_name, data_type 
         FROM information_schema.columns
         WHERE table_name LIKE :viewname
         and table_schema like 'curated'
