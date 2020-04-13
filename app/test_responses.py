@@ -7,7 +7,7 @@ sample_view_info = [
             [
                 {
                     "column_name": 'column_name', 
-                    "column_type": 'int'
+                    "column_type": 'integer'
                 }, 
                 {
                     "column_name": 'column_name', 
@@ -30,7 +30,7 @@ sample_view_info = [
             [
                 {
                     "column_name": 'column_name', 
-                    "column_type": 'int'
+                    "column_type": 'integer'
                 }, 
                 {
                     "column_name": 'column_name', 
@@ -42,7 +42,7 @@ sample_view_info = [
                 }, 
                 {
                     "column_name": 'column_name', 
-                    "column_type": 'int'
+                    "column_type": 'integer'
                 }, 
                 {
                     "column_name": 'column_name', 
