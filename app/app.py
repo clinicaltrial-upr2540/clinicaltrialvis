@@ -9,6 +9,8 @@ from flask import Flask, render_template, request, make_response
 from sqlalchemy.orm import scoped_session, sessionmaker
 from configparser import ConfigParser
 
+import random
+
 app = Flask(__name__)
 app.config['TESTING'] = True
 
@@ -19,7 +21,7 @@ app.config['TESTING'] = True
 # Connect to the database
 # Set the DB URL and schema to use
 # URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
-DATABASE_URL = "postgresql://postgres:y9fBsh5xEeYvkUkCQ5q3@drugdata.cgi8bzi5jc1o.us-east-1.rds.amazonaws.com:5432/drugdata"
+DATABASE_URL = "postgresql://app_user:flask_app_user_role@drugdata.cgi8bzi5jc1o.us-east-1.rds.amazonaws.com:5432/drugdata"
 
 # Set up and establish connection
 engine = sqlalchemy.create_engine(DATABASE_URL)
@@ -241,12 +243,54 @@ def table_name(table_name):
 @app.route("/data/views", methods=['GET'])
 def views():
     # Query tables in the 'curated' schema and serialize
-    result = db.execute(f"SELECT * FROM information_schema.views")
-    views = [dict(row) for row in result]
-
+    result = db.execute("""
+        SELECT table_name 
+        FROM information_schema.views 
+        WHERE table_schema like 'curated'; 
+    """)
+    views = [dict(row).get("table_name") for row in result]
+    response = {"views": views} 
     # Return list of views as JSON object
-    return (json.dumps(views, indent=4, separators=(',', ': ')))
+    return (json.dumps(response, indent=4, separators=(',', ': ')))
 
+
+@app.route("/data/view/<view_name>", methods=['GET'])
+def view_info(view_name):
+    from test_responses import sample_view_info
+
+    params={"viewname": view_name} 
+
+    result = db.execute("""
+        SELECT table_name as column_name, data_type 
+        FROM information_schema.columns
+        WHERE table_name LIKE :viewname
+        and table_schema like 'curated'
+        ;
+    """, params)
+
+    columns = [dict(row) for row in result]
+    view_name = view_name 
+
+    return_data = {"view_name": view_name, "columns": columns} 
+
+    return (json.dumps(return_data, indent=4))
+
+
+@app.route("/data/explore", methods=['GET', 'POST']) 
+def explore_data(): 
+    # if method is POST 
+    # get JSON payload
+    # apply algorithm to create a dictionary object
+    # json dump string response
+
+    # if the method is GET, then retrieve one of several sample responses. 
+    # useful for development and testing of frontend
+    if request.method == 'GET': 
+       
+        from test_responses import list_of_responses 
+
+        response_obj = random.choice(list_of_responses)
+        return (json.dumps(response_obj, indent=4)) 
 
 ############################################
 # Utility Functions
