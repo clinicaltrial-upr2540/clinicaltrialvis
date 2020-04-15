@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     */
 
     // Checkbox listeners go here
+    // Filter listeners go here
     // Update Preview button functionality goes here
     // Export button functionality goes here
 
@@ -56,6 +57,7 @@ function buildSelectionSidebar() {
 }
 
 // Function to add a single view to the sidebar
+// Specific columns are nested under the view
 function buildSidebarViewEntry(viewList) {
     for (var key in viewList) {
         var columnRequest = new XMLHttpRequest();
@@ -108,6 +110,7 @@ function buildSidebarColumnEntry(fieldList) {
     for (var key in fieldList["columns"]) {
         const tr = document.createElement('tr');
 
+        // Build the table entry for a single column field
         tr.innerHTML = `<td class="text-muted">${fieldList["columns"][key]["column_name"]}</td>
 <td>
     <label class="custom-toggle">
@@ -116,7 +119,7 @@ function buildSidebarColumnEntry(fieldList) {
     </label>
 </td>`;
         
-        console.log(`#${view}fields`)
+        // Append the column to the sidebar
         document.querySelector(`#${view}fields`).append(tr);
     }
 }
