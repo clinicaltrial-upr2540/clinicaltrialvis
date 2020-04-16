@@ -14,8 +14,19 @@ document.addEventListener('DOMContentLoaded', () => {
     */
 
     // Checkbox listeners go here
-    // Filter listeners go here
+    document.getElementsByClassName('parent-checkbox').onclick = () => {
+        console.log("YAY");
+    };
+
     // Update Preview button functionality goes here
+    document.querySelector('#update-preview-button').onclick = () => {
+        // Here, we might gather a list of the checked boxes on the left sidebar
+        // Here, gather a list of filters (none by default)
+
+        // Request the data
+        requestPreviewData();
+    };
+
     // Export button functionality goes here
 
     /**
@@ -69,7 +80,7 @@ function buildSidebarViewEntry(viewList) {
 <td>
     <label class="custom-toggle">
         <input type="checkbox" checked data-toggle="toggle" id="${viewList[key]}checkbox" name="${viewList[key]}">
-        <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+        <span class="custom-toggle-slider rounded-circle parent-checkbox" data-label-off="All" data-label-on="All"></span>
     </label>
 </td>
 `;
@@ -82,6 +93,11 @@ function buildSidebarViewEntry(viewList) {
 
         document.querySelector('#selection-sidebar').append(tr);
         document.querySelector('#selection-sidebar').append(tr2);
+
+        // Add a listener for all child checkboxes
+        document.querySelector(`#${viewList[key]}checkbox`).onclick = () => {
+            console.log("YAY");
+        };
 
         // Get the list of fields in the view and append to sidebar
         columnRequest.onreadystatechange = function() {
@@ -124,6 +140,83 @@ function buildSidebarColumnEntry(fieldList) {
     }
 }
 
+function requestPreviewData() {
+    var dataRequest = new XMLHttpRequest();
 
+    // Get the list of views and append to sidebar
+    dataRequest.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            try {
+                var data = JSON.parse(this.responseText);
+                buildDataPreviewTable(data);
+            } catch(err) {
+                // TODO: If no data comes back, insert error message
+                document.querySelector('#data-preview').innerHTML = `<div class="alert alert-danger" role="alert">An error occurred while retrieving data. Please try again!</div>`;
+                console.log(err.message + " in " + this.responseText);
+                return;
+            }
+        }
+    };
+    dataRequest.open("GET", "/data/explore", true);
+    dataRequest.send();
+}
 
+function buildDataPreviewTable(data) {
+    var html_buffer = '';
 
+    // Extract the data
+    column_names = data["data"][0]["column_names"];
+    sample_data = data["data"][0]["data"];
+
+    // Reset the table
+    document.querySelector('#data-preview').innerHTML = '';
+
+    // Build and insert the table headers
+    const thead = document.createElement('thead');
+    thead.setAttribute('class', 'thead-light');
+    for (var key in column_names) {
+        html_buffer = html_buffer.concat(`<th>${ column_names[key] }</th>`)
+    }
+    thead.innerHTML = html_buffer;
+    document.querySelector('#data-preview').append(thead);
+
+    // Build and insert the filter fields
+    html_buffer = '';
+    const tr = document.createElement('tr');
+    tr.setAttribute('class', 'table-active');
+    for (var key in sample_data[0]) {
+        if (typeof sample_data[0][key] == 'number') {
+            html_buffer = html_buffer.concat(`<td class="form-inline">
+    <div class="row input-group">
+        <div class="col-3">
+            <select class="form-control form-control-sm">
+                <option>></option>
+                <option><</option>
+                <option>=</option>
+            </select>
+        </div>
+        <div class="col-9">
+            <input class="form-control form-control-sm" type="text" placeholder="filter" style="max-width: 100%;">
+        </div>
+    </div>
+</td>`);
+        } else {
+            html_buffer = html_buffer.concat('<td><input class="form-control form-control-sm" type="text" placeholder="filter"></td>');
+        }
+    }
+    tr.innerHTML = html_buffer;
+    document.querySelector('#data-preview').append(tr);
+
+    // Build and insert the data
+    for (var key in sample_data) {
+        const data_tr = document.createElement('tr');
+        html_buffer = '';
+
+        for (var inner_key in sample_data[key]) {
+            html_buffer = html_buffer.concat(`<td>${sample_data[key][inner_key]}</td>`)
+        }
+
+        data_tr.innerHTML = html_buffer;
+        document.querySelector('#data-preview').append(data_tr);
+    }
+}
