@@ -55,61 +55,140 @@ sample_view_info = [
 ]
 
 list_of_responses = [
-    {'message': 'Outputs for explore_data()'},
     {
         "download": True,
         "single_file": False,
         "data":
-        [
-            {
-                "view_names": ['view_name'],
-                "column_names": [ 'colname', 'colname', 'colname'],
-                "data":
-                [
-                    ['datum', 'datum', 'datum'],  # first row of data
-                    ['datum', 'datum', 'datum'],
-                    ['datum', 'datum', 'datum'],
-                ],
-            }, # end first dataset
-            {
-                "view_names": ['view_name'],
-                "column_names": [ 'colname', 'colname'],
-                "data":
-                [
-                    ['datum', 'datum'],  # first row of data
-                    ['datum', 'datum'],
-                    ['datum', 'datum'],
-                ],
-            } #  end second dataset
-        ] ,  # end data array
+            [
+                {
+                    "view_names": ['view_name'],
+                    "column_names": [ 'colname', 'colname', 'colname'],
+                    "data":
+                    [
+                        ['datum', 'datum', 'datum'],  # first row of data
+                        ['datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum'],
+                    ],
+                }, # end first dataset
+                {
+                    "view_names": ['view_name'],
+                    "column_names": [ 'colname', 'colname'],
+                    "data":
+                    [
+                        ['datum', 'datum'],  # first row of data
+                        ['datum', 'datum'],
+                        ['datum', 'datum'],
+                    ],
+                } #  end second dataset
+            ] ,  # end data array
     }, 
 
     {
     "download": False,
-    "files_to_prepare": 0,
     "data":
-    [
+        [
+            {
+                "view_names": ['view_name', 'view_name'], 
+                "column_names":
+                    [
+                        'colname',
+                        'colname',
+                        'colname',
+                        'colname',
+                        'colname'
+                    ],
+                "data":
+                    [
+                        ['datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum'],
+
+
+                    ],
+            }, # end first dataset
+            # additional datasets will be ignored if download is false
+        ] ,  # end data array
+
+    }, 
+
     {
-        "view_names": ['view_name', 'view_name'], 
-        "column_names":
+    "download": False,
+    "data":
         [
-            'colname',
-            'colname',
-            'colname',
-            'colname',
-            'colname'
-        ],
-        "data":
-        [
-            ['datum', 'datum', 'datum', 'datum', 'datum'],
-            ['datum', 'datum', 'datum', 'datum', 'datum'],
-            ['datum', 'datum', 'datum', 'datum', 'datum'],
+            {
+                "view_names": ['view_name', 'view_name'], 
+                "column_names":
+                    [
+                        'colname',
+                        'colname',
+                        'colname'
+                    ],
+                "data":
+                    [
+                        ['datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum'],
 
 
-                ],
-                }, # end first dataset
-                # additional datasets will be ignored if download is false
-                ] ,  # end data array
+                    ],
+            }, # end first dataset
+            # additional datasets will be ignored if download is false
+        ] ,  # end data array
+
+    }, 
+
+    {
+    "download": False,
+    "data":
+        [
+            {
+                "view_names": ['view_name', 'view_name'], 
+                "column_names":
+                    [
+                        'colname',
+                        'colname',
+                        'colname',
+                        'colname',
+                        'colname',
+                        'colname',
+                        'colname'
+                    ],
+                "data":
+                    [
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                        ['datum', 'datum', 'datum', 'datum', 'datum', 'datum', 'datum'],
+                    ],
+            }, # end first dataset
+            # additional datasets will be ignored if download is false
+        ] ,  # end data array
 
     }, 
 ] 
