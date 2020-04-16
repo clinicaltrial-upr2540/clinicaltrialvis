@@ -280,11 +280,13 @@ def explore_data():
     # if the method is GET, then retrieve one of several sample responses. 
     # useful for development and testing of frontend
     if request.method == 'GET': 
-       
         from test_responses import list_of_responses 
+        
+        if request.args.get("download")=="true": 
+            return (json.dumps(list_of_responses[0], indent=4))
+        else: 
+            return (json.dumps(random.choice(list_of_responses[1:4]), indent=4))
 
-        response_obj = random.choice(list_of_responses)
-        return (json.dumps(response_obj, indent=4)) 
 
 ############################################
 # Utility Functions
