@@ -278,8 +278,21 @@ def view_info(view_name):
 
 @app.route("/data/explore", methods=['GET', 'POST']) 
 def explore_data(): 
+    from flask import jsonify
     # if method is POST 
-    # get JSON payload
+    if request.method == 'POST':
+        data = request.get_json()
+        if data is None:
+            return "NO JSON";
+        else:
+            return(data) 
+    # get & validate JSON payload
+        # if request.get_json() is False:
+        #     return('NO JSON')
+        # else:
+        #     data = json.loads(request.data)
+        #     return jsonify(data)
+
     # apply algorithm to create a dictionary object
     # json dump string response
 
