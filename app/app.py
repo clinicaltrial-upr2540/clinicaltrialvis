@@ -281,20 +281,40 @@ def explore_data():
     from flask import jsonify
     # if method is POST 
     if request.method == 'POST':
+        # get and validate JSON payload
         data = request.get_json()
+        from_query = "FROM"
+        inner_join = " INNER JOIN "
+        left_join = ' LEFT JOIN '
+        select = 'SELECT'
+        where = 'WHERE'
+        drug_id = ' using (drug_id)'
         if data is None:
-            return "NO JSON";
+            return "ERROR 404: JSON MISSING"
+        # apply algorithm to create a dictionary object
         else:
-            return(data) 
-    # get & validate JSON payload
-        # if request.get_json() is False:
-        #     return('NO JSON')
-        # else:
-        #     data = json.loads(request.data)
-        #     return jsonify(data)
-
-    # apply algorithm to create a dictionary object
-    # json dump string response
+            # list of all views in JSON
+            views = []
+            for entry in data["data_list"]:
+                views.append(entry['view_name']) 
+            print(views)
+            view_str = ','.join(views[1:])
+            if data['join_style'] == "inner":
+                # construct FROM statement inner join
+                full_from_statement = from_query + ' ' + views[0] + inner_join + view_str + drug_id
+                print(full_from_statement)
+                return data
+            else:
+                # construct FROM statement left join
+                view_str = ','.join(views[1:])
+                full_from_statement = from_query + ' ' + views[0] + left_join + view_str + drug_id
+                print(full_from_statement)
+                return data
+    # query db (plug in variables here)
+    # result = db.execute(f"SELECT * FROM curated.{table_name} LIMIT 100")
+    # table_data = [dict(row) for row in result]
+    # json dump string response 
+    # return (json.dumps(table_data, indent=4))
 
     # if the method is GET, then retrieve one of several sample responses. 
     # useful for development and testing of frontend
