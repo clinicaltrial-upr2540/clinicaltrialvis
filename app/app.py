@@ -346,19 +346,19 @@ def get_select_snippet(payload):
     return result[0:len(result)-2]
     # return " SELECT drug_id, compound_name, smiles, clogp " 
 
-def get_where_snippet(payload): 
-    result = " " 
-    condition_term = " WHERE " 
-    for item in payload.get("data_list"): 
-        view_name = item.get("view_name") 
+def get_where_snippet(payload):
+    result = " "
+    condition_term = " WHERE "
+    for item in payload.get("data_list"):
+        view_name = item.get("view_name")
         filter_list = item.get("filters", [] )
-        for filter_obj in filter_list: 
-            column_name = filter_obj.get("column_name") 
-            operator = " LIKE " 
-            target = filter_obj.get("target") 
+        for filter_obj in filter_list:
+            column_name = filter_obj.get("column_name")
+            operator = " LIKE "
+            target = filter_obj.get("target")
             this_snip = f' {condition_term} "{view_name}"."{column_name}" LIKE \'%{target}%\' '
-            result += this_snip 
-            condition_term = " AND " 
+            result += this_snip
+            condition_term = " AND "
 
     return result 
     # return " WHERE 1=1 " 
