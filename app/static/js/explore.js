@@ -13,15 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
     Begin event listeners
     */
 
-    // Checkbox listeners go here
-    document.getElementsByClassName('parent-checkbox').onclick = () => {
-        console.log("YAY");
-    };
-
     // Update Preview button functionality goes here
     document.querySelector('#update-preview-button').onclick = () => {
         // Here, we might gather a list of the checked boxes on the left sidebar
         // Here, gather a list of filters (none by default)
+        var jsonToPost = buildDataRequest();
+
+        // ASK LU: Does the API allow for querying all columns from a view?
+        // What are possible values of <search_token>?
 
         // Request the data
         requestPreviewData();
@@ -79,7 +78,7 @@ function buildSidebarViewEntry(viewList) {
         tr.innerHTML = `<td data-toggle="collapse" data-target="#${viewList[key]}fields" class="accordion-toggle">${viewList[key]} <small class="text-muted">click to expand</small></td>
 <td>
     <label class="custom-toggle">
-        <input type="checkbox" checked data-toggle="toggle" id="${viewList[key]}checkbox" name="${viewList[key]}">
+        <input type="checkbox" checked data-toggle="toggle" class="parent-checkbox" id="${viewList[key]}checkbox" name="${viewList[key]}">
         <span class="custom-toggle-slider rounded-circle parent-checkbox" data-label-off="All" data-label-on="All"></span>
     </label>
 </td>
@@ -93,11 +92,6 @@ function buildSidebarViewEntry(viewList) {
 
         document.querySelector('#selection-sidebar').append(tr);
         document.querySelector('#selection-sidebar').append(tr2);
-
-        // Add a listener for all child checkboxes
-        document.querySelector(`#${viewList[key]}checkbox`).onclick = () => {
-            console.log("YAY");
-        };
 
         // Get the list of fields in the view and append to sidebar
         columnRequest.onreadystatechange = function() {
@@ -114,6 +108,23 @@ function buildSidebarViewEntry(viewList) {
         columnRequest.open("GET", `/data/view/${viewList[key]}`, true);
         columnRequest.send();
     }
+
+    // Add a listener for all parent checkboxes
+    document.querySelectorAll(".parent-checkbox").forEach(function(parentSwitch) {
+        parentSwitch.onclick = () => {
+            var parentName = parentSwitch.getAttribute("name");
+            var childSwitches = document.querySelectorAll(`.parent-${parentName}`);
+
+            // Switch all child switches when you click the parent switch
+            childSwitches.forEach(function(childSwitch) {
+                if (parentSwitch.checked) {
+                    childSwitch.checked = true;
+                } else {
+                    childSwitch.checked = false;
+                }
+            });
+        };
+    });
 }
 
 // Function to add a single column header to the sidebar
@@ -130,7 +141,7 @@ function buildSidebarColumnEntry(fieldList) {
         tr.innerHTML = `<td class="text-muted">${fieldList["columns"][key]["column_name"]}</td>
 <td>
     <label class="custom-toggle">
-        <input type="checkbox" checked data-toggle="toggle" id="${view}.${fieldList["columns"][key]["column_name"]}" name="${view}.${fieldList["columns"][key]["column_name"]}">
+        <input type="checkbox" checked data-toggle="toggle" class="child-checkbox parent-${view}" data-parent="${view}" id="${view}.${fieldList["columns"][key]["column_name"]}" name="${view}.${fieldList["columns"][key]["column_name"]}">
         <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
     </label>
 </td>`;
@@ -138,8 +149,21 @@ function buildSidebarColumnEntry(fieldList) {
         // Append the column to the sidebar
         document.querySelector(`#${view}fields`).append(tr);
     }
+
+    // Add a listener for all child (baby) checkboxes
+    document.querySelectorAll(".child-checkbox").forEach(function(babySwitch) {
+        babySwitch.onclick = () => {
+            var babyParent = babySwitch.getAttribute("data-parent");
+
+            // Switch all child switches when you click the parent switch
+            if (babySwitch.checked == false) {
+                document.querySelector(`#${babyParent}checkbox`).checked = false;
+            }
+        };
+    });
 }
 
+// Function to request preview data to populate the table in the UI
 function requestPreviewData() {
     var dataRequest = new XMLHttpRequest();
 
@@ -150,7 +174,7 @@ function requestPreviewData() {
                 var data = JSON.parse(this.responseText);
                 buildDataPreviewTable(data);
             } catch(err) {
-                // TODO: If no data comes back, insert error message
+                // If no data comes back, insert error message
                 document.querySelector('#data-preview').innerHTML = `<div class="alert alert-danger" role="alert">An error occurred while retrieving data. Please try again!</div>`;
                 console.log(err.message + " in " + this.responseText);
                 return;
@@ -161,6 +185,7 @@ function requestPreviewData() {
     dataRequest.send();
 }
 
+// Function to build the preview data table once data has been returned
 function buildDataPreviewTable(data) {
     var html_buffer = '';
 
@@ -185,24 +210,7 @@ function buildDataPreviewTable(data) {
     const tr = document.createElement('tr');
     tr.setAttribute('class', 'table-active');
     for (var key in sample_data[0]) {
-        if (typeof sample_data[0][key] == 'number') {
-            html_buffer = html_buffer.concat(`<td class="form-inline">
-    <div class="row input-group">
-        <div class="col-3">
-            <select class="form-control form-control-sm">
-                <option>></option>
-                <option><</option>
-                <option>=</option>
-            </select>
-        </div>
-        <div class="col-9">
-            <input class="form-control form-control-sm" type="text" placeholder="filter" style="max-width: 100%;">
-        </div>
-    </div>
-</td>`);
-        } else {
-            html_buffer = html_buffer.concat('<td><input class="form-control form-control-sm" type="text" placeholder="filter"></td>');
-        }
+        html_buffer = html_buffer.concat(`<td><input class="form-control form-control-sm data-filter" data-view="${data["view_name"]}" data-column="${column_names[key]}" type="text" placeholder="filter"></td>`);
     }
     tr.innerHTML = html_buffer;
     document.querySelector('#data-preview').append(tr);
@@ -220,3 +228,49 @@ function buildDataPreviewTable(data) {
         document.querySelector('#data-preview').append(data_tr);
     }
 }
+
+// Function to build the JSON object to request data from the API
+function buildDataRequest() {
+    var rawFields = [];
+    var fieldDict = {};
+    var filterDict = {};
+
+    // Loop through all the column switches, and if they are checked, add them to the list
+    document.querySelectorAll(".child-checkbox").forEach(function(babySwitch) {
+        if (babySwitch.checked == true) {
+            rawFields.push(babySwitch.getAttribute("name"));
+        }
+    });
+
+    // Loop through the resulting columns
+    rawFields.forEach(function(field) {
+        var splitBuffer = field.split(".");
+        console.log(splitBuffer[0]);
+
+        // If this view isn't in the dict yet, add it
+        if (!(splitBuffer[0] in fieldDict)) {
+            fieldDict[splitBuffer[0]] = [];
+        }
+
+        // Add the field being requested to that view
+        fieldDict[splitBuffer[0]].push(splitBuffer[1]);
+    });
+
+    // Loop through all the filters, and if they are set, add to the list
+    document.querySelectorAll(".data-filter").forEach(function(filterField) {
+        if (filterField.value.length > 0) {
+            var filterView = filterField.getAttribute("data-view");
+            var filterColumn = filterField.getAttribute("data-column");
+            var filterValue = filterField.value;
+
+
+        }
+        // UH OH! In the response from endpoint 3, we have a list of views, but no way to know when column comes from what view
+        // Other than looping through and checking each
+    });
+
+    return rawFields;
+}
+
+
+
