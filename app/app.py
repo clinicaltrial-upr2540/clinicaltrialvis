@@ -184,7 +184,7 @@ def explore_data():
         if validate_explore_request(payload) is False:
             return
 
-        # TODO: fork for multi file response. What follows is RENDER behavior
+
         where_snippet = get_where_snippet(payload)
         from_snippet = get_from_snippet(payload)
         select_snippet = get_select_snippet(payload)
@@ -235,7 +235,7 @@ def get_from_snippet(payload):
 
 def get_select_snippet(payload):
     counter = 1
-    result = " SELECT "
+    result = " SELECT DISTINCT "
 
     for item in payload.get("data_list"):
         view_name = item.get("view_name")
@@ -244,26 +244,25 @@ def get_select_snippet(payload):
             result += f'"{view_name}"."{column_name}", '
             counter += 1
 
-    return result[0:len(result) - 2]
+    return result[0:len(result)-2]
     # return " SELECT drug_id, compound_name, smiles, clogp "
 
-
 def get_where_snippet(payload):
-    result = " "
-    condition_term = " WHERE "
+    result = " " 
+    condition_term = " WHERE " 
     for item in payload.get("data_list"):
-        view_name = item.get("view_name")
-        filter_list = item.get("filters", [])
+        view_name = item.get("view_name") 
+        filter_list = item.get("filters", [] )
         for filter_obj in filter_list:
             column_name = filter_obj.get("column_name")
-            operator = " LIKE "
+            operator = filter_obj.get("operator")
+            if operator == "matches": operator = "LIKE"
             target = filter_obj.get("target")
-            this_snip = f' {condition_term} "{view_name}"."{column_name}" LIKE \'%{target}%\' '
+            this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'%{target}%\' '
             result += this_snip
             condition_term = " AND "
 
     return result
-    # return " WHERE 1=1 "
 
 
 def get_limit_snippet(payload):
