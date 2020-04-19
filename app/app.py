@@ -266,6 +266,7 @@ def view_info(view_name):
         FROM information_schema.columns
         WHERE table_name LIKE :viewname
         and table_schema like 'curated'
+        order by 1
         ;
     """, params)
 
@@ -365,7 +366,8 @@ def get_where_snippet(payload):
 
 
 def get_limit_snippet(payload): 
-    return " LIMIT 10 "
+    limit = payload.get("limit", 10) 
+    return f" LIMIT {limit} "
 
 def get_explore_response(sql_string, payload): 
     cmd = text(sql_string) 
