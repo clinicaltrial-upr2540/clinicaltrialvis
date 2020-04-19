@@ -317,6 +317,8 @@ def validate_explore_request(payload):
         return True 
 
 def get_from_snippet(payload): 
+    join_options = {"inner": "INNER", "left": "LEFT OUTER"} 
+    join_term = join_options.get(payload.get("join_style"), "INNER")  
     counter = 1 
     result = "" 
     for item in payload.get("data_list"): 
@@ -325,13 +327,24 @@ def get_from_snippet(payload):
         if counter == 1: 
             this_snip = f' FROM curated."{view_name}"'
         else: 
-            this_snip = f' INNER JOIN curated."{view_name}" using (drug_id)'
+            this_snip = f' {join_term} JOIN curated."{view_name}" using (drug_id)'
         counter+=1 
         result += this_snip 
     return result 
 
 def get_select_snippet(payload): 
-    return " SELECT drug_id, compound_name, smiles, clogp " 
+    counter = 1
+    result = " SELECT " 
+
+    for item in payload.get("data_list"): 
+        view_name = item.get("view_name") 
+        column_list = item.get("column_list")
+        for column_name in column_list: 
+            result += f'"{view_name}"."{column_name}", '
+            counter+=1 
+
+    return result[0:len(result)-2]
+    # return " SELECT drug_id, compound_name, smiles, clogp " 
 
 def get_where_snippet(payload): 
     return " WHERE 1=1 " 
@@ -367,12 +380,13 @@ def get_view_names_from_payload(payload):
 
 
 def get_view_column_names_from_payload(payload): 
-    view_column_names = [
-            ["compounds", "drug_id"], 
-            ["compounds", "compound_name"], 
-            ["compounds", "smiles"], 
-            ["compounds", "clogp"], 
-        ] 
+    view_column_names = [] 
+
+    for item in payload.get("data_list"): 
+        view_name = item.get("view_name") 
+        column_list = item.get("column_list")
+        for column_name in column_list: 
+            view_column_names.append([view_name, column_name]) 
     return view_column_names 
 
 def get_data_list_obj_from_data(data): 
