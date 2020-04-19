@@ -390,7 +390,12 @@ def get_explore_response(sql_string, payload):
 
 
 def get_view_names_from_payload(payload):
-    return ["compounds"] 
+    view_names = [] 
+
+    for item in payload.get("data_list"): 
+        view_name = item.get("view_name") 
+        view_names.append(view_name)
+    return view_names 
 
 
 def get_view_column_names_from_payload(payload): 
