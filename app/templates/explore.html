@@ -9,81 +9,8 @@
                     <div class="col-3">
                         <p class="h3">Select fields to export:</p>
 
-                        <table class="table table-sm table-responsive">
-                            <thead>
-                                <tr>
-                                    <th>View name</th>
-                                    <th>Enabled</th>
-                                </tr>
-                            </thead>
-
-                            <tr>
-                                <td data-toggle="collapse" data-target="#productfields" class="accordion-toggle">product <small class="text-muted">click to expand</small></td>
-                                <td>
-                                    <label class="custom-toggle">
-                                        <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
-                                        <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
-                                    </label>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="hiddenRow" colspan="2">
-
-                                    <table class="table table-sm accordion-body collapse ml-3" id="productfields">
-                                        <tr>
-                                            <td class="text-muted">drug_id</td>
-                                            <td>
-                                                <label class="custom-toggle">
-                                                    <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
-                                                    <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
-                                                </label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted">product_name</td>
-                                            <td>
-                                                <label class="custom-toggle">
-                                                    <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
-                                                    <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
-                                                </label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted">labeller</td>
-                                            <td>
-                                                <label class="custom-toggle">
-                                                    <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
-                                                    <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
-                                                </label>
-                                            </td>
-                                        </tr>
-                                    </table>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td>patent <small class="text-muted">click to expand</td>
-                                <td>
-                                    <label class="custom-toggle">
-                                        <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
-                                        <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
-                                    </label>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>compound <small class="text-muted">click to expand</td>
-                                <td>
-                                    <label class="custom-toggle">
-                                        <input type="checkbox" checked data-toggle="toggle" id="checkbox2" name="product">
-                                        <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
-                                    </label>
-                                </td>
-                            </tr>
-
+                        <table class="table table-sm table-responsive overflow-auto mh-100" id="selection-sidebar">
+                            <!-- explore.js generates sidebar with list of views and column names -->
                         </table>
 
                     </div>
@@ -95,15 +22,16 @@
                             </div>
                             <div class="col">
                                 <div class="float-right">
-                                    <button class="btn btn-lg btn-primary" type="submit">Update preview</button>
+                                    <!-- <button class="btn btn-lg btn-primary" type="submit">Update preview</button> -->
+                                    <a class="btn btn-lg btn-primary" href="#" id="update-preview-button">Update preview</a>
                                     <button class="btn btn-lg btn-danger" type="submit">Export</button>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row mt-3">
-                            <table class="table table-sm table-responsive">
-                                <thead>
+                            <table class="table table-sm table-responsive w-auto" id="data-preview">
+                                <!-- <thead class="thead-light">
                                     <th>drug_id</th>
                                     <th>product_name</th>
                                     <th>labeller</th>
@@ -115,17 +43,43 @@
                                     <th>another_col</th>
                                     <th>another_col</th>
                                 </thead>
-                                <tr>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
-                                    <td>data</td>
+                                <tr class="table-active">
+                                    <td><input class="form-control form-control-sm" type="text" placeholder="filter"></td>
+                                    <td><input class="form-control form-control-sm" type="text" placeholder="filter"></td>
+                                    <td class="form-inline">
+                                        <div class="row input-group">
+                                            <div class="col-3">
+                                                <select class="form-control form-control-sm">
+                                                    <option>></option>
+                                                    <option><</option>
+                                                    <option>=</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-9">
+                                                <input class="form-control form-control-sm" type="text" placeholder="filter" style="max-width: 100%;">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><input class="form-control form-control-sm" type="text" placeholder="filter"></td>
+                                    <td><input class="form-control form-control-sm" type="text" placeholder="filter"></td>
+                                    <td><input class="form-control form-control-sm" type="text" placeholder="filter"></td>
+                                    <td><input class="form-control form-control-sm" type="text" placeholder="filter"></td>
+                                    <td class="form-inline">
+                                        <div class="row input-group">
+                                            <div class="col-3">
+                                                <select class="form-control form-control-sm">
+                                                    <option>></option>
+                                                    <option><</option>
+                                                    <option>=</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-9">
+                                                <input class="form-control form-control-sm" type="text" placeholder="filter" style="max-width: 100%;">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><input class="form-control form-control-sm" type="text" placeholder="filter"></td>
+                                    <td><input class="form-control form-control-sm" type="text" placeholder="filter"></td>
                                 </tr>
                                 <tr>
                                     <td>data</td>
@@ -199,6 +153,18 @@
                                     <td>data</td>
                                     <td>data</td>
                                 </tr>
+                                <tr>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                    <td>data</td>
+                                </tr> -->
                             </table>
                         </div>
 
@@ -209,6 +175,6 @@
     </div>
 </div>
 
-
+<script src="{{ url_for('static', filename='js/explore.js') }}"></script>
 
 {% endblock %}
