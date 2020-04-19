@@ -44,12 +44,6 @@ def render_index():
     return render_template('home.html', page_title="Home")
 
 
-# Route to test page. TODO: Remove!
-@app.route("/test")
-def render_test():
-    return render_template('test.html', page_title="Test Page")
-
-
 # Route to API doc page
 @app.route("/api")
 def render_api_doc():
