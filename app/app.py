@@ -285,7 +285,7 @@ def explore_data():
         if validate_explore_request(payload) == False: 
             return 
 
-        # TODO: fork for multi file response. What follows is RENDER behavior 
+        # TODO: split for multi file response. What follows is RENDER behavior 
         where_snippet = get_where_snippet(payload) 
         from_snippet = get_from_snippet(payload)
         select_snippet = get_select_snippet(payload)
@@ -334,7 +334,7 @@ def get_from_snippet(payload):
 
 def get_select_snippet(payload): 
     counter = 1
-    result = " SELECT " 
+    result = " SELECT DISTINCT " 
 
     for item in payload.get("data_list"): 
         view_name = item.get("view_name") 
@@ -354,14 +354,15 @@ def get_where_snippet(payload):
         filter_list = item.get("filters", [] )
         for filter_obj in filter_list: 
             column_name = filter_obj.get("column_name") 
-            operator = " LIKE " 
+            operator = filter_obj.get("operator")
+            if operator == "matches": operator = "LIKE" 
             target = filter_obj.get("target") 
-            this_snip = f' {condition_term} "{view_name}"."{column_name}" LIKE \'%{target}%\' '
+            this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'%{target}%\' '
             result += this_snip 
             condition_term = " AND " 
 
     return result 
-    # return " WHERE 1=1 " 
+
 
 def get_limit_snippet(payload): 
     return " LIMIT 10 "
