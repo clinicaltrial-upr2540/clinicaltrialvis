@@ -322,50 +322,5 @@ def get_data_list_obj_from_data(data):
     return [list(row) for row in data]
 
 
-def get_all_view_names():
-    connection = engine.connect()
-    q1 = 'select trim(matviewname) as view_name, \'checked\' as selected_view from pg_matviews where schemaname = \'curated\' AND trim(matviewname) <> \'m_report\' '
-    report = connection.execute(q1)
-    report = [dict(row) for row in report]
-    connection.close()
-    return report
-
-
-def update_view_list(view_list, view_names):
-    view_list_df = pandas.DataFrame(view_list)
-    view_names_df = pandas.DataFrame(view_names.keys(), columns=['view_name'])
-    view_list_df.loc[(~view_list_df['view_name'].isin(view_names_df['view_name'])), 'selected_view'] = ''
-    return view_list_df.to_dict(orient='records')
-
-
-def get_col_list(view_names):
-    view_list = []
-    for table in view_names:
-        if table['selected_view'] == 'checked':
-            view_list.append('"' + table['view_name'] + '"')
-
-    selected_columns = ','.join(map(str, view_list))
-    q1 = 'SELECT view_name, col_name from application.get_view_attributes(' + "'{" + selected_columns + '}' + "'" + ');'
-    connection = engine.connect()
-    report = connection.execute(q1)
-    report = [dict(row) for row in report]
-
-    connection.close()
-    return report
-
-
-def get_init_list(view_names):
-    view_list = []
-    for table in view_names:
-        view_list.append('"' + table['view_name'] + '"')
-    selected_views = ','.join(map(str, view_list))
-    q1 = 'SELECT view_name, col_name from application.get_view_attributes(' + "'{" + selected_views + '}' + "'" + ');'
-    connection = engine.connect()
-    report = connection.execute(q1)
-    report = [dict(row) for row in report]
-    connection.close()
-    return report
-
-
 if __name__ == "__main__":
     app.run(debug=True)
