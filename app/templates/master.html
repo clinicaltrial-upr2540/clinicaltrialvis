@@ -11,7 +11,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/nucleo/css/nucleo.css') }}"  type="text/css">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/@fortawesome/fontawesome-free/css/all.min.css') }}" type="text/css">
+	<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/@fortawesome/fontawesome-free/css/all.min.css') }}" type="text/css"> -->
 
 	<!-- Argon CSS -->
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/argon.css') }}" type="text/css">
@@ -59,29 +59,12 @@
 								<span class="nav-link-text">Home</span>
 							</a>
 						</li>
-						<li class="nav-item">
-                            <a class="nav-link active" href="#navbar-dashboards" data-toggle="collapse" role="button"
-                               aria-expanded="true" aria-controls="navbar-dashboards">
-                                <i class="ni ni-planet text-orange"></i>
-                                <span class="nav-link-text">Report</span>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/explore">
+                                <i class="ni ni-bullet-list-67 text-default"></i>
+                                <span class="nav-link-text">Explore</span>
                             </a>
-                            <div class="collapse show" id="navbar-dashboards">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="/report" class="nav-link">Saved Report</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="/report/create" class="nav-link">Create Report</a>
-                                    </li>
-                                </ul>
-                            </div>
                         </li>
-<!-- 						<li class="nav-item">
-							<a class="nav-link" href="">
-								<i class="ni ni-bullet-list-67 text-default"></i>
-								<span class="nav-link-text">Drug</span>
-							</a>
-						</li> -->
                         <li class="nav-item">
                             <a class="nav-link" href="/api">
                                 <i class="ni ni-bullet-list-67 text-default"></i>
