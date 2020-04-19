@@ -278,7 +278,6 @@ def view_info(view_name):
 
 @app.route("/data/explore", methods=['GET', 'POST']) 
 def explore_data(): 
-    from flask import jsonify
     # if method is POST 
     if request.method == 'POST':
         # get and validate JSON payload
@@ -291,24 +290,32 @@ def explore_data():
         drug_id = ' using (drug_id)'
         if data is None:
             return "ERROR 404: JSON MISSING"
-        # apply algorithm to create a dictionary object
         else:
+            # look at filter conditions for WHERE 
+            try:
+                data['data_list'][0]['filters']
+            except KeyError:
+                # no filter make the empty WHERE statement
+                where_statement = 'no where, DELETE LATER'
+                print(where_statement)
+            else:
+                print('YES THERE IS FILTER')
             # list of all views in JSON
             views = []
             for entry in data["data_list"]:
                 views.append(entry['view_name']) 
-            print(views)
+            # print(views)
             view_str = ','.join(views[1:])
             if data['join_style'] == "inner":
                 # construct FROM statement inner join
                 full_from_statement = from_query + ' ' + views[0] + inner_join + view_str + drug_id
-                print(full_from_statement)
+                # print(full_from_statement)
                 return data
             else:
                 # construct FROM statement left join
                 view_str = ','.join(views[1:])
                 full_from_statement = from_query + ' ' + views[0] + left_join + view_str + drug_id
-                print(full_from_statement)
+                # print(full_from_statement)
                 return data
     # query db (plug in variables here)
     # result = db.execute(f"SELECT * FROM curated.{table_name} LIMIT 100")
