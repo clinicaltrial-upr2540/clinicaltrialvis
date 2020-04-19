@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // What are possible values of <search_token>?
 
         // Request the data
-        requestPreviewData();
+        requestPreviewData(jsonToPost);
     };
 
     // Export button functionality goes here
@@ -164,7 +164,7 @@ function buildSidebarColumnEntry(fieldList) {
 }
 
 // Function to request preview data to populate the table in the UI
-function requestPreviewData() {
+function requestPreviewData(jsonToPost) {
     var dataRequest = new XMLHttpRequest();
 
     // Get the list of views and append to sidebar
@@ -181,8 +181,9 @@ function requestPreviewData() {
             }
         }
     };
-    dataRequest.open("GET", "/data/explore", true);
-    dataRequest.send();
+    dataRequest.open("POST", "/data/explore", true);
+    dataRequest.setRequestHeader("Content-type", "application/json");
+    dataRequest.send(JSON.stringify(jsonToPost));
 }
 
 // Function to build the preview data table once data has been returned
@@ -230,10 +231,13 @@ function buildDataPreviewTable(data) {
 }
 
 // Function to build the JSON object to request data from the API
+// This is a big function, but organized into first checkboxes, then filters
 function buildDataRequest() {
     var rawFields = [];
     var fieldDict = {};
     var filterDict = {};
+    var resultJSON = {};
+    resultJSON["data_list"] = [];
 
     // Loop through all the column switches, and if they are checked, add them to the list
     document.querySelectorAll(".child-checkbox").forEach(function(babySwitch) {
@@ -245,7 +249,6 @@ function buildDataRequest() {
     // Loop through the resulting columns
     rawFields.forEach(function(field) {
         var splitBuffer = field.split(".");
-        console.log(splitBuffer[0]);
 
         // If this view isn't in the dict yet, add it
         if (!(splitBuffer[0] in fieldDict)) {
@@ -263,13 +266,47 @@ function buildDataRequest() {
             var filterColumn = filterField.getAttribute("data-column");
             var filterValue = filterField.value;
 
+            // First make sure the field is still relevant (the user may have unchecked it since the last refresh)
+            // if (fieldDict[filterView].includes(filterColumn)) {
+                var filterType = "match";
 
+                // Derive type of filter comparison from first character
+                if (filterValue.charAt(0) == '>') {
+                    filterType = '>';
+                    filterValue = filterValue.substr(1);
+                } else if (filterValue.charAt(0) == '<') {
+                    filterType = '<';
+                    filterValue = filterValue.substr(1);
+                } else if (filterValue.charAt(0) == '=') {
+                    filterType = '=';
+                    filterValue = filterValue.substr(1);
+                }
+
+                // If this view isn't in the dict yet, add it
+                if (!(filterView in filterDict)) {
+                    filterDict[filterView] = [];
+                }
+
+                // Add the filter to that view
+                filterDict[filterView].push({column_name:filterColumn, operator:filterType, target:filterValue});
+            // }
         }
-        // UH OH! In the response from endpoint 3, we have a list of views, but no way to know when column comes from what view
-        // Other than looping through and checking each
     });
 
-    return rawFields;
+    // Avengers, assemble (the JSON object to return)
+    for (const key of Object.keys(fieldDict)) {
+        var viewObj = {};
+
+        viewObj["view_name"] = key;
+        viewObj["column_list"] = fieldDict[key];
+        if (key in filterDict) {
+            viewObj["filters"] = filterDict[key];
+        }
+
+        resultJSON["data_list"].push(viewObj);
+    }
+
+    return resultJSON;
 }
 
 
