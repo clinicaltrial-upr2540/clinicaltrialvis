@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Here, gather a list of filters (none by default)
         var jsonToPost = buildDataRequest();
 
+        jsonToPost["join_style"] = "inner";
+        jsonToPost["export"] = "false";
+        jsonToPost["single_file"] = "false";
+
         // ASK LU: Does the API allow for querying all columns from a view?
         // What are possible values of <search_token>?
 
@@ -183,6 +187,7 @@ function requestPreviewData(jsonToPost) {
     };
     dataRequest.open("POST", "/data/explore", true);
     dataRequest.setRequestHeader("Content-type", "application/json");
+    console.log(JSON.stringify(jsonToPost));
     dataRequest.send(JSON.stringify(jsonToPost));
 }
 
@@ -191,8 +196,8 @@ function buildDataPreviewTable(data) {
     var html_buffer = '';
 
     // Extract the data
-    column_names = data["data"][0]["column_names"];
-    sample_data = data["data"][0]["data"];
+    column_names = data["data"]["view_column_names"];
+    sample_data = data["data"]["data"];
 
     // Reset the table
     document.querySelector('#data-preview').innerHTML = '';
