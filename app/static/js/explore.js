@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         jsonToPost["join_style"] = document.querySelector('#joinSelect').value;
         jsonToPost["export"] = "false";
-        jsonToPost["single_file"] = "false";
+        jsonToPost["single_file"] = "true";
         jsonToPost["limit"] = parseInt(document.querySelector('#resultsSelect').value, 10);
 
         // Request the data
@@ -29,7 +29,20 @@ document.addEventListener('DOMContentLoaded', () => {
         requestPreviewData(jsonToPost);
     };
 
-    // Export button functionality goes here
+    // Export button functionality
+    document.querySelector('#export-button').onclick = () => {
+        // Here, we might gather a list of the checked boxes on the left sidebar
+        // Here, gather a list of filters (none by default)
+        var jsonToPost = buildDataRequest();
+
+        jsonToPost["join_style"] = document.querySelector('#joinSelect').value;
+        jsonToPost["export"] = "true";
+        jsonToPost["single_file"] = "true";
+
+        // Request the data
+        console.log(JSON.stringify(jsonToPost));
+        requestExport(jsonToPost);
+    };
 
     /**
     End event listeners
@@ -186,6 +199,43 @@ function requestPreviewData(jsonToPost) {
     };
     dataRequest.open("POST", "/data/explore", true);
     dataRequest.setRequestHeader("Content-type", "application/json");
+    dataRequest.send(JSON.stringify(jsonToPost));
+}
+
+// Function to request full data export to download
+function requestExport(jsonToPost) {
+    var dataRequest = new XMLHttpRequest();
+
+    // Perform the actual request
+    dataRequest.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            try {
+                // Try to find out the filename from the content disposition `filename` value
+                var disposition = this.getResponseHeader('Content-Disposition');
+                var matches = /"([^"]*)"/.exec(disposition);
+                var filename = (matches != null && matches[1] ? matches[1] : 'export.csv');
+
+                // The actual download
+                var blob = new Blob([this.response], { type: 'application/octet-stream' });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+
+                document.body.appendChild(link);
+
+                link.click();
+
+                document.body.removeChild(link);
+            } catch(err) {
+                // If no data comes back, insert error message
+                console.log(err.message + " in " + this.responseText);
+                return;
+            }
+        }
+    };
+    dataRequest.open("POST", "/data/explore", true);
+    dataRequest.setRequestHeader("Content-type", "application/json");
+    dataRequest.responseType = 'blob';
     dataRequest.send(JSON.stringify(jsonToPost));
 }
 
