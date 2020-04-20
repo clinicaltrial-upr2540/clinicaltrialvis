@@ -19,9 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Here, gather a list of filters (none by default)
         var jsonToPost = buildDataRequest();
 
-        // ASK LU: Does the API allow for querying all columns from a view?
-        // What are possible values of <search_token>?
-
         // Request the data
         requestPreviewData(jsonToPost);
     };
@@ -183,6 +180,7 @@ function requestPreviewData(jsonToPost) {
     };
     dataRequest.open("POST", "/data/explore", true);
     dataRequest.setRequestHeader("Content-type", "application/json");
+    console.log(JSON.stringify(jsonToPost));
     dataRequest.send(JSON.stringify(jsonToPost));
 }
 
@@ -191,8 +189,8 @@ function buildDataPreviewTable(data) {
     var html_buffer = '';
 
     // Extract the data
-    column_names = data["data"][0]["column_names"];
-    sample_data = data["data"][0]["data"];
+    column_names = data["data"]["view_column_names"];
+    sample_data = data["data"]["data"];
 
     // Reset the table
     document.querySelector('#data-preview').innerHTML = '';
@@ -201,7 +199,7 @@ function buildDataPreviewTable(data) {
     const thead = document.createElement('thead');
     thead.setAttribute('class', 'thead-light');
     for (var key in column_names) {
-        html_buffer = html_buffer.concat(`<th>${ column_names[key] }</th>`)
+        html_buffer = html_buffer.concat(`<th>${ column_names[key][1] }</th>`)
     }
     thead.innerHTML = html_buffer;
     document.querySelector('#data-preview').append(thead);
@@ -210,8 +208,8 @@ function buildDataPreviewTable(data) {
     html_buffer = '';
     const tr = document.createElement('tr');
     tr.setAttribute('class', 'table-active');
-    for (var key in sample_data[0]) {
-        html_buffer = html_buffer.concat(`<td><input class="form-control form-control-sm data-filter" data-view="${data["view_name"]}" data-column="${column_names[key]}" type="text" placeholder="filter"></td>`);
+    for (var key in column_names) {
+        html_buffer = html_buffer.concat(`<td><input class="form-control form-control-sm data-filter" data-view="${column_names[key][0]}" data-column="${column_names[key][1]}" type="text" placeholder="filter"></td>`);
     }
     tr.innerHTML = html_buffer;
     document.querySelector('#data-preview').append(tr);
@@ -222,7 +220,7 @@ function buildDataPreviewTable(data) {
         html_buffer = '';
 
         for (var inner_key in sample_data[key]) {
-            html_buffer = html_buffer.concat(`<td>${sample_data[key][inner_key]}</td>`)
+            html_buffer = html_buffer.concat(`<td class="text-truncate" style="max-width: 150px;" title="${sample_data[key][inner_key]}">${sample_data[key][inner_key]}</td>`)
         }
 
         data_tr.innerHTML = html_buffer;
@@ -305,6 +303,8 @@ function buildDataRequest() {
 
         resultJSON["data_list"].push(viewObj);
     }
+
+    console.log(filterDict);
 
     return resultJSON;
 }
