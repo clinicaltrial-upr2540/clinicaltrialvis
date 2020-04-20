@@ -270,7 +270,7 @@ function buildDataRequest() {
 
             // First make sure the field is still relevant (the user may have unchecked it since the last refresh)
             // if (fieldDict[filterView].includes(filterColumn)) {
-                var filterType = "match";
+                var filterType = "matches";
 
                 // Derive type of filter comparison from first character
                 if (filterValue.charAt(0) == '>') {
