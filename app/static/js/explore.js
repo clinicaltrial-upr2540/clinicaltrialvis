@@ -19,10 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Here, gather a list of filters (none by default)
         var jsonToPost = buildDataRequest();
 
-        // ASK LU: Does the API allow for querying all columns from a view?
-        // What are possible values of <search_token>?
+        jsonToPost["join_style"] = document.querySelector('#joinSelect').value;
+        jsonToPost["export"] = "false";
+        jsonToPost["single_file"] = "false";
+        jsonToPost["limit"] = parseInt(document.querySelector('#resultsSelect').value, 10);
 
         // Request the data
+        console.log(JSON.stringify(jsonToPost));
         requestPreviewData(jsonToPost);
     };
 
@@ -172,7 +175,7 @@ function requestPreviewData(jsonToPost) {
         if (this.readyState == 4 && this.status == 200) {
             try {
                 var data = JSON.parse(this.responseText);
-                buildDataPreviewTable(data);
+                buildDataPreviewTable(data, jsonToPost);
             } catch(err) {
                 // If no data comes back, insert error message
                 document.querySelector('#data-preview').innerHTML = `<div class="alert alert-danger" role="alert">An error occurred while retrieving data. Please try again!</div>`;
@@ -187,12 +190,12 @@ function requestPreviewData(jsonToPost) {
 }
 
 // Function to build the preview data table once data has been returned
-function buildDataPreviewTable(data) {
+function buildDataPreviewTable(data, jsonPosted) {
     var html_buffer = '';
 
     // Extract the data
-    column_names = data["data"][0]["column_names"];
-    sample_data = data["data"][0]["data"];
+    column_names = data["data"]["view_column_names"];
+    sample_data = data["data"]["data"];
 
     // Reset the table
     document.querySelector('#data-preview').innerHTML = '';
@@ -201,7 +204,7 @@ function buildDataPreviewTable(data) {
     const thead = document.createElement('thead');
     thead.setAttribute('class', 'thead-light');
     for (var key in column_names) {
-        html_buffer = html_buffer.concat(`<th>${ column_names[key] }</th>`)
+        html_buffer = html_buffer.concat(`<th>${ column_names[key][1] }</th>`)
     }
     thead.innerHTML = html_buffer;
     document.querySelector('#data-preview').append(thead);
@@ -210,11 +213,20 @@ function buildDataPreviewTable(data) {
     html_buffer = '';
     const tr = document.createElement('tr');
     tr.setAttribute('class', 'table-active');
-    for (var key in sample_data[0]) {
-        html_buffer = html_buffer.concat(`<td><input class="form-control form-control-sm data-filter" data-view="${data["view_name"]}" data-column="${column_names[key]}" type="text" placeholder="filter"></td>`);
+    for (var key in column_names) {
+        html_buffer = html_buffer.concat(`<td><input class="form-control form-control-sm data-filter" data-view="${column_names[key][0]}" data-column="${column_names[key][1]}" type="text" placeholder="filter"></td>`);
     }
     tr.innerHTML = html_buffer;
     document.querySelector('#data-preview').append(tr);
+
+    // If there were any filters set on the last refresh, set them again
+    for (var view in jsonPosted["data_list"]) {
+        if ("filters" in jsonPosted["data_list"][view]) {
+            for (var filter in jsonPosted["data_list"][view]["filters"]) {
+                document.querySelector(`[data-view="${jsonPosted["data_list"][view]["view_name"]}"][data-column="${jsonPosted["data_list"][view]["filters"][filter]["column_name"]}"]`).value = jsonPosted["data_list"][view]["filters"][filter]["target"];
+            }
+        }
+    }
 
     // Build and insert the data
     for (var key in sample_data) {
@@ -222,7 +234,7 @@ function buildDataPreviewTable(data) {
         html_buffer = '';
 
         for (var inner_key in sample_data[key]) {
-            html_buffer = html_buffer.concat(`<td>${sample_data[key][inner_key]}</td>`)
+            html_buffer = html_buffer.concat(`<td class="text-truncate" style="max-width: 150px;" title="${sample_data[key][inner_key]}">${sample_data[key][inner_key]}</td>`)
         }
 
         data_tr.innerHTML = html_buffer;
@@ -268,7 +280,7 @@ function buildDataRequest() {
 
             // First make sure the field is still relevant (the user may have unchecked it since the last refresh)
             // if (fieldDict[filterView].includes(filterColumn)) {
-                var filterType = "match";
+                var filterType = "matches";
 
                 // Derive type of filter comparison from first character
                 if (filterValue.charAt(0) == '>') {

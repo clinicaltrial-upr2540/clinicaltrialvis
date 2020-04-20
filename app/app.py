@@ -185,7 +185,6 @@ def explore_data():
         if validate_explore_request(payload) is False:
             return
 
-
         where_snippet = get_where_snippet(payload)
         from_snippet = get_from_snippet(payload)
         select_snippet = get_select_snippet(payload)
@@ -248,15 +247,16 @@ def get_select_snippet(payload):
             result += f'"{view_name}"."{column_name}", '
             counter += 1
 
-    return result[0:len(result)-2]
+    return result[0:len(result) - 2]
     # return " SELECT drug_id, compound_name, smiles, clogp "
 
+
 def get_where_snippet(payload):
-    result = " " 
-    condition_term = " WHERE " 
+    result = " "
+    condition_term = " WHERE "
     for item in payload.get("data_list"):
-        view_name = item.get("view_name") 
-        filter_list = item.get("filters", [] )
+        view_name = item.get("view_name")
+        filter_list = item.get("filters", [])
         for filter_obj in filter_list:
             column_name = filter_obj.get("column_name")
             operator = filter_obj.get("operator")
@@ -264,7 +264,7 @@ def get_where_snippet(payload):
                 operator = "="
             if operator == "matches":
                 operator = "LIKE"
-            target = filter_obj.get("target") 
+            target = filter_obj.get("target")
 
             this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'%{target}%\' '
             result += this_snip
@@ -273,10 +273,9 @@ def get_where_snippet(payload):
     return result
 
 
-def get_limit_snippet(payload): 
-    limit = payload.get("limit", 10) 
+def get_limit_snippet(payload):
+    limit = payload.get("limit", 10)
     return f" LIMIT {limit} "
-
 
 
 def get_explore_response(sql_string, payload):

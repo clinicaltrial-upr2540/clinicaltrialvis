@@ -9,6 +9,31 @@
                     <div class="col-3">
                         <p class="h3">Select fields to export:</p>
 
+                            <div class="form-row mt-4 mb-2">
+                                <div class="col">
+                                    <label for="joinSelect">Join type: </label>
+                                </div>
+                                <div class="col">
+                                    <select class="form-control form-control-sm" id="joinSelect">
+                                        <option>inner</option>
+                                        <option>left</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row mb-4">
+                                <div class="col">
+                                    <label for="resultsSelect">Preview results: </label>
+                                </div>
+                                <div class="col">
+                                    <select class="form-control form-control-sm" id="resultsSelect">
+                                        <option>10</option>
+                                        <option>25</option>
+                                        <option selected>50</option>
+                                        <option>100</option>
+                                    </select>
+                                </div>
+                            </div>
+
                         <table class="table table-sm table-responsive overflow-auto mh-100" id="selection-sidebar">
                             <!-- explore.js generates sidebar with list of views and column names -->
                         </table>
