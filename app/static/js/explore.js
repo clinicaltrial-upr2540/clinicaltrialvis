@@ -22,8 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
         jsonToPost["join_style"] = document.querySelector('#joinSelect').value;
         jsonToPost["export"] = "false";
         jsonToPost["single_file"] = "false";
+        jsonToPost["limit"] = parseInt(document.querySelector('#resultsSelect').value, 10);
 
         // Request the data
+        console.log(JSON.stringify(jsonToPost));
         requestPreviewData(jsonToPost);
     };
 
