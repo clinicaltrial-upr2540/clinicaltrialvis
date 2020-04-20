@@ -257,8 +257,12 @@ def get_where_snippet(payload):
         for filter_obj in filter_list:
             column_name = filter_obj.get("column_name")
             operator = filter_obj.get("operator")
-            if operator == "matches": operator = "LIKE"
-            target = filter_obj.get("target")
+            if operator not in ["matches", ">", "<", "=", "!="]:
+                operator = "="
+            if operator == "matches":
+                operator = "LIKE"
+            target = filter_obj.get("target") 
+
             this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'%{target}%\' '
             result += this_snip
             condition_term = " AND "
