@@ -184,21 +184,20 @@ def explore_data():
         if validate_explore_request(payload) is False:
             return
 
-
-        if payload.get("download") == "false": 
+        if payload.get("export") == "false":
             where_snippet = get_where_snippet(payload)
             from_snippet = get_from_snippet(payload)
-            select_snippet = get_select_snippet(payload)
+            select_snippet = get_select_snippet(payload, False)
             limit_snippet = get_limit_snippet(payload)
 
             sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
             results = get_explore_response(sql_string, payload)
-            
-            results["sql"] = sql_string
-            return json.dumps(results, indent=4)  
 
-        if payload.get("download") == "true": 
-            pass 
+            results["sql"] = sql_string
+            return json.dumps(results, indent=4)
+
+        elif payload.get("export") == "true":
+            pass
             # IF this is a single file download, the data is exactly the same as render, just need to turn it into a file 
             # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets 
             # the only thing that is different is the SELECT statement
@@ -247,11 +246,14 @@ def get_from_snippet(payload):
 
 
 # if not download, do not use DISTINCT
-# if download, add distinct 
-# if multi file download, this will be run multiple times each time with columns from one view 
-def get_select_snippet(payload):
+# if download, add distinct
+# if multi file download, this will be run multiple times each time with columns from one view
+def get_select_snippet(payload, download):
     counter = 1
-    result = " SELECT "
+    if download:
+        result = " SELECT DISTINCT "
+    else:
+        result = " SELECT "
 
     for item in payload.get("data_list"):
         view_name = item.get("view_name")
