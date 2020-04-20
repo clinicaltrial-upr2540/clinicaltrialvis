@@ -193,7 +193,10 @@ def explore_data():
 
         sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
         results = get_explore_response(sql_string, payload)
-        return results
+        
+        results["sql"] = sql_string
+        return json.dumps(results, indent=4)  
+
 
     # if the method is GET, then retrieve one of several sample responses.
     # useful for development and testing of frontend
@@ -295,7 +298,7 @@ def get_explore_response(sql_string, payload):
 
     results["data"] = data_list_obj
 
-    return json.dumps(results, indent=4)
+    return results   
 
 
 def get_view_names_from_payload(payload):
