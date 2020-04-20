@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Here, gather a list of filters (none by default)
         var jsonToPost = buildDataRequest();
 
-        jsonToPost["join_style"] = "inner";
+        jsonToPost["join_style"] = document.querySelector('#joinSelect').value;
         jsonToPost["export"] = "false";
         jsonToPost["single_file"] = "false";
 
