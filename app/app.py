@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 import json
-import pandas
 import sqlalchemy
 import pathlib
+import datetime
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql import text
 from configparser import ConfigParser
@@ -197,13 +197,36 @@ def explore_data():
             return json.dumps(results, indent=4)
 
         elif payload.get("export") == "true":
-            pass
-            # IF this is a single file download, the data is exactly the same as render, just need to turn it into a file 
-            # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets 
+            # IF this is a single file download, the data is exactly the same as render, just need to turn it into a file
+            if payload.get("single_file") == "true":
+                where_snippet = get_where_snippet(payload)
+                from_snippet = get_from_snippet(payload)
+                select_snippet = get_select_snippet(payload, True)
+                limit_snippet = get_limit_snippet(payload)
+
+                sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
+                results = get_explore_response_as_csv(sql_string, payload)
+
+                # results["sql"] = sql_string
+
+                # # Generate CSV
+                # resultCSV = convert_data_to_csv(results)
+
+                # Create a response object and set headers so it will download as file
+                response = make_response(results)
+                response.headers['Content-Type'] = "application/octet-stream"
+                response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
+
+                print("SEND DAT FILE")
+                return(response)
+
+            # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets
             # the only thing that is different is the SELECT statement
+            else:
+                pass
 
             # with each view, a JSON is constructed
-            # from that JSON, a file is made and added to a zip file 
+            # from that JSON, a file is made and added to a zip file
             # once all views have been iterated thru, return the zip file
 
     # if the method is GET, then retrieve one of several sample responses.
@@ -289,6 +312,8 @@ def get_where_snippet(payload):
 
 
 def get_limit_snippet(payload):
+    if payload.get("export") == "true":
+        return ""
     limit = payload.get("limit", 10)
     return f" LIMIT {limit} "
 
@@ -312,7 +337,31 @@ def get_explore_response(sql_string, payload):
 
     results["data"] = data_list_obj
 
-    return results   
+    return results
+
+
+def get_explore_response_as_csv(sql_string, payload):
+    cmd = text(sql_string)
+    data = None
+    print(str(datetime.datetime.now()) + " QUERYING DATABASE")
+    with engine.connect() as conn:
+        data = conn.execute(cmd)
+
+    print(str(datetime.datetime.now()) + " EXTRACTING COLUMN HEADERS")
+    # Get column names for first row in the CSV
+    view_column_names = get_column_names_from_payload(payload)
+
+    print(str(datetime.datetime.now()) + " SERIALIZING DATA")
+    # Serialize as a CSV
+    result = [','.join(map(str, list(row))) for row in data]
+    result = '\n'.join(result)
+
+    print(str(datetime.datetime.now()) + " PREPENDING COLUMN HEADERS")
+    # Prepend column headings
+    print(view_column_names)
+    result = ','.join(view_column_names) + '\n' + result
+
+    return(result)
 
 
 def get_view_names_from_payload(payload):
@@ -335,8 +384,38 @@ def get_view_column_names_from_payload(payload):
     return view_column_names
 
 
+def get_column_names_from_payload(payload):
+    column_names = []
+
+    for item in payload.get("data_list"):
+        column_list = item.get("column_list")
+        for column_name in column_list:
+            column_names.append(column_name)
+    return column_names
+
+
 def get_data_list_obj_from_data(data):
     return [list(row) for row in data]
+
+
+# Function to convert API response JSON to a single CSV file
+def convert_data_to_csv(data):
+    print("BEGIN CSV BUILD")
+    csv_output = ""
+
+    # Append column headers
+    for column in data["data"]["view_column_names"]:
+        csv_output += f"{column[1]},"
+
+    # Remove trailing comma
+    csv_output = csv_output[:-1]
+
+    # Add all table data
+    for row in data["data"]["data"]:
+        csv_output = csv_output + "\n" + ",".join(map(str, row))
+
+    print("FINISH CSV BUILD")
+    return(csv_output)
 
 
 if __name__ == "__main__":
