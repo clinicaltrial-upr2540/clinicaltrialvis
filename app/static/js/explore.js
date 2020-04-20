@@ -173,7 +173,7 @@ function requestPreviewData(jsonToPost) {
         if (this.readyState == 4 && this.status == 200) {
             try {
                 var data = JSON.parse(this.responseText);
-                buildDataPreviewTable(data);
+                buildDataPreviewTable(data, jsonToPost);
             } catch(err) {
                 // If no data comes back, insert error message
                 document.querySelector('#data-preview').innerHTML = `<div class="alert alert-danger" role="alert">An error occurred while retrieving data. Please try again!</div>`;
@@ -184,12 +184,11 @@ function requestPreviewData(jsonToPost) {
     };
     dataRequest.open("POST", "/data/explore", true);
     dataRequest.setRequestHeader("Content-type", "application/json");
-    console.log(JSON.stringify(jsonToPost));
     dataRequest.send(JSON.stringify(jsonToPost));
 }
 
 // Function to build the preview data table once data has been returned
-function buildDataPreviewTable(data) {
+function buildDataPreviewTable(data, jsonPosted) {
     var html_buffer = '';
 
     // Extract the data
@@ -217,6 +216,15 @@ function buildDataPreviewTable(data) {
     }
     tr.innerHTML = html_buffer;
     document.querySelector('#data-preview').append(tr);
+
+    // If there were any filters set on the last refresh, set them again
+    for (var view in jsonPosted["data_list"]) {
+        if ("filters" in jsonPosted["data_list"][view]) {
+            for (var filter in jsonPosted["data_list"][view]["filters"]) {
+                document.querySelector(`[data-view="${jsonPosted["data_list"][view]["view_name"]}"][data-column="${jsonPosted["data_list"][view]["filters"][filter]["column_name"]}"]`).value = jsonPosted["data_list"][view]["filters"][filter]["target"];
+            }
+        }
+    }
 
     // Build and insert the data
     for (var key in sample_data) {
@@ -307,8 +315,6 @@ function buildDataRequest() {
 
         resultJSON["data_list"].push(viewObj);
     }
-
-    console.log(filterDict);
 
     return resultJSON;
 }
