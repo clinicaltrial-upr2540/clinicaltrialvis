@@ -185,18 +185,27 @@ def explore_data():
         if validate_explore_request(payload) is False:
             return
 
+        if payload.get("download") == "false": 
+            where_snippet = get_where_snippet(payload)
+            from_snippet = get_from_snippet(payload)
+            select_snippet = get_select_snippet(payload)
+            limit_snippet = get_limit_snippet(payload)
 
-        where_snippet = get_where_snippet(payload)
-        from_snippet = get_from_snippet(payload)
-        select_snippet = get_select_snippet(payload)
-        limit_snippet = get_limit_snippet(payload)
+            sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
+            results = get_explore_response(sql_string, payload)
+            
+            results["sql"] = sql_string
+            return json.dumps(results, indent=4)  
 
-        sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
-        results = get_explore_response(sql_string, payload)
-        
-        results["sql"] = sql_string
-        return json.dumps(results, indent=4)  
+        if payload.get("download") == "true": 
+            pass 
+            # IF this is a single file download, the data is exactly the same as render, just need to turn it into a file 
+            # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets 
+            # the only thing that is different is the SELECT statement
 
+            # with each view, a JSON is constructed
+            # from that JSON, a file is made and added to a zip file 
+            # once all views have been iterated thru, return the zip file 
 
     # if the method is GET, then retrieve one of several sample responses.
     # useful for development and testing of frontend
@@ -237,9 +246,12 @@ def get_from_snippet(payload):
     return result
 
 
+# if not download, do not use DISTINCT
+# if download, add distinct 
+# if multi file download, this will be run multiple times each time with columns from one view 
 def get_select_snippet(payload):
     counter = 1
-    result = " SELECT DISTINCT "
+    result = " SELECT "
 
     for item in payload.get("data_list"):
         view_name = item.get("view_name")
