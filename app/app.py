@@ -54,7 +54,8 @@ def render_api_doc():
 @app.route("/visualizations")
 def render_visualizations_page():
     # Query for full list of visualizations
-    result = db.execute("SELECT * FROM application.visualizations;").fetchall()
+    with engine.connect() as conn:
+        result = conn.execute("SELECT * FROM application.visualizations;").fetchall()
     result_list = [dict(row) for row in result]
 
     return render_template('visualizations.html', page_title="Visualizations", result_list=result_list)
@@ -64,7 +65,8 @@ def render_visualizations_page():
 @app.route("/visualization/<vis_id>")
 def render_visualization(vis_id):
     # Query for full list of visualizations
-    result = db.execute(f"SELECT * FROM application.visualizations WHERE id = {vis_id};").fetchone()
+    with engine.connect() as conn:
+        result = conn.execute(f"SELECT * FROM application.visualizations WHERE id = {vis_id};").fetchone()
     result = dict(result)
 
     return render_template('visualization.html', page_title="Visualization", result=result)
@@ -143,11 +145,12 @@ def table_name(table_name):
 @app.route("/data/views", methods=['GET'])
 def views():
     # Query tables in the 'curated' schema and serialize
-    result = db.execute("""
-        SELECT table_name
-        FROM information_schema.views
-        WHERE table_schema like 'curated';
-    """)
+    with engine.connect() as conn:
+        result = conn.execute("""
+            SELECT table_name
+            FROM information_schema.views
+            WHERE table_schema like 'curated';
+        """)
     views = [dict(row).get("table_name") for row in result]
     response = {"views": views}
     # Return list of views as JSON object
@@ -158,16 +161,12 @@ def views():
 def view_info(view_name):
     from test_responses import sample_view_info
 
-    params = {"viewname": view_name}
-
-    result = db.execute("""
-        SELECT column_name, data_type
-        FROM information_schema.columns
-        WHERE table_name LIKE :viewname
-        and table_schema like 'curated'
-        order by 1
-        ;
-    """, params)
+    with engine.connect() as conn:
+        result = conn.execute(f"SELECT column_name, data_type \
+            FROM information_schema.columns \
+            WHERE table_name LIKE '{view_name}' \
+            and table_schema like 'curated' \
+            order by 1;")
 
     columns = [dict(row) for row in result]
     view_name = view_name
