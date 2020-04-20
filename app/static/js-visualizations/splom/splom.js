@@ -1,12 +1,18 @@
+//load the data, using plotly library function
+
+//line for local deployment
+//Plotly.d3.csv('/vis/splomdata/csv/splom_data_C14.csv', function(err, rows){
+//line for Flask deployment
 Plotly.d3.csv('/vis/splomdata/csv', function(err, rows){
 
-
+//reads the data
     function unpack(rows, key) {
         return rows.map(function(row) { return row[key]; });
     }
 
+//creates color array for each data point
+//by looping through the data and defines colors (0, 0.5, 1) for data points for every company
     colors=[];
-
     for (i=0; i < unpack(rows, 'group').length; i++) {
       if (unpack(rows, 'group')[i] == "MYLAN PHARMACEUTICALS INC") {
         colors.push(0);
@@ -16,7 +22,7 @@ Plotly.d3.csv('/vis/splomdata/csv', function(err, rows){
         colors.push(1);
       }
     }
-
+//color scale that maps colors defined per each data point (0, 0.5, 1) to actual colors
       var pl_colorscale=[               
                [0.0, '#19d3f3'],
                [0.333, '#19d3f3'],
@@ -26,18 +32,18 @@ Plotly.d3.csv('/vis/splomdata/csv', function(err, rows){
                [1, '#636efa']
     ]
 
+//description of the options for axis, data an layout 
+//documentation on plotly parameters is here: https://plotly.com/javascript/splom/
 
-scl = [[0, 'rgb(150,0,90)'],[0.125, 'rgb(0, 0, 200)'],[0.25,'rgb(0, 25, 255)'],[0.375,'rgb(0, 152, 255)'],[0.5,'rgb(44, 255, 150)'],[0.625,'rgb(151, 255, 0)'],[0.75,'rgb(255, 234, 0)'],[0.875,'rgb(255, 111, 0)'],[1,'rgb(255, 0, 0)']];
-
-
-
+//axis
     var axis = () => ({
       showline:false,
       zeroline:false,
       gridcolor:'#ffff',
-      ticklen:4
+      ticklen:3
     })
 
+//data
     var data = [{
       type: 'splom',
       dimensions: [
@@ -51,6 +57,7 @@ scl = [[0, 'rgb(150,0,90)'],[0.125, 'rgb(0, 0, 200)'],[0.25,'rgb(0, 25, 255)'],[
       name: unpack(rows, 'group'),
       marker: {
         color: colors,
+        colorscale:pl_colorscale,
         size: 7,
         line: {
           color: 'white',
@@ -59,11 +66,12 @@ scl = [[0, 'rgb(150,0,90)'],[0.125, 'rgb(0, 0, 200)'],[0.25,'rgb(0, 25, 255)'],[
       }
     }]
 
+//layout
     var layout = {
       title:'Molecular descriptors',
       height: 800,
       width: 800,
-      autosize: true,
+      autosize: false,
       hovermode:'closest',
       dragmode:'select',
       plot_bgcolor:'rgba(240,240,240, 0.95)',
@@ -79,7 +87,8 @@ scl = [[0, 'rgb(150,0,90)'],[0.125, 'rgb(0, 0, 200)'],[0.25,'rgb(0, 25, 255)'],[
       yaxis5:axis()
     }
 
+//calls plotly function to create scatterplot matrix or splom
     Plotly.react('splom-plot', data, layout);
-    
 
-});
+
+}); //end plotly.d3.csv function
