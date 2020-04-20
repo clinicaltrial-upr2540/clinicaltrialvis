@@ -5,9 +5,9 @@ import pandas
 import sqlalchemy
 import pathlib
 
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.sql import text 
+from sqlalchemy.sql import text
 from configparser import ConfigParser
 
 import random
@@ -42,12 +42,6 @@ config.readfp(open(f"{pathlib.Path(__file__).parent.absolute()}/config/configura
 def render_index():
     print(db)
     return render_template('home.html', page_title="Home")
-
-
-# Route to test page. TODO: Remove!
-@app.route("/test")
-def render_test():
-    return render_template('test.html', page_title="Test Page")
 
 
 # Route to API doc page
@@ -115,101 +109,6 @@ def get_visualization_data(vis_data_name, data_format):
 
 
 ############################################
-# Routes to Reports
-############################################
-
-@app.route("/report/create", methods=['GET', 'POST'])
-def create_custom_report():
-    try:
-        view_list = get_all_view_names()
-        if request.method == 'POST':
-            view_names = request.form.to_dict()
-            view_list = update_view_list(view_list, view_names)
-            col_list = get_col_list(view_list)
-            return render_template("custom_report.html", view_list=view_list, col_list=col_list)
-        else:
-            col_list = get_init_list(view_list)
-            return render_template("custom_report.html", view_list=view_list, col_list=col_list)
-    except Exception as e:
-        return str(e)
-
-
-@app.route("/report", methods=['GET', 'POST'])
-def render_report():
-    table_list = []
-    test_string = ""
-    try:
-        # Does this block do anything?
-        if request.method == 'POST':
-            table_list = request.form.getlist('checks[]')
-            test_string = ','.join(map(str, table_list))
-
-            # Pull data from database
-            result = db.execute('select drug_name, ' + test_string + ' from curated.m_report')
-            result = [dict(row) for row in result]
-
-            # Create CSV as a multi-line string
-            csv_output = ",".join(result[0].keys())
-            for row in result:
-                csv_output = csv_output + "\n" + ",".join(map(str, row.values()))
-
-            # Create a response object and set headers so it will download as file
-            response = make_response(csv_output)
-            response.headers['Content-Type'] = "application/octet-stream"
-            response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
-
-            return(response)
-        else:
-            connection = engine.connect()
-            q1 = 'SELECT trim(column_name) FROM information_schema.columns\r\n WHERE table_schema = \'curated\' AND table_name = \'report\''
-            report = connection.execute(q1)
-            for table in report:
-                table_list.append(table[0])
-            result = [row for row in report]
-            connection.close()
-            return render_template("report.html", table=table_list)
-    except Exception as e:
-        return str(e)
-
-
-@app.route("/export", methods=['GET', 'POST'])
-def export():
-    export_list = request.form.getlist('ck[]')
-    col_list = []
-    view_list = []
-
-    for item in export_list:
-        x = item.split(":")
-        col_list.append(
-            'CAST("' + x[1].strip() + '"."' + x[0].strip() + '" AS VARCHAR(100)) AS "' + x[1].strip() + '_' + x[0].strip() + '"')
-        view_list.append(x[1].strip())
-
-    if len(view_list) > len(set(view_list)):
-        join_condition = 'FROM "curated"' + '."' + view_list[0] + '"'
-    else:
-        join_condition = config.get('sql_config', 'join_condition')
-
-    parameters = ','.join(map(str, col_list))
-    query = 'select distinct ' + parameters + ' ' + join_condition
-
-    # Pull requested data from database
-    result = db.execute(query)
-    result = [dict(row) for row in result]
-
-    # Create CSV as a multi-line string
-    csv_output = ",".join(result[0].keys())
-    for row in result:
-        csv_output = csv_output + "\n" + ",".join(map(str, row.values()))
-
-    # Create a response object and set headers so it will download as file
-    response = make_response(csv_output)
-    response.headers['Content-Type'] = "application/octet-stream"
-    response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
-
-    return(response)
-
-
-############################################
 # Routes to API endpoints go here
 ############################################
 
@@ -245,12 +144,12 @@ def table_name(table_name):
 def views():
     # Query tables in the 'curated' schema and serialize
     result = db.execute("""
-        SELECT table_name 
-        FROM information_schema.views 
-        WHERE table_schema like 'curated'; 
+        SELECT table_name
+        FROM information_schema.views
+        WHERE table_schema like 'curated';
     """)
     views = [dict(row).get("table_name") for row in result]
-    response = {"views": views} 
+    response = {"views": views}
     # Return list of views as JSON object
     return (json.dumps(response, indent=4, separators=(',', ': ')))
 
@@ -259,10 +158,10 @@ def views():
 def view_info(view_name):
     from test_responses import sample_view_info
 
-    params={"viewname": view_name} 
+    params = {"viewname": view_name}
 
     result = db.execute("""
-        SELECT table_name as column_name, data_type 
+        SELECT column_name, data_type
         FROM information_schema.columns
         WHERE table_name LIKE :viewname
         and table_schema like 'curated'
@@ -271,39 +170,39 @@ def view_info(view_name):
     """, params)
 
     columns = [dict(row) for row in result]
-    view_name = view_name 
+    view_name = view_name
 
-    return_data = {"view_name": view_name, "columns": columns} 
+    return_data = {"view_name": view_name, "columns": columns}
 
     return (json.dumps(return_data, indent=4))
 
 
-@app.route("/data/explore", methods=['GET', 'POST']) 
-def explore_data(): 
-    # if method is POST 
+@app.route("/data/explore", methods=['GET', 'POST'])
+def explore_data():
+    # if method is POST
     if request.method == 'POST':
         payload = request.get_json()
-        if validate_explore_request(payload) == False: 
-            return 
+        if validate_explore_request(payload) is False:
+            return
 
-        # TODO: split for multi file response. What follows is RENDER behavior 
-        where_snippet = get_where_snippet(payload) 
+
+        where_snippet = get_where_snippet(payload)
         from_snippet = get_from_snippet(payload)
         select_snippet = get_select_snippet(payload)
-        limit_snippet = get_limit_snippet(payload) 
+        limit_snippet = get_limit_snippet(payload)
 
         sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
         results = get_explore_response(sql_string, payload)
-        return results   
+        return results
 
-    # if the method is GET, then retrieve one of several sample responses. 
+    # if the method is GET, then retrieve one of several sample responses.
     # useful for development and testing of frontend
-    if request.method == 'GET': 
-        from test_responses import list_of_responses 
-        
-        if request.args.get("download")=="true": 
+    if request.method == 'GET':
+        from test_responses import list_of_responses
+
+        if request.args.get("download") == "true":
             return (json.dumps(list_of_responses[0], indent=4))
-        else: 
+        else:
             return (json.dumps(random.choice(list_of_responses[1:4]), indent=4))
 
 
@@ -311,156 +210,116 @@ def explore_data():
 # Utility Functions
 ############################################
 
-def validate_explore_request(payload): 
-    if payload is None: 
-        return "404 error needed" 
-    else: 
-        return True 
+def validate_explore_request(payload):
+    if payload is None:
+        return "404 error needed"
+    else:
+        return True
 
-def get_from_snippet(payload): 
-    join_options = {"inner": "INNER", "left": "LEFT OUTER"} 
-    join_term = join_options.get(payload.get("join_style"), "INNER")  
-    counter = 1 
-    result = "" 
-    for item in payload.get("data_list"): 
-        view_name = item.get("view_name") 
-        this_snip = ""
-        if counter == 1: 
-            this_snip = f' FROM curated."{view_name}"'
-        else: 
-            this_snip = f' {join_term} JOIN curated."{view_name}" using (drug_id)'
-        counter+=1 
-        result += this_snip 
-    return result 
 
-def get_select_snippet(payload): 
+def get_from_snippet(payload):
+    join_options = {"inner": "INNER", "left": "LEFT OUTER"}
+    join_term = join_options.get(payload.get("join_style"), "INNER")
     counter = 1
-    result = " SELECT DISTINCT " 
+    result = ""
+    for item in payload.get("data_list"):
+        view_name = item.get("view_name")
+        this_snip = ""
+        if counter == 1:
+            this_snip = f' FROM curated."{view_name}"'
+        else:
+            this_snip = f' {join_term} JOIN curated."{view_name}" using (drug_id)'
+        counter += 1
+        result += this_snip
+    return result
 
-    for item in payload.get("data_list"): 
-        view_name = item.get("view_name") 
+
+def get_select_snippet(payload):
+    counter = 1
+    result = " SELECT DISTINCT "
+
+    for item in payload.get("data_list"):
+        view_name = item.get("view_name")
         column_list = item.get("column_list")
-        for column_name in column_list: 
+        for column_name in column_list:
             result += f'"{view_name}"."{column_name}", '
-            counter+=1 
+            counter += 1
 
     return result[0:len(result)-2]
-    # return " SELECT drug_id, compound_name, smiles, clogp " 
+    # return " SELECT drug_id, compound_name, smiles, clogp "
 
-def get_where_snippet(payload): 
+def get_where_snippet(payload):
     result = " " 
     condition_term = " WHERE " 
-    for item in payload.get("data_list"): 
+    for item in payload.get("data_list"):
         view_name = item.get("view_name") 
         filter_list = item.get("filters", [] )
-        for filter_obj in filter_list: 
-            column_name = filter_obj.get("column_name") 
+        for filter_obj in filter_list:
+            column_name = filter_obj.get("column_name")
             operator = filter_obj.get("operator")
-            if operator not in ["matches", ">", "<", "=", "!="]: 
+            if operator not in ["matches", ">", "<", "=", "!="]:
                 operator = "="
-            if operator == "matches": 
-                operator = "LIKE" 
+            if operator == "matches":
+                operator = "LIKE"
             target = filter_obj.get("target") 
-            this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'%{target}%\' '
-            result += this_snip 
-            condition_term = " AND " 
 
-    return result 
+            this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'%{target}%\' '
+            result += this_snip
+            condition_term = " AND "
+
+    return result
 
 
 def get_limit_snippet(payload): 
     limit = payload.get("limit", 10) 
     return f" LIMIT {limit} "
 
-def get_explore_response(sql_string, payload): 
-    cmd = text(sql_string) 
-    data = None 
-    with engine.connect() as conn: 
-        data  = conn.execute(cmd) 
-    results = { 
-            "download": False, 
-            "files_to_prepare": 0, 
-            "data": [], 
-        } 
+
+
+def get_explore_response(sql_string, payload):
+    cmd = text(sql_string)
+    data = None
+    with engine.connect() as conn:
+        data = conn.execute(cmd)
+    results = {
+        "download": False,
+        "files_to_prepare": 0,
+        "data": [],
+    }
 
     data_list_obj = {
-            "view_names": get_view_names_from_payload(payload), 
-            "view_column_names": get_view_column_names_from_payload(payload), 
-            "data": get_data_list_obj_from_data(data), 
-        } 
+        "view_names": get_view_names_from_payload(payload),
+        "view_column_names": get_view_column_names_from_payload(payload),
+        "data": get_data_list_obj_from_data(data),
+    }
 
     results["data"] = data_list_obj
 
-    return json.dumps(results, indent=4)  
-
+    return json.dumps(results, indent=4)
 
 
 def get_view_names_from_payload(payload):
-    view_names = [] 
+    view_names = []
 
-    for item in payload.get("data_list"): 
-        view_name = item.get("view_name") 
+    for item in payload.get("data_list"):
+        view_name = item.get("view_name")
         view_names.append(view_name)
-    return view_names 
+    return view_names
 
 
-def get_view_column_names_from_payload(payload): 
-    view_column_names = [] 
+def get_view_column_names_from_payload(payload):
+    view_column_names = []
 
-    for item in payload.get("data_list"): 
-        view_name = item.get("view_name") 
+    for item in payload.get("data_list"):
+        view_name = item.get("view_name")
         column_list = item.get("column_list")
-        for column_name in column_list: 
-            view_column_names.append([view_name, column_name]) 
-    return view_column_names 
+        for column_name in column_list:
+            view_column_names.append([view_name, column_name])
+    return view_column_names
 
-def get_data_list_obj_from_data(data): 
+
+def get_data_list_obj_from_data(data):
     return [list(row) for row in data]
-
-
-def get_all_view_names():
-    connection = engine.connect()
-    q1 = 'select trim(matviewname) as view_name, \'checked\' as selected_view from pg_matviews where schemaname = \'curated\' AND trim(matviewname) <> \'m_report\' '
-    report = connection.execute(q1)
-    report = [dict(row) for row in report]
-    connection.close()
-    return report
-
-
-def update_view_list(view_list, view_names):
-    view_list_df = pandas.DataFrame(view_list)
-    view_names_df = pandas.DataFrame(view_names.keys(), columns=['view_name'])
-    view_list_df.loc[(~view_list_df['view_name'].isin(view_names_df['view_name'])), 'selected_view'] = ''
-    return view_list_df.to_dict(orient='records')
-
-
-def get_col_list(view_names):
-    view_list = []
-    for table in view_names:
-        if table['selected_view'] == 'checked':
-            view_list.append('"' + table['view_name'] + '"')
-
-    selected_columns = ','.join(map(str, view_list))
-    q1 = 'SELECT view_name, col_name from application.get_view_attributes(' + "'{" + selected_columns + '}' + "'" + ');'
-    connection = engine.connect()
-    report = connection.execute(q1)
-    report = [dict(row) for row in report]
-
-    connection.close()
-    return report
-
-
-def get_init_list(view_names):
-    view_list = []
-    for table in view_names:
-        view_list.append('"' + table['view_name'] + '"')
-    selected_views = ','.join(map(str, view_list))
-    q1 = 'SELECT view_name, col_name from application.get_view_attributes(' + "'{" + selected_views + '}' + "'" + ');'
-    connection = engine.connect()
-    report = connection.execute(q1)
-    report = [dict(row) for row in report]
-    connection.close()
-    return report
 
 
 if __name__ == "__main__":
