@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Here, gather a list of filters (none by default)
         var jsonToPost = buildDataRequest();
 
+        jsonToPost["join_style"] = "inner";
+        jsonToPost["export"] = "false";
+        jsonToPost["single_file"] = "false";
+
         // Request the data
         requestPreviewData(jsonToPost);
     };
