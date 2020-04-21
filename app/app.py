@@ -40,7 +40,6 @@ config.readfp(open(f"{pathlib.Path(__file__).parent.absolute()}/config/configura
 # Route to homepage
 @app.route("/")
 def render_index():
-    print(db)
     return render_template('home.html', page_title="Home")
 
 
@@ -188,7 +187,6 @@ def explore_data():
                 response.headers['Content-Type'] = "application/octet-stream"
                 response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
 
-                print("SEND DAT FILE")
                 return(response)
 
             # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets
@@ -329,7 +327,6 @@ def get_explore_response_as_csv(sql_string, payload):
 
     print(str(datetime.datetime.now()) + " PREPENDING COLUMN HEADERS")
     # Prepend column headings
-    print(view_column_names)
     result = ','.join(view_column_names) + '\n' + result
 
     return(result)

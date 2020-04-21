@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         jsonToPost["limit"] = parseInt(document.querySelector('#resultsSelect').value, 10);
 
         // Request the data
-        console.log(JSON.stringify(jsonToPost));
         requestPreviewData(jsonToPost);
     };
 
@@ -40,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
         jsonToPost["single_file"] = "true";
 
         // Request the data
-        console.log(JSON.stringify(jsonToPost));
         requestExport(jsonToPost);
     };
 
