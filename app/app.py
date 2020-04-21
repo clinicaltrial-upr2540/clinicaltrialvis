@@ -353,7 +353,7 @@ def get_explore_response_as_csv(sql_string, payload):
 
     print(str(datetime.datetime.now()) + " SERIALIZING DATA")
     # Serialize as a CSV
-    result = [','.join(map(str, list(row))) for row in data]
+    result = [','.join(map(clean_csv_value, list(row))) for row in data]
     result = '\n'.join(result)
 
     print(str(datetime.datetime.now()) + " PREPENDING COLUMN HEADERS")
@@ -362,6 +362,13 @@ def get_explore_response_as_csv(sql_string, payload):
     result = ','.join(view_column_names) + '\n' + result
 
     return(result)
+
+
+def clean_csv_value(value):
+    if isinstance(value, str):
+        return('"' + value.replace('"', '""') + '"')
+    else:
+        return(str(value))
 
 
 def get_view_names_from_payload(payload):
