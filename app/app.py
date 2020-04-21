@@ -209,9 +209,6 @@ def explore_data():
 
                 # results["sql"] = sql_string
 
-                # # Generate CSV
-                # resultCSV = convert_data_to_csv(results)
-
                 # Create a response object and set headers so it will download as file
                 response = make_response(results)
                 response.headers['Content-Type'] = "application/octet-stream"
@@ -403,26 +400,6 @@ def get_column_names_from_payload(payload):
 
 def get_data_list_obj_from_data(data):
     return [list(row) for row in data]
-
-
-# Function to convert API response JSON to a single CSV file
-def convert_data_to_csv(data):
-    print("BEGIN CSV BUILD")
-    csv_output = ""
-
-    # Append column headers
-    for column in data["data"]["view_column_names"]:
-        csv_output += f"{column[1]},"
-
-    # Remove trailing comma
-    csv_output = csv_output[:-1]
-
-    # Add all table data
-    for row in data["data"]["data"]:
-        csv_output = csv_output + "\n" + ",".join(map(str, row))
-
-    print("FINISH CSV BUILD")
-    return(csv_output)
 
 
 if __name__ == "__main__":
