@@ -83,7 +83,8 @@ def render_explorer():
 ############################################
 @app.route("/vis/<vis_data_name>/<data_format>")
 def get_visualization_data(vis_data_name, data_format):
-    query_result = db.execute(f"SELECT * FROM application.{vis_data_name}").fetchall()
+    with engine.connect() as conn:
+        query_result = conn.execute(f"SELECT * FROM application.{vis_data_name}").fetchall()
     query_result = [dict(row) for row in query_result]
 
     popped_result = []
@@ -113,33 +114,6 @@ def get_visualization_data(vis_data_name, data_format):
 ############################################
 # Routes to API endpoints go here
 ############################################
-
-# API endpoint to list available tables in the curated dataset
-@app.route("/data/tables")
-def data_tables():
-    table_list = []
-
-    # Query tables in the 'curated' schema and serialize
-    result = db.execute(f"SELECT * FROM information_schema.tables WHERE table_schema = \'curated\';")
-    result = [dict(row) for row in result]
-
-    # Loop through and pull out table names
-    for table in result:
-        table_list.append(table["table_name"])
-
-    # Return table name as JSON object
-    return (json.dumps(table_list, indent=4, separators=(',', ': ')))
-
-
-# API endpoint to query sample data from each table in the curated dataset
-@app.route("/data/tables/<table_name>", methods=['GET'])
-def table_name(table_name):
-    # Query tables in the 'curated' schema and serialize
-    result = db.execute(f"SELECT * FROM curated.{table_name} LIMIT 100")
-    table_data = [dict(row) for row in result]
-    # Return as JSON object
-    return (json.dumps(table_data, indent=4, separators=(',', ': ')))
-
 
 # API endpoint to list available views in the curated dataset
 @app.route("/data/views", methods=['GET'])
