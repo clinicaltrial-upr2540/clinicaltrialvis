@@ -53,10 +53,9 @@
                                             <input type="checkbox" checked data-toggle="toggle" id="multi-file-checkbox">
                                             <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
                                         </label>
-                                        
                                     </div>
                                     <a class="btn btn-lg btn-primary" href="#" id="update-preview-button">Update preview</a>
-                                    <a class="btn btn-lg btn-danger" href="#" id="export-button">Export</a>
+                                    <a class="btn btn-lg btn-danger" href="#" data-toggle="modal" data-target="#exportModal" id="export-button">Export</a>
                                 </div>
                             </div>
                         </div>
@@ -69,6 +68,21 @@
 
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exportModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Exporting...</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><img src="{{ url_for('static', filename='img/spinner.gif') }}" alt="spinner" width="35" height="35" class="mr-2"/>Export in progress. Please do not refresh the page...</p>
             </div>
         </div>
     </div>

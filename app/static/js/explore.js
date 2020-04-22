@@ -226,10 +226,16 @@ function requestExport(jsonToPost) {
 
                 document.body.appendChild(link);
 
+                // Remove the loading modal
+                $('#exportModal').modal('hide');
+
                 link.click();
 
                 document.body.removeChild(link);
             } catch(err) {
+                // Remove the loading modal
+                $('#exportModal').modal('hide');
+
                 // If no data comes back, insert error message
                 console.log(err.message + " in " + this.responseText);
                 return;
