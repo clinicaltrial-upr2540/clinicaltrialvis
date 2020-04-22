@@ -4,11 +4,13 @@ import json
 import sqlalchemy
 import pathlib
 import datetime
+import zipfile
 
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, send_file
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql import text
 from configparser import ConfigParser
+from io import BytesIO
 
 import random
 
@@ -192,11 +194,24 @@ def explore_data():
             # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets
             # the only thing that is different is the SELECT statement
             else:
-                pass
+                csv_data_dict = {}
+                memory_file = BytesIO()
 
-            # with each view, a JSON is constructed
-            # from that JSON, a file is made and added to a zip file
-            # once all views have been iterated thru, return the zip file
+                for view in payload["data_list"]:
+                    where_snippet = get_where_snippet(payload)
+                    from_snippet = get_from_snippet(payload)
+                    select_snippet = get_single_view_select_snippet(view)
+                    limit_snippet = get_limit_snippet(payload)
+
+                    sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
+                    csv_data_dict[view["view_name"]] = get_explore_response_as_csv(sql_string, payload)
+
+                # Add all views to an in-memory zip file and return
+                with zipfile.ZipFile(memory_file, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
+                    for viewname, csvdata in csv_data_dict.items():
+                        zf.writestr(f"{viewname}.csv", csvdata)
+                memory_file.seek(0)
+                return send_file(memory_file, attachment_filename='export.zip', as_attachment=True)
 
     # if the method is GET, then retrieve one of several sample responses.
     # useful for development and testing of frontend
@@ -256,6 +271,21 @@ def get_select_snippet(payload, download):
 
     return result[0:len(result) - 2]
     # return " SELECT drug_id, compound_name, smiles, clogp "
+
+
+# Function to return SELECT part of query for a multi-file download
+# Only select fields from one view at a time
+def get_single_view_select_snippet(view_data):
+    counter = 1
+    result = " SELECT DISTINCT "
+
+    view_name = view_data.get("view_name")
+    column_list = view_data.get("column_list")
+    for column_name in column_list:
+        result += f'"{view_name}"."{column_name}", '
+        counter += 1
+
+    return result[0:len(result) - 2]
 
 
 def get_where_snippet(payload):
