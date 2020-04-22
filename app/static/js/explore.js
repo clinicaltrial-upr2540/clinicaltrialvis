@@ -42,8 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             jsonToPost["single_file"] = "true";
         }
-
-        console.log(jsonToPost["single_file"]);
         
         // Request the data
         requestExport(jsonToPost);
@@ -231,8 +229,6 @@ function requestExport(jsonToPost) {
                 link.click();
 
                 document.body.removeChild(link);
-
-                console.log(disposition);
             } catch(err) {
                 // If no data comes back, insert error message
                 console.log(err.message + " in " + this.responseText);
