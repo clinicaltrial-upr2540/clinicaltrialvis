@@ -277,7 +277,7 @@ def get_select_snippet(payload, download):
 # Only select fields from one view at a time
 def get_single_view_select_snippet(view_data):
     counter = 1
-    result = " SELECT "
+    result = " SELECT DISTINCT "
 
     view_name = view_data.get("view_name")
     column_list = view_data.get("column_list")
