@@ -33,7 +33,7 @@ visualization_list = [
         "classes": "bubble-plot-3d",
         "dataset": "splomdata",
         "data_format": "csv",
-        "scripts": "bubble_plot_3d.js"
+        "scripts": "bubble-plot-3d.js"
     },
     {
         "name": "box-whisker",
@@ -43,7 +43,7 @@ visualization_list = [
         "classes": "box-whisker-plotly",
         "dataset": "heatmapdata",
         "data_format": "csv",
-        "scripts": "box_whisker_plotly.js"
+        "scripts": "box-whisker.js"
     },
     {
         "name": "heatmap",
