@@ -21,18 +21,19 @@ app.config['TESTING'] = True
 # Startup tasks go here (load/check data)
 ############################################
 
-# Connect to the database
-# Set the DB URL and schema to use
-# URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
-DATABASE_URL = "postgresql://app_user:flask_app_user_role@drugdata.cgi8bzi5jc1o.us-east-1.rds.amazonaws.com:5432/drugdata"
+# Import database configuration
+config = ConfigParser()
+config.read("database.conf")
 
-# Set up and establish connection
+config['drugdata']['host']
+
+# Build URL for database connection
+# URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
+DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
+
+# Set up and establish databaseconnection
 engine = sqlalchemy.create_engine(DATABASE_URL)
 db = scoped_session(sessionmaker(bind=engine))
-
-# What does this config do? Let's eliminate it if possible
-config = ConfigParser()
-config.readfp(open(f"{pathlib.Path(__file__).parent.absolute()}/config/configuration.conf"))
 
 
 ############################################
