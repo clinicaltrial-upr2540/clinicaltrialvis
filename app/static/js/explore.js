@@ -36,8 +36,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         jsonToPost["join_style"] = document.querySelector('#joinSelect').value;
         jsonToPost["export"] = "true";
-        jsonToPost["single_file"] = "true";
 
+        if (document.querySelector('#multi-file-checkbox').checked == true) {
+            jsonToPost["single_file"] = "false";
+        } else {
+            jsonToPost["single_file"] = "true";
+        }
+
+        console.log(jsonToPost["single_file"]);
+        
         // Request the data
         requestExport(jsonToPost);
     };
@@ -211,7 +218,7 @@ function requestExport(jsonToPost) {
                 // Try to find out the filename from the content disposition `filename` value
                 var disposition = this.getResponseHeader('Content-Disposition');
                 var matches = /"([^"]*)"/.exec(disposition);
-                var filename = (matches != null && matches[1] ? matches[1] : 'export.csv');
+                var filename = (matches != null && matches[1] ? matches[1] : 'export.zip');
 
                 // The actual download
                 var blob = new Blob([this.response], { type: 'application/octet-stream' });
@@ -224,6 +231,8 @@ function requestExport(jsonToPost) {
                 link.click();
 
                 document.body.removeChild(link);
+
+                console.log(disposition);
             } catch(err) {
                 // If no data comes back, insert error message
                 console.log(err.message + " in " + this.responseText);
