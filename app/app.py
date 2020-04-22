@@ -2,17 +2,14 @@
 
 import json
 import sqlalchemy
-import pathlib
 import datetime
 import zipfile
+import random
 
 from flask import Flask, render_template, request, make_response, send_file
-from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql import text
 from configparser import ConfigParser
 from io import BytesIO
-
-import random
 
 app = Flask(__name__)
 app.config['TESTING'] = True
@@ -25,15 +22,10 @@ app.config['TESTING'] = True
 config = ConfigParser()
 config.read("database.conf")
 
-config['drugdata']['host']
-
-# Build URL for database connection
+# Set up and establish database engine
 # URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
 DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
-
-# Set up and establish databaseconnection
 engine = sqlalchemy.create_engine(DATABASE_URL)
-db = scoped_session(sessionmaker(bind=engine))
 
 
 ############################################
@@ -135,8 +127,6 @@ def views():
 
 @app.route("/data/view/<view_name>", methods=['GET'])
 def view_info(view_name):
-    from test_responses import sample_view_info
-
     with engine.connect() as conn:
         result = conn.execute(f"SELECT column_name, data_type \
             FROM information_schema.columns \
