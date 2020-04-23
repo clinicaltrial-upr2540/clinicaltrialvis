@@ -8,6 +8,9 @@
 		<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
 		<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
 
+		<!-- local css -->
+		<link href='splom.css' rel='stylesheet' type='text/css'>
+
 		<!-- jQuery.js -->
 		<script
 		src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -26,106 +29,6 @@
 
 		<!-- Plotly.js -->
 		<script src="https://cdn.plot.ly/plotly-latest.js" charset="utf-8"></script>
-		
-		<style>
-			body {
-				font-family: 'Open Sans', sans-serif;
-				font-size: 11px;
-				font-weight: 300;
-				fill: #242424;
-				text-align: center;
-				text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
-				cursor: default;
-			}
-			/*for dotMatrixChart, from https://github.com/arpitnarechania/d3-dotmatrix/blob/master/dist/DotMatrix.css*/
-
-			path {
-			  stroke: steelblue;
-			  stroke-width: 2;
-			  fill: none;
-			}
-			.axis path,
-			.axis line {
-				fill: none;
-				stroke: grey;
-				stroke-width: 1;
-				shape-rendering: crispEdges;
-			}
-			
-			/*.tooltip {
-				background: #eee;
-				box-shadow: 0 0 5px #999999;
-				color: #333;
-				font-size: 12px;
-				left: 30px;
-				padding: 10px;
-				position: absolute;
-				text-align: center;
-				top: 5px;
-				z-index: 10;
-				display: block;
-				opacity: 0;
-				fill: #333333;
-			}*/
-
-			.tooltip{
-				color: black;
-				background-color: white;
-				background: white;
-				position: absolute;
-				align-content: center;
-				margin-right: 10%;
-				margin-left: 10%;
-				border: green;
-				}
-
-			.title{
-				font-size:16px;
-				}
-			g{
-				visibility: visible;
-			}
-
-			.xScale > g{
-				white-space: nowrap;
-  				overflow: hidden;
-			}
-
-			.xScale > g >text{
-				height: 1.2em; /* exactly one lines */
-  				width: 70px;
-  				display: inline-block;
-  				text-align: center;
-  				white-space: nowrap;
-  				overflow: hidden;
-  				text-overflow: ellipsis;
-				}
-			/*for radarChart*/
-			.legend {
-				width: 300px;
-				font-family: 'Raleway', sans-serif;
-				fill: #333333;
-			}
-			/*for the heatmap from http://bl.ocks.org/tjdecke/5558084*/
-			rect.bordered {
-		        stroke: #E6E6E6;
-		        stroke-width:2px;   
-		      }
-
-		      text.mono {
-		        font-size: 9pt;
-		        font-family: Consolas, courier;
-		        fill: #aaa;
-		      }
-
-		      text.axis-workweek {
-		        fill: #000;
-		      }
-
-		      text.axis-worktime {
-		        fill: #000;
-		      }
-		</style>
 	
 	</head>
 	<body>
@@ -135,8 +38,9 @@
 				<div id="splom-plot"></div>
 			</div>
 		</div>
-	 </div>
-	 	 <!-- DotMatrix.js - from http://jsfiddle.net/hrabinowitz/ZW528/14/ -->
+	  </div>
+
+	<!-- splom.js -->
 	 	<script src="splom.js"></script>
 	</body>
 </html>
