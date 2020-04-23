@@ -493,13 +493,13 @@ var CopyIcon = (function() {
 
 		clipboard.on('success', function(e) {
 			$(e.trigger)
-				.attr('title', 'Descriptor Selected!')
+				.attr('title', 'Copied!')
 				.tooltip('_fixTitle')
 				.tooltip('show')
-				.attr('title', 'Select Descriptor to Export')
+				.attr('title', 'Copy to clipboard')
 				.tooltip('_fixTitle')
 
-			// e.clearSelection()
+			e.clearSelection()
 		});
 	}
 

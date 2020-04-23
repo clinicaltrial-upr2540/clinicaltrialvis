@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
+# This module imports information about the visualizations included with the application
+# as a demonstration for applications of the dataset
+
 import sqlalchemy
 
-from sqlalchemy.orm import scoped_session, sessionmaker
+from configparser import ConfigParser
 
 visualization_list = [
     {
@@ -36,14 +39,14 @@ visualization_list = [
         "scripts": "bubble-plot-3d.js"
     },
     {
-        "name": "box-whisker",
+        "name": "box-whisker-plotly",
         "title": "Drug Targets by Companies",
         "description": "Box and Whisker Chart",
         "thumbnail": "box-whisker.png",
         "classes": "box-whisker-plotly",
         "dataset": "heatmapdata",
         "data_format": "csv",
-        "scripts": "box-whisker.js"
+        "scripts": "box-whisker-plotly.js"
     },
     {
         "name": "heatmap",
@@ -67,35 +70,33 @@ visualization_list = [
     }
 ]
 
-DATABASE_URL = "postgresql://postgres:y9fBsh5xEeYvkUkCQ5q3@drugdata.cgi8bzi5jc1o.us-east-1.rds.amazonaws.com:5432/drugdata"
-# DATABASE_URL = "postgresql://postgres:y9fBsh5xEeYvkUkCQ5q3@localhost:54320/postgres"
+# Import database configuration
+config = ConfigParser()
+config.read("database.conf")
+
+# Set up and establish database engine
+# URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
+DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
 SCHEMA_NAME = "application"
 
-# Set up database
 engine = sqlalchemy.create_engine(DATABASE_URL)
-db = scoped_session(sessionmaker(bind=engine))
 
-# # Does the schema exist? If not, create
-db.execute(f"CREATE SCHEMA IF NOT EXISTS {SCHEMA_NAME};")
-db.commit()
+with engine.connect() as conn:
+    print("Refreshing visualization data...")
 
-# Create the table if necessary
-db.execute(f"set search_path to {SCHEMA_NAME};")
-db.execute("DROP TABLE IF EXISTS visualizations;")
-db.execute("CREATE TABLE visualizations (id SERIAL PRIMARY KEY, \
-                                name VARCHAR NOT NULL, \
-                                title VARCHAR NOT NULL, \
-                                description VARCHAR, \
-                                thumbnail VARCHAR, \
-                                classes VARCHAR, \
-                                dataset VARCHAR, \
-                                data_format VARCHAR, \
-                                scripts VARCHAR);")
-db.commit()
+    # Create the table if necessary
+    conn.execute(f"set search_path to {SCHEMA_NAME};")
+    conn.execute("TRUNCATE TABLE visualizations;")
+    # conn.execute("CREATE TABLE visualizations (id SERIAL PRIMARY KEY, \
+    #                                 name VARCHAR NOT NULL, \
+    #                                 title VARCHAR NOT NULL, \
+    #                                 description VARCHAR, \
+    #                                 thumbnail VARCHAR, \
+    #                                 classes VARCHAR, \
+    #                                 dataset VARCHAR, \
+    #                                 data_format VARCHAR, \
+    #                                 scripts VARCHAR);")
 
-for visualization in visualization_list:
-    db.execute(f"INSERT INTO {SCHEMA_NAME}.visualizations (\"name\", title, description, thumbnail, classes, dataset, data_format, scripts) VALUES \
-                (\'{visualization['name']}\', \'{visualization['title']}\', \'{visualization['description']}\', \'{visualization['thumbnail']}\', \'{visualization['classes']}\', \'{visualization['dataset']}\', \'{visualization['data_format']}\', \'{visualization['scripts']}\')")
-    db.commit()
-
-db.close()
+    for visualization in visualization_list:
+        conn.execute(f"INSERT INTO {SCHEMA_NAME}.visualizations (\"name\", title, description, thumbnail, classes, dataset, data_format, scripts) VALUES \
+                    (\'{visualization['name']}\', \'{visualization['title']}\', \'{visualization['description']}\', \'{visualization['thumbnail']}\', \'{visualization['classes']}\', \'{visualization['dataset']}\', \'{visualization['data_format']}\', \'{visualization['scripts']}\')")
