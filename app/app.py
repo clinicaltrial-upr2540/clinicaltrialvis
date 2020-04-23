@@ -11,9 +11,6 @@ from sqlalchemy.sql import text
 from configparser import ConfigParser
 from io import BytesIO
 
-# The following imports are custom code, not downloaded libraries
-import visualization_setup
-
 app = Flask(__name__)
 app.config['TESTING'] = True
 
@@ -29,6 +26,9 @@ config.read("database.conf")
 # URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
 DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
 engine = sqlalchemy.create_engine(DATABASE_URL)
+
+# Refresh visualization data
+import visualization_setup
 
 
 ############################################
