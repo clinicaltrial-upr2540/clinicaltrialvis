@@ -11,6 +11,9 @@ from sqlalchemy.sql import text
 from configparser import ConfigParser
 from io import BytesIO
 
+# The following imports are custom code, not downloaded libraries
+import visualization_setup
+
 app = Flask(__name__)
 app.config['TESTING'] = True
 
