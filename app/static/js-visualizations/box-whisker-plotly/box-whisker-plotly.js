@@ -104,6 +104,7 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
       dataForStyled.push(result);
   };
 
+  //layout
   var layout = {
       title: 'Box-whisker plot accross pharma',
       yaxis: {
@@ -137,6 +138,7 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
       }
   };
 
+    //calls plotly function to create box-whisker plot
     Plotly.newPlot('box-whisker-plotly', dataForStyled, layout);
 
 }) //end d3.csv function

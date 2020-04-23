@@ -36,7 +36,7 @@ visualization_list = [
         "classes": "bubble-plot-3d",
         "dataset": "splomdata",
         "data_format": "csv",
-        "scripts": "bubble_plot_3d.js"
+        "scripts": "bubble-plot-3d.js"
     },
     {
         "name": "box-whisker-plotly",
