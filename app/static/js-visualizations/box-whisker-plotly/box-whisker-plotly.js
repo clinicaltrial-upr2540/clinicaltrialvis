@@ -1,13 +1,11 @@
 "use strict";
 
-
-
-// set the dimensions and margins of the graph
+// set the dimensions and margins of the visualization
 var margin = {top: 10, right: 30, bottom: 30, left: 40},
     width = 460 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
-// append the svg object to the body of the page
+// create and append the svg object to the box-whisker element of the page
 var svg = d3.select("#box-whisker")
   .append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -16,19 +14,18 @@ var svg = d3.select("#box-whisker")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
-// Read the data and compute summary statistics for each specie
+// read the data
+//line for local deployment
+//d3.csv("/vis/heatmapdata/csv/heatmap_data_CO6.csv", function(data){
+//line for Flask deployment
 d3.csv("/vis/heatmapdata/csv", function(data) {
 
-  // Compute quartiles, median, inter quantile range min and max --> these info are then used to draw the box.
-  var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+  // create data collections and compute statistics that are necessary to draw the box
+  var sumstat = d3.nest()
     .key(function(d) { return d.group;})
     .rollup(function(d) {
-      //let q0 = d3.quantile(d.map(function(g) { return g.value;}).sort(d3.ascending),0);
       let sorted = d.map(function(g) { return +g.value;});
       let drugNames = d.map(function(g) { return g.variable;});
-      /*let sorted = notSorted.sort(d3.ascending);
-      let q1 = d3.quantile(sorted,0.25);*/
-      //let median = d3.quantile(d.map(function(g) { return g.value;}).sort(d3.ascending),0.5);
       let median = d3.median(d.map(function(g) { return +g.value;}).sort(d3.ascending));
       let q1 = d3.quantile(d.map(function(g) { return +g.value;}).sort(d3.ascending),0.25);
       let q3 = d3.quantile(d.map(function(g) { return +g.value;}).sort(d3.ascending),0.75);
@@ -36,18 +33,14 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
       let deviation = d3.deviation(d.map(function(g) { return g.value;}).sort(d3.ascending));
       let min = q1 - 1.5 * interQuantileRange;
       let max = q3 + 1.5 * interQuantileRange;
-      //let min = d3.min(d.map(function(g) { return +g.value;}).sort(d3.ascending));
-      //let max = d3.max(d.map(function(g) { return +g.value;}).sort(d3.ascending));
       return({sorted: sorted, drugNames: drugNames, deviation : deviation, q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max})
     })
     .entries(data);
 
-    console.log(sumstat);
+// create additional data collections for drug groups and drugs as well as for axis
 
-//domain
     var myGroups = d3.map(data, function(d){return d.group;}).keys();
     var myDrugs = d3.map(data, function(d){return d.variable;}).keys();
-    console.log(myDrugs);
 
     var myGroupsTruncated = d3.map(data, function(d){
       var myStr = d.group;
@@ -57,21 +50,21 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
       return myStr;
       }).keys();
 
-    //Plotly
-
     var allYs = sumstat.map(function(g) { return g.value['sorted'];});
-
-
     var allDrugNames = sumstat.map(function(g) { return g.value['drugNames'];});
 
+  //Plotly
+  //all code below prepares the data that plotly requires for visualizing multiple box-whisker plots
+  //the description of all parameters is here https://plotly.com/javascript/box-plots/
 
-  //coloring
+  //rainbow coloring inspired by plotly https://plotly.com/javascript/box-plots/
   function linspace(a,b,n) {
     return Plotly.d3.range(n).map(function(i){return a+i*(b-a)/(n-1);});
   }
   var boxNumber = myGroupsTruncated.length;
   var boxColor = [];
   var allColors = linspace(0, 360, boxNumber);
+
   for( var i = 0; i < boxNumber;  i++ ){
     var result = 'hsl('+ allColors[i] +',50%'+',50%)';
     boxColor.push(result);
@@ -79,8 +72,8 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
 
   var colors = ['rgba(93, 164, 214, 0.5)', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 101, 0.5)', 'rgba(255, 65, 54, 0.5)', 'rgba(207, 114, 255, 0.5)', 'rgba(127, 96, 0, 0.5)', 'rgba(255, 140, 184, 0.5)', 'rgba(79, 90, 117, 0.5)', 'rgba(222, 223, 0, 0.5)'];
 
+  //create data in plotly format
   var dataForStyled = [];
-
   for ( var i = 0; i < myGroupsTruncated.length; i ++ ) {
       var result = {
           type: 'box',
@@ -111,6 +104,7 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
       dataForStyled.push(result);
   };
 
+  //layout
   var layout = {
       title: 'Box-whisker plot accross pharma',
       yaxis: {
@@ -132,14 +126,19 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
       paper_bgcolor: 'rgb(243, 243, 243)',
       plot_bgcolor: 'rgb(243, 243, 243)',
       hovermode:'closest',
-      showlegend: true
+      showlegend: true,
+      hoverlabel: {
+        bgcolor: 'lightgrey',
+        bordercolor: 'darkgrey',
+        font: {
+          color: 'black',
+          family: 'Open Sans',
+          size: 16
+        } 
+      }
   };
 
-
-
+    //calls plotly function to create box-whisker plot
     Plotly.newPlot('box-whisker-plotly', dataForStyled, layout);
 
- 
-
-
-})
+}) //end d3.csv function

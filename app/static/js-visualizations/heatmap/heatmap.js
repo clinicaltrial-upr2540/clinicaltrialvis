@@ -5,7 +5,7 @@ var margin = {top: 80, right: 30, bottom: 30, left: 300},
   width = 1000 - margin.left - margin.right,
   height = 1000 - margin.top - margin.bottom;
 
-// append the svg object to the body of the page
+// append the svg object to the heatmap element of the page
 var svg = d3.select("#heatmap")
 .append("svg")
   .attr("width", width + margin.left + margin.right)
@@ -14,14 +14,34 @@ var svg = d3.select("#heatmap")
   .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
-//Read the data
+// add title to graph
+svg.append("text")
+        .attr("x", 0)
+        .attr("y", -50)
+        .attr("text-anchor", "left")
+        .style("font-size", "22px")
+        .text("A heatmap for one disease category");
+
+// add subtitle to graph
+svg.append("text")
+        .attr("x", 0)
+        .attr("y", -20)
+        .attr("text-anchor", "left")
+        .style("font-size", "14px")
+        .style("fill", "grey")
+        .style("max-width", 400)
+        .text("Company (row), drug(column), psa(color)");
+
+//read the data
+//line for local deployment
+//d3.csv('/vis/heatmap/csv/heatmap_data_CO6.csv', function(err, data){
+//line for Flask deployment
 d3.csv("/vis/heatmapdata/csv", function(data) {
 
-  // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
+  //labels for rows ('group' or company) and columns('variable' or drug)
   var myGroups = d3.map(data, function(d){return d.group;}).keys();
 
   var myVars = d3.map(data, function(d){return d.variable;}).keys();
-  console.log(myGroups.length, myVars.length);
 
   var myGroupsTruncated = d3.map(data, function(d){
       var myStr = d.group;
@@ -34,7 +54,7 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
   myVars = myVars.sort().reverse();
 
 
-  // Build X scales and axis:
+  // build x scale and axis:
   var x = d3.scaleBand()
     .range([ 0, width ])
     .domain(myGroupsTruncated)
@@ -46,7 +66,7 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
     .call(d3.axisBottom(x).tickSize(0))
     .select(".domain").remove()
 
-  // Build Y scales and axis:
+  // build y scale and axis:
   var y = d3.scaleBand()
     .range([ height, 0 ])
     .domain(myVars)
@@ -68,7 +88,7 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
   .attr("x",0) 
   .attr("y", 0);
 
-  // Build color scale
+  // build color scale
   var myColor = d3.scaleSequential()
     .interpolator(d3.interpolatePiYG)
     .domain([1,100])
@@ -84,7 +104,7 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
     .style("border-radius", "5px")
     .style("padding", "5px")
 
-  // Three function that change the tooltip when user hover / move / leave a cell
+  // tooltip on hover over or mouse enter/over
   var mouseover = function(d) {
     tooltip
       .style("opacity", 1)
@@ -92,12 +112,14 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
       .style("stroke", "black")
       .style("opacity", 1)
   }
+  //toopltip on mouse move
   var mousemove = function(d) {
     tooltip
       .html(d.variable + "<br>PSA: " + d.value)
       .style("left", (d3.mouse(this)[0]+300) + "px")
       .style("top", (d3.mouse(this)[1]) + "px")
   }
+  //tooltip on mouse leave
   var mouseleave = function(d) {
     tooltip
       .style("opacity", 0)
@@ -129,23 +151,6 @@ d3.csv("/vis/heatmapdata/csv", function(data) {
     .on("mouseover", mouseover)
     .on("mousemove", mousemove)
     .on("mouseleave", mouseleave)
-})
 
-// Add title to graph
-svg.append("text")
-        .attr("x", 0)
-        .attr("y", -50)
-        .attr("text-anchor", "left")
-        .style("font-size", "22px")
-        .text("A heatmap for one disease category");
-
-// Add subtitle to graph
-svg.append("text")
-        .attr("x", 0)
-        .attr("y", -20)
-        .attr("text-anchor", "left")
-        .style("font-size", "14px")
-        .style("fill", "grey")
-        .style("max-width", 400)
-        .text("Company (row), drug(column), psa(color+tooltip).");
+}) //end d3.csv
 
