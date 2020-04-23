@@ -2,17 +2,14 @@
 
 import json
 import sqlalchemy
-import pathlib
 import datetime
 import zipfile
+import random
 
 from flask import Flask, render_template, request, make_response, send_file
-from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql import text
 from configparser import ConfigParser
 from io import BytesIO
-
-import random
 
 app = Flask(__name__)
 app.config['TESTING'] = True
@@ -21,18 +18,17 @@ app.config['TESTING'] = True
 # Startup tasks go here (load/check data)
 ############################################
 
-# Connect to the database
-# Set the DB URL and schema to use
-# URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
-DATABASE_URL = "postgresql://app_user:flask_app_user_role@drugdata.cgi8bzi5jc1o.us-east-1.rds.amazonaws.com:5432/drugdata"
-
-# Set up and establish connection
-engine = sqlalchemy.create_engine(DATABASE_URL)
-db = scoped_session(sessionmaker(bind=engine))
-
-# What does this config do? Let's eliminate it if possible
+# Import database configuration
 config = ConfigParser()
-config.readfp(open(f"{pathlib.Path(__file__).parent.absolute()}/config/configuration.conf"))
+config.read("database.conf")
+
+# Set up and establish database engine
+# URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
+DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
+engine = sqlalchemy.create_engine(DATABASE_URL)
+
+# Refresh visualization data
+import visualization_setup
 
 
 ############################################
@@ -82,6 +78,10 @@ def render_explorer():
 ############################################
 # Routes to visualization data
 ############################################
+
+# This route is a fake API for the D3 visualizations to get their prepared
+#   datasets out of the database
+# TODO: Replace this with queries of the actual curated dataset
 @app.route("/vis/<vis_data_name>/<data_format>")
 def get_visualization_data(vis_data_name, data_format):
     with engine.connect() as conn:
@@ -132,10 +132,9 @@ def views():
     return (json.dumps(response, indent=4, separators=(',', ': ')))
 
 
+# API endpoint to list the columns in a single view
 @app.route("/data/view/<view_name>", methods=['GET'])
 def view_info(view_name):
-    from test_responses import sample_view_info
-
     with engine.connect() as conn:
         result = conn.execute(f"SELECT column_name, data_type \
             FROM information_schema.columns \
@@ -151,14 +150,18 @@ def view_info(view_name):
     return (json.dumps(return_data, indent=4))
 
 
+# API endpoint for querying data from one or more views in the curated dataset
+# Supports returning results as a JSON object, as a single CSV, or as a zip file
+#   containing one CSV for each view
 @app.route("/data/explore", methods=['GET', 'POST'])
 def explore_data():
-    # if method is POST
+    # If method is POST, this is a real API request
     if request.method == 'POST':
         payload = request.get_json()
         if validate_explore_request(payload) is False:
             return
 
+        # If "export" is false, return a JSON object to build a preview table
         if payload.get("export") == "false":
             where_snippet = get_where_snippet(payload)
             from_snippet = get_from_snippet(payload)
@@ -172,7 +175,7 @@ def explore_data():
             return json.dumps(results, indent=4)
 
         elif payload.get("export") == "true":
-            # IF this is a single file download, the data is exactly the same as render, just need to turn it into a file
+            # IF this is a single file download, the data is exactly the same as render, just need to turn it into a CSV
             if payload.get("single_file") == "true":
                 where_snippet = get_where_snippet(payload)
                 from_snippet = get_from_snippet(payload)
@@ -182,8 +185,6 @@ def explore_data():
                 sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
                 results = get_explore_response_as_csv(sql_string, payload)
 
-                # results["sql"] = sql_string
-
                 # Create a response object and set headers so it will download as file
                 response = make_response(results)
                 response.headers['Content-Type'] = "application/octet-stream"
@@ -192,7 +193,6 @@ def explore_data():
                 return(response)
 
             # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets
-            # the only thing that is different is the SELECT statement
             else:
                 csv_data_dict = {}
                 memory_file = BytesIO()
@@ -228,6 +228,8 @@ def explore_data():
 # Utility Functions
 ############################################
 
+# Check if there is a valid APi request
+# TODO: Replace this with a real 404 page
 def validate_explore_request(payload):
     if payload is None:
         return "404 error needed"
@@ -235,6 +237,7 @@ def validate_explore_request(payload):
         return True
 
 
+# Function to build the "FROM" portion of a query, with join
 def get_from_snippet(payload):
     join_options = {"inner": "INNER", "left": "LEFT OUTER"}
     join_term = join_options.get(payload.get("join_style"), "INNER")
@@ -288,6 +291,7 @@ def get_single_view_select_snippet(view_data):
     return result[0:len(result) - 2]
 
 
+# Function to build the "WHERE" portion of the query, with all fields
 def get_where_snippet(payload):
     result = " "
     condition_term = " WHERE "
@@ -310,6 +314,7 @@ def get_where_snippet(payload):
     return result
 
 
+# Function to define the "LIMIT" portion of a query
 def get_limit_snippet(payload):
     if payload.get("export") == "true":
         return ""
@@ -317,6 +322,7 @@ def get_limit_snippet(payload):
     return f" LIMIT {limit} "
 
 
+# Query the database and serialize results as a Python dict
 def get_explore_response(sql_string, payload):
     cmd = text(sql_string)
     data = None
@@ -339,6 +345,7 @@ def get_explore_response(sql_string, payload):
     return results
 
 
+# Query the database and serialize the results as a CSV
 def get_explore_response_as_csv(sql_string, payload):
     cmd = text(sql_string)
     data = None
@@ -362,6 +369,7 @@ def get_explore_response_as_csv(sql_string, payload):
     return(result)
 
 
+# Convert a single datum to a clean format for the CSV
 def clean_csv_value(value):
     if isinstance(value, str):
         return('"' + value.replace('"', '""') + '"')
@@ -369,6 +377,7 @@ def clean_csv_value(value):
         return(str(value))
 
 
+# Get the list of views included in an API request
 def get_view_names_from_payload(payload):
     view_names = []
 
@@ -378,6 +387,8 @@ def get_view_names_from_payload(payload):
     return view_names
 
 
+# Get the list of columns included in an API request
+# Returns a list of tuples (view, column)
 def get_view_column_names_from_payload(payload):
     view_column_names = []
 
@@ -389,6 +400,8 @@ def get_view_column_names_from_payload(payload):
     return view_column_names
 
 
+# Get the list of columns included in an API request
+# This is run against individual views, so it returns only a list of columns
 def get_column_names_from_payload(payload):
     column_names = []
 
@@ -399,9 +412,11 @@ def get_column_names_from_payload(payload):
     return column_names
 
 
+# Function to serialize a SQL response as a Python list
 def get_data_list_obj_from_data(data):
     return [list(row) for row in data]
 
 
+# Necessary to run app if app.py is executed as a script
 if __name__ == "__main__":
     app.run(debug=True)
