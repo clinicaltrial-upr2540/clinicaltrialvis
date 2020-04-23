@@ -39,14 +39,14 @@ visualization_list = [
         "scripts": "bubble_plot_3d.js"
     },
     {
-        "name": "box-whisker",
+        "name": "box-whisker-plotly",
         "title": "Drug Targets by Companies",
         "description": "Box and Whisker Chart",
         "thumbnail": "box-whisker.png",
         "classes": "box-whisker-plotly",
         "dataset": "heatmapdata",
         "data_format": "csv",
-        "scripts": "box_whisker_plotly.js"
+        "scripts": "box-whisker-plotly.js"
     },
     {
         "name": "heatmap",
