@@ -1,6 +1,9 @@
 # Mac files
 .DS_Store
 
+# VS Code IDE files
+**/.vscode/*
+
 # Pycharm IDE files
 **/.idea/*
 
