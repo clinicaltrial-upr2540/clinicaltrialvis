@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import json
 import sqlalchemy
 import datetime
@@ -11,6 +12,7 @@ from sqlalchemy.sql import text
 from configparser import ConfigParser
 from io import BytesIO
 
+
 app = Flask(__name__)
 app.config['TESTING'] = True
 
@@ -18,9 +20,12 @@ app.config['TESTING'] = True
 # Startup tasks go here (load/check data)
 ############################################
 
+# Set current working path
+current_path = str(os.path.dirname(os.path.realpath(__file__)))
+
 # Import database configuration
 config = ConfigParser()
-config.read("database.conf")
+config.read(f"{current_path}/database.conf")
 
 # Set up and establish database engine
 # URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
@@ -28,7 +33,7 @@ DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['
 engine = sqlalchemy.create_engine(DATABASE_URL)
 
 # Refresh visualization data
-import visualization_setup
+# import visualization_setup
 
 
 ############################################
