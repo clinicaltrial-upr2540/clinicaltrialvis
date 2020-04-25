@@ -7,3 +7,6 @@ Flask
 Flask-Session
 xmltodict
 flask_sqlalchemy
+matplotlib
+numpy
+StringIO
