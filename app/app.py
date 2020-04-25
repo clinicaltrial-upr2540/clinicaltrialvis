@@ -5,11 +5,19 @@ import sqlalchemy
 import datetime
 import zipfile
 import random
+import os 
 
 from flask import Flask, render_template, request, make_response, send_file
 from sqlalchemy.sql import text
 from configparser import ConfigParser
 from io import BytesIO
+
+############################################
+# Import local modules
+############################################
+import sys 
+sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}") 
+from basic_visuals import get_plot_png_test, get_plot_png
 
 app = Flask(__name__)
 app.config['TESTING'] = True
@@ -20,7 +28,9 @@ app.config['TESTING'] = True
 
 # Import database configuration
 config = ConfigParser()
-config.read("database.conf")
+# config.read("database.conf")
+print(f"{os.path.dirname(os.path.realpath(__file__))}/database.conf")
+config.read(f"{os.path.dirname(os.path.realpath(__file__))}/database.conf")
 
 # Set up and establish database engine
 # URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
@@ -28,7 +38,7 @@ DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['
 engine = sqlalchemy.create_engine(DATABASE_URL)
 
 # Refresh visualization data
-import visualization_setup
+# import visualization_setup
 
 
 ############################################
@@ -115,6 +125,12 @@ def get_visualization_data(vis_data_name, data_format):
 ############################################
 # Routes to API endpoints go here
 ############################################
+
+# API endpoint to get a 9 descriptor plot for a compound
+@app.route("/compound/explore/<compound_name>/descriptors", methods=["GET"]) 
+def compound_descriptors(compound_name): 
+    return get_plot_png(compound_name, engine)
+    # return f"compound name is {compound_name}" 
 
 # API endpoint to list available views in the curated dataset
 @app.route("/data/views", methods=['GET'])
