@@ -6,7 +6,7 @@ import sqlalchemy
 import datetime
 import zipfile
 import random
-import os 
+import sys
 
 from flask import Flask, render_template, request, make_response, send_file
 from sqlalchemy.sql import text
@@ -17,8 +17,8 @@ from io import BytesIO
 ############################################
 # Import local modules
 ############################################
-import sys 
-sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}") 
+sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
+
 from basic_visuals import get_plot_png_test, get_plot_png
 
 
@@ -36,8 +36,7 @@ current_path = str(os.path.dirname(os.path.realpath(__file__)))
 config = ConfigParser()
 
 # config.read("database.conf")
-print(f"{os.path.dirname(os.path.realpath(__file__))}/database.conf")
-config.read(f"{os.path.dirname(os.path.realpath(__file__))}/database.conf")
+config.read(f"{current_path}/database.conf")
 
 
 # Set up and establish database engine
