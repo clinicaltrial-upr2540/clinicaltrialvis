@@ -28,7 +28,7 @@ DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['
 engine = sqlalchemy.create_engine(DATABASE_URL)
 
 # Refresh visualization data
-import visualization_setup
+# import visualization_setup
 
 
 ############################################
