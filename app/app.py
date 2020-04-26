@@ -92,6 +92,33 @@ def render_explorer():
     return render_template('explore.html', page_title="Explore")
 
 
+# Page to look up a compound vs its therapeutic group's descriptors
+@app.route("/compound/explore/<compound_name>")
+def render_compound_descriptor_results(compound_name):
+    
+    return render_template('compound_vs_theragroup.html', 
+            compound_name=compound_name
+            ) 
+
+
+# Page to look up a compound vs its therapeutic group's descriptors
+@app.route("/compound/explore", methods=["GET", "POST"])
+def render_compound_explorer():
+    if request.method=="POST": 
+        message="this is a POST request" 
+        try: 
+            compound_name = request.form["compound_name"] 
+            message+= " Couldn't find compound name" 
+        except KeyError: 
+            compound_name = 'Phenylalanine'
+        return render_template('lookup_compound_descriptors.html', 
+            compound_name=compound_name, 
+            message=message 
+            ) 
+    else: 
+        message = "This is a GET request"
+        return render_template('lookup_compound_descriptors.html', message=message) 
+
 ############################################
 # Routes to visualization data
 ############################################
