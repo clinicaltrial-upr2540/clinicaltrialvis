@@ -86,7 +86,7 @@ with engine.connect() as conn:
 
     # Create the table if necessary
     conn.execute(f"set search_path to {SCHEMA_NAME};")
-    conn.execute("TRUNCATE TABLE visualizations;")
+    #conn.execute("TRUNCATE TABLE visualizations;")
     # conn.execute("CREATE TABLE visualizations (id SERIAL PRIMARY KEY, \
     #                                 name VARCHAR NOT NULL, \
     #                                 title VARCHAR NOT NULL, \
