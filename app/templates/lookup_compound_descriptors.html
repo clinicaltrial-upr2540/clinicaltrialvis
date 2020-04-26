@@ -6,16 +6,23 @@
         <div class="card h-100">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-3">
+                    <div class="col-12">
 
                         <h1>Please enter a compound name</h1>
+                        
+                        <p> Try "Adefovir dipivoxil" or "Amikacin" for a non-bioavailable compound
+                            or "Abacavir" for a bioavailable compound 
+                        </p>
                         <form action="/compound/explore" method="post">
-                            <input type="text" id="compound_name"> 
+                            <input type="text" name="compound_name" value='Atorvastatin'> 
                             <input type="submit" value="Submit"> 
                         </form>
 
                         <p>{{message}}</p>
-                        <img src="/compound/explore/{{compound_name}}/descriptors" />
+                        {% if compound_name is defined %} 
+                            <img src="/compound/explore/{{compound_name}}/descriptors" style="width:100%"/>
+                        {% else %} 
+                        {% endif %} 
 </div>
 </div>
 </div>

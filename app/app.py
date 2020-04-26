@@ -106,11 +106,8 @@ def render_compound_descriptor_results(compound_name):
 def render_compound_explorer():
     if request.method=="POST": 
         message="this is a POST request" 
-        try: 
-            compound_name = request.form["compound_name"] 
-            message+= " Couldn't find compound name" 
-        except KeyError: 
-            compound_name = 'Phenylalanine'
+        compound_name = request.form.get("compound_name", "Phenylalanine") 
+        message+= " Compound is "+compound_name
         return render_template('lookup_compound_descriptors.html', 
             compound_name=compound_name, 
             message=message 
