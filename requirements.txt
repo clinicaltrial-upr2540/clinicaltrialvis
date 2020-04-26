@@ -7,3 +7,4 @@ Flask
 Flask-Session
 xmltodict
 flask_sqlalchemy
+typing
