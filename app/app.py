@@ -75,6 +75,14 @@ def render_visualizations_page():
     return render_template('visualizations.html', page_title="Visualizations", result_list=result_list)
 
 
+# Menu to present all visualizations
+@app.route("/explore/drugs/classes")
+def render_drug_classes():
+    # Query for full list of visualizations
+
+    return render_template('drug_classes.html', page_title="Visualizations", result={})
+
+
 # Page to show a single d3 visualization
 @app.route("/visualization/<vis_id>")
 def render_visualization(vis_id):

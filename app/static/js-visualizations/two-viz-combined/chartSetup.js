@@ -67,7 +67,7 @@
 			//cdc_data.json
 			//cd_psa_data.json
 			//Company_disease_psa_hbd.json
-			d3.json("cdc_preferred_name.json", function(error, data){
+			d3.json("/static/js-visualizations/two-viz-combined/cdc_preferred_name.json", function(error, data){
 				console.log(data);
 				var dataForViz= prepareData(data);
 				//radarChart(".radarChart", dataForViz, radarChartOptions);
