@@ -51,7 +51,7 @@ descriptors = [
 ]
 
 
-# In[4]:
+# In[13]:
 
 
 # retrieve data from database 
@@ -113,15 +113,31 @@ def get_data_for_group(group_token):
 def get_best_ba_guess(row): 
     retval = None 
     v1 = row["v1"]
-    try: 
+    v2 = row['v2']
+    v3 = row['v3']
+  
+    if v1 is not None: 
         v1_list = v1.split(" ")
-        perc_str = v1_list[len(v1_list)-1]
-        if "%" in perc_str:
-            perc_str = float(perc_str.replace("%", ""))
-        retval = perc_str
-    except AttributeError: 
-        retval = None 
-    return retval
+        v1_perc_str = v1_list[len(v1_list)-1]
+        if "%" in v1_perc_str:
+            v1_perc_str = float(v1_perc_str.replace("%", ""))
+            return v1_perc_str
+
+    if v2 is not None: 
+        v2_list = v2.split(" ")
+        v2_perc_str = v2_list[len(v2_list)-1]
+        if "%" in v2_perc_str:
+            v2_perc_str = float(v2_perc_str.replace("%", ""))
+            return v2_perc_str
+    
+    if v3 is not None: 
+        v3_list = v3.split(" ")
+        v3_perc_str = v3_list[len(v3_list)-1]
+        if "%" in v3_perc_str:
+            v3_perc_str = float(v3_perc_str.replace("%", ""))
+            return v3_perc_str
+
+    return None 
 
 
 def make_modeling_data(df): 
@@ -139,7 +155,22 @@ def make_modeling_data(df):
     return (X, y, modeling_data)
 
 
-# In[5]:
+# In[15]:
+
+
+df = get_data_for_group('J%')
+
+
+assert (len(df["compound_name"].unique()) == len(df["compound_name"])), "Duplicated compound name"
+
+df["perc_ba"] = np.nan 
+for index, row in df.iterrows():     
+    df.at[index, "perc_ba"] = get_best_ba_guess(row)
+    
+df.head()
+
+
+# In[16]:
 
 
 # go through all therapeutic groups 
@@ -183,7 +214,7 @@ for thera_group in thera_groups:
     models[thera_group] = {"model": reg, "score": score, "sample_size": sample_size}
 
 
-# In[7]:
+# In[17]:
 
 
 model_coef_data = [] 
