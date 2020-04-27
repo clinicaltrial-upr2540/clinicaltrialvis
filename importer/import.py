@@ -2,12 +2,22 @@
 
 import requests
 import sqlalchemy
+import sys
+import os
 
 from ftplib import FTP
 from os import path
 from configparser import ConfigParser
 
+# Set up path for local imports
+sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
+sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}/modules")
+
+# Custom imports
 import data_processors
+import import_fda
+import import_pubchem
+import import_mesh
 
 data_sources = {
     "central_drug": {
@@ -106,6 +116,11 @@ def main():
     # Import ChemBL
     data_processors.import_chembl(config, engine, FORCE)
     data_processors.import_drugcentral(config, engine, FORCE)
+    data_processors.import_drugbank(config, engine, FORCE)
+
+    import_fda.import_fda(config, engine, FORCE)
+    import_pubchem.import_pubchem(config, engine, FORCE)
+    import_mesh.import_mesh(config, engine, FORCE)
 
 
 if __name__ == "__main__":
