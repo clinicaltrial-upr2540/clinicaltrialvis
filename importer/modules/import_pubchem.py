@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-# Script to import PubChem data using API
+# Script to import PubChem data using PUG API
+# Instead of importing ALL PubChem data, this requests compound properties for
+#   anything with a PubChem compound identifier (cid) listed in DrugBank.
 
 import json
 import time
@@ -36,8 +38,6 @@ def api_delay(headers):
     elif "Yellow" in throttling_header:
         print("API status is YELLOW, waiting 10 seconds...")
         time.sleep(10)
-    else:
-        time.sleep(0.2)
 
 
 def uberprint(toprint):
@@ -64,7 +64,7 @@ def import_pubchem(config, engine, FORCE):
 
         # Create PubChem schema and table
         with engine.connect() as conn:
-            conn.execute(f"DROP SCHEMA IF EXISTS pubchem;")
+            conn.execute(f"DROP SCHEMA IF EXISTS pubchem CASCADE;")
             conn.execute(f"CREATE SCHEMA pubchem;")
             conn.execute(f"set search_path to pubchem;")
             conn.execute("CREATE TABLE IF NOT EXISTS compounds (id SERIAL PRIMARY KEY, \
@@ -106,7 +106,7 @@ def import_pubchem(config, engine, FORCE):
 
         # Query the DrugBank list
         with engine.connect() as conn:
-            drugbank_list = conn.execute("SELECT identifier FROM drug_bank.drug_external_identifiers WHERE resource = \'PubChem Substance\'").fetchall()
+            drugbank_list = conn.execute("SELECT identifier FROM drug_bank.drug_external_identifiers WHERE resource = \'PubChem Compound\'").fetchall()
         drugbank_list = [dict(row) for row in drugbank_list]
 
         # Break the drugbank list into batches of 200 to avoid overstressing the API
@@ -119,131 +119,108 @@ def import_pubchem(config, engine, FORCE):
             chunk_counter = chunk_counter + 1
             print(f"Loading chunk {chunk_counter} of {len(drugbank_chunks)}")
 
-            sid_list = ""
+            cid_list = []
             for element in chunk:
-                sid_list = f"{sid_list}{element['identifier']},"
+                cid_list.append(element['identifier'])
+            cid_list = ",".join(cid_list)
 
-            sid_list = sid_list[:-1]
-
-            if len(sid_list) > 0:
-                # Query the API by Substance ID to get Compound IDs
+            if len(cid_list) > 0:
                 successful = 0
-                while successful == 0:
-                    response = requests.post('https://pubchem.ncbi.nlm.nih.gov/rest/pug/substance/sid/record/JSON', data={'sid': f"{sid_list}"})
 
-                    if response.status_code == 200:
+                while successful == 0:
+                    chem_response = requests.post('https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/record/JSON', data={'cid': f"{cid_list}"})
+
+                    if chem_response.status_code == 200:
                         successful = 1
+                    else:
+                        print(f"REQUEST FAILURE: Retrying get CIDs on chunk {chunk_counter}")
 
                     # Sleep to avoid stressing API
-                    api_delay(response.headers)
+                    api_delay(chem_response.headers)
 
-                response = json.loads(response.text)
+                chem_response = json.loads(chem_response.text)
 
-                cid_list = ""
+                # Loop through compounds in the response and insert into db
+                with engine.connect() as conn:
+                    for compound in chem_response["PC_Compounds"]:
+                        compound_dict = {}
 
-                # Loop through substances and get cids from everything that has one
-                for substance in response["PC_Substances"]:
-                    if "compound" in substance:
-                        for dimension in substance["compound"]:
-                            if "id" in dimension:
-                                if "id" in dimension["id"]:
-                                    if "cid" in dimension["id"]["id"]:
-                                        cid_list = f"{cid_list}{dimension['id']['id']['cid']},"
+                        # Get the CID
+                        if "id" in compound:
+                            if "id" in compound["id"]:
+                                if "cid" in compound["id"]["id"]:
+                                    compound_dict["cid"] = compound["id"]["id"]["cid"]
 
-                if len(cid_list) > 0:
-                    successful = 0
-                    while successful == 0:
-                        chem_response = requests.post('https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/record/JSON', data={'cid': f"{cid_list}"})
+                        # Add the charge to the dict
+                        compound_dict["charge"] = get_key(compound, "charge")
 
-                        if chem_response.status_code == 200:
-                            successful = 1
+                        # Loop through properties and add to dict
+                        for prop in compound["props"]:
+                            if "label" in prop['urn'] and "name" in prop['urn']:
+                                prop_full_name = f"{prop['urn']['label']}_{prop['urn']['name']}"
+                            elif "label" in prop['urn']:
+                                prop_full_name = f"{prop['urn']['label']}"
+                            elif "name" in prop['urn']:
+                                prop_full_name = f"{prop['urn']['name']}"
 
-                        # Sleep to avoid stressing API
-                        api_delay(chem_response.headers)
+                            if "ival" in prop['value']:
+                                compound_dict[prop_full_name] = get_key(prop['value'], "ival")
+                            elif "fval" in prop['value']:
+                                compound_dict[prop_full_name] = get_key(prop['value'], "fval")
+                            elif "binary" in prop['value']:
+                                compound_dict[prop_full_name] = get_key(prop['value'], "binary")
+                            elif "sval" in prop['value']:
+                                compound_dict[prop_full_name] = get_key(prop['value'], "sval")
 
-                    chem_response = json.loads(chem_response.text)
+                        # Loop through counts in the compound and add to dict
+                        for count in compound["count"].keys():
+                            compound_dict[f"count_{count}"] = get_key(compound["count"], count)
 
-                    # Loop through compounds in the response and insert into db
-                    with engine.connect() as conn:
-                        for compound in chem_response["PC_Compounds"]:
-                            compound_dict = {}
-
-                            # Get the CID
-                            if "id" in compound:
-                                if "id" in compound["id"]:
-                                    if "cid" in compound["id"]["id"]:
-                                        compound_dict["cid"] = compound["id"]["id"]["cid"]
-
-                            # Add the charge to the dict
-                            compound_dict["charge"] = get_key(compound, "charge")
-
-                            # Loop through properties and add to dict
-                            for prop in compound["props"]:
-                                if "label" in prop['urn'] and "name" in prop['urn']:
-                                    prop_full_name = f"{prop['urn']['label']}_{prop['urn']['name']}"
-                                elif "label" in prop['urn']:
-                                    prop_full_name = f"{prop['urn']['label']}"
-                                elif "name" in prop['urn']:
-                                    prop_full_name = f"{prop['urn']['name']}"
-
-                                if "ival" in prop['value']:
-                                    compound_dict[prop_full_name] = get_key(prop['value'], "ival")
-                                elif "fval" in prop['value']:
-                                    compound_dict[prop_full_name] = get_key(prop['value'], "fval")
-                                elif "binary" in prop['value']:
-                                    compound_dict[prop_full_name] = get_key(prop['value'], "binary")
-                                elif "sval" in prop['value']:
-                                    compound_dict[prop_full_name] = get_key(prop['value'], "sval")
-
-                            # Loop through counts in the compound and add to dict
-                            for count in compound["count"].keys():
-                                compound_dict[f"count_{count}"] = get_key(compound["count"], count)
-
-                            # Insert into the table
-                            conn.execute(f"INSERT INTO compounds (cid, charge, \"Compound_Canonicalized\", \"Compound Complexity\", \"Count_Hydrogen Bond Acceptor\", \
-                                                        \"Count_Hydrogen Bond Donor\", \"Count_Rotatable Bond\", \"Fingerprint_SubStructure Keys\", \"IUPAC Name_Allowed\", \
-                                                        \"IUPAC Name_CAS-like Style\", \"IUPAC Name_Markup\", \"IUPAC Name_Preferred\", \"IUPAC Name_Systematic\", \
-                                                        \"IUPAC Name_Traditional\", \"InChI_Standard\", \"InChIKey_Standard\", \"Log P_XLogP3-AA\", \"Mass_Exact\", \
-                                                        \"Molecular Formula\", \"Molecular Weight\", \"SMILES_Canonical\", \"SMILES_Isomeric\", \
-                                                        \"Topological_Polar Surface Area\", \"Weight_MonoIsotopic\", \"Log P_XLogP3\", \"count_heavy_atom\", \
-                                                        \"count_atom_chiral\", \"count_atom_chiral_def\", \"count_atom_chiral_undef\", \"count_bond_chiral\", \
-                                                        \"count_bond_chiral_def\", \"count_bond_chiral_undef\", \"count_isotope_atom\", \"count_covalent_unit\", \
-                                                        \"count_tautomers\") VALUES ( \
-                                                    \'{get_key(compound_dict, 'cid')}\', \
-                                                    \'{get_key(compound_dict, 'charge')}\', \
-                                                    \'{get_key(compound_dict, 'Compound_Canonicalized')}\', \
-                                                    \'{get_key(compound_dict, 'Compound Complexity')}\', \
-                                                    \'{get_key(compound_dict, 'Count_Hydrogen Bond Acceptor')}\', \
-                                                    \'{get_key(compound_dict, 'Count_Hydrogen Bond Donor')}\', \
-                                                    \'{get_key(compound_dict, 'Count_Rotatable Bond')}\', \
-                                                    \'{get_key(compound_dict, 'Fingerprint_SubStructure Keys')}\', \
-                                                    \'{get_key(compound_dict, 'IUPAC Name_Allowed')}\', \
-                                                    \'{get_key(compound_dict, 'IUPAC Name_CAS-like Style')}\', \
-                                                    \'{get_key(compound_dict, 'IUPAC Name_Markup')}\', \
-                                                    \'{get_key(compound_dict, 'IUPAC Name_Preferred')}\', \
-                                                    \'{get_key(compound_dict, 'IUPAC Name_Systematic')}\', \
-                                                    \'{get_key(compound_dict, 'IUPAC Name_Traditional')}\', \
-                                                    \'{get_key(compound_dict, 'InChI_Standard')}\', \
-                                                    \'{get_key(compound_dict, 'InChIKey_Standard')}\', \
-                                                    {get_key(compound_dict, 'Log P_XLogP3-AA')}, \
-                                                    \'{get_key(compound_dict, 'Mass_Exact')}\', \
-                                                    \'{get_key(compound_dict, 'Molecular Formula')}\', \
-                                                    \'{get_key(compound_dict, 'Molecular Weight')}\', \
-                                                    \'{get_key(compound_dict, 'SMILES_Canonical')}\', \
-                                                    \'{get_key(compound_dict, 'SMILES_Isomeric')}\', \
-                                                    \'{get_key(compound_dict, 'Topological_Polar Surface Area')}\', \
-                                                    \'{get_key(compound_dict, 'Weight_MonoIsotopic')}\', \
-                                                    {get_key(compound_dict, 'Log P_XLogP3')}, \
-                                                    \'{get_key(compound_dict, 'count_heavy_atom')}\', \
-                                                    \'{get_key(compound_dict, 'count_atom_chiral')}\', \
-                                                    \'{get_key(compound_dict, 'count_atom_chiral_def')}\', \
-                                                    \'{get_key(compound_dict, 'count_atom_chiral_undef')}\', \
-                                                    \'{get_key(compound_dict, 'count_bond_chiral')}\', \
-                                                    \'{get_key(compound_dict, 'count_bond_chiral_def')}\', \
-                                                    \'{get_key(compound_dict, 'count_bond_chiral_undef')}\', \
-                                                    \'{get_key(compound_dict, 'count_isotope_atom')}\', \
-                                                    \'{get_key(compound_dict, 'count_covalent_unit')}\', \
-                                                    \'{get_key(compound_dict, 'count_tautomers')}\');")
+                        # Insert into the table
+                        conn.execute(f"INSERT INTO compounds (cid, charge, \"Compound_Canonicalized\", \"Compound Complexity\", \"Count_Hydrogen Bond Acceptor\", \
+                                                    \"Count_Hydrogen Bond Donor\", \"Count_Rotatable Bond\", \"Fingerprint_SubStructure Keys\", \"IUPAC Name_Allowed\", \
+                                                    \"IUPAC Name_CAS-like Style\", \"IUPAC Name_Markup\", \"IUPAC Name_Preferred\", \"IUPAC Name_Systematic\", \
+                                                    \"IUPAC Name_Traditional\", \"InChI_Standard\", \"InChIKey_Standard\", \"Log P_XLogP3-AA\", \"Mass_Exact\", \
+                                                    \"Molecular Formula\", \"Molecular Weight\", \"SMILES_Canonical\", \"SMILES_Isomeric\", \
+                                                    \"Topological_Polar Surface Area\", \"Weight_MonoIsotopic\", \"Log P_XLogP3\", \"count_heavy_atom\", \
+                                                    \"count_atom_chiral\", \"count_atom_chiral_def\", \"count_atom_chiral_undef\", \"count_bond_chiral\", \
+                                                    \"count_bond_chiral_def\", \"count_bond_chiral_undef\", \"count_isotope_atom\", \"count_covalent_unit\", \
+                                                    \"count_tautomers\") VALUES ( \
+                                                \'{get_key(compound_dict, 'cid')}\', \
+                                                \'{get_key(compound_dict, 'charge')}\', \
+                                                \'{get_key(compound_dict, 'Compound_Canonicalized')}\', \
+                                                \'{get_key(compound_dict, 'Compound Complexity')}\', \
+                                                \'{get_key(compound_dict, 'Count_Hydrogen Bond Acceptor')}\', \
+                                                \'{get_key(compound_dict, 'Count_Hydrogen Bond Donor')}\', \
+                                                \'{get_key(compound_dict, 'Count_Rotatable Bond')}\', \
+                                                \'{get_key(compound_dict, 'Fingerprint_SubStructure Keys')}\', \
+                                                \'{get_key(compound_dict, 'IUPAC Name_Allowed')}\', \
+                                                \'{get_key(compound_dict, 'IUPAC Name_CAS-like Style')}\', \
+                                                \'{get_key(compound_dict, 'IUPAC Name_Markup')}\', \
+                                                \'{get_key(compound_dict, 'IUPAC Name_Preferred')}\', \
+                                                \'{get_key(compound_dict, 'IUPAC Name_Systematic')}\', \
+                                                \'{get_key(compound_dict, 'IUPAC Name_Traditional')}\', \
+                                                \'{get_key(compound_dict, 'InChI_Standard')}\', \
+                                                \'{get_key(compound_dict, 'InChIKey_Standard')}\', \
+                                                {get_key(compound_dict, 'Log P_XLogP3-AA')}, \
+                                                \'{get_key(compound_dict, 'Mass_Exact')}\', \
+                                                \'{get_key(compound_dict, 'Molecular Formula')}\', \
+                                                \'{get_key(compound_dict, 'Molecular Weight')}\', \
+                                                \'{get_key(compound_dict, 'SMILES_Canonical')}\', \
+                                                \'{get_key(compound_dict, 'SMILES_Isomeric')}\', \
+                                                \'{get_key(compound_dict, 'Topological_Polar Surface Area')}\', \
+                                                \'{get_key(compound_dict, 'Weight_MonoIsotopic')}\', \
+                                                {get_key(compound_dict, 'Log P_XLogP3')}, \
+                                                \'{get_key(compound_dict, 'count_heavy_atom')}\', \
+                                                \'{get_key(compound_dict, 'count_atom_chiral')}\', \
+                                                \'{get_key(compound_dict, 'count_atom_chiral_def')}\', \
+                                                \'{get_key(compound_dict, 'count_atom_chiral_undef')}\', \
+                                                \'{get_key(compound_dict, 'count_bond_chiral')}\', \
+                                                \'{get_key(compound_dict, 'count_bond_chiral_def')}\', \
+                                                \'{get_key(compound_dict, 'count_bond_chiral_undef')}\', \
+                                                \'{get_key(compound_dict, 'count_isotope_atom')}\', \
+                                                \'{get_key(compound_dict, 'count_covalent_unit')}\', \
+                                                \'{get_key(compound_dict, 'count_tautomers')}\');")
 
         uberprint("IMPORT OF PubChem COMPLETE")
     else:
@@ -259,4 +236,4 @@ if __name__ == "__main__":
     DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
     engine = sqlalchemy.create_engine(DATABASE_URL)
 
-    import_pubchem(config, engine, False)
+    import_pubchem(config, engine, True)
