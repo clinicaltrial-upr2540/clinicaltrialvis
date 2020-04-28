@@ -76,7 +76,7 @@ def render_visualizations_page():
 
 
 # Menu to present all visualizations
-@app.route("/explore/drugs/classes")
+@app.route("/classes")
 def render_drug_classes():
     # Query for full list of visualizations
 

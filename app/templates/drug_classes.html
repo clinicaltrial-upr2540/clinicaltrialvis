@@ -10,51 +10,42 @@
 					</div>
 				</div>
 				<div class="card-body">
-				</div>
-				<div class="card-footer">
-					<div class="stats">
-						<i class="material-icons">bar_chart</i> Created with data from ChemBL
-					</div>
+
+                    <div class="row">
+                        <h1 class="display-1">Drug targets by companies</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="stacked-companies">
+                                <div>Total Companies</div>
+                                <div>996</div>
+                                <form id="companies_form">
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div id="visualizationSpace" height = "300" ></div>
+                            <div class="radarChart"></div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="stacked-diseases">
+                                <div>Total Disease Classes</div>
+                                <div>34</div>
+                                <form id="disease_classes_form">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
 				</div>
 			</div>
 		</div>
 	</div>
-<div class="container-fluid">
-        <div class="row">
-            <h1 class="display-1">Drug targets by companies</h1>
-        </div>
-        <div class="row">
-            <div class="col-md-2">
-                <div class="stacked-companies">
-                    <div>Total Companies</div>
-                    <div>996</div>
-                    <form id="companies_form">
-                    </form>
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div id="visualizationSpace" width="300" height = "300" ></div>
-                <div class="radarChart"></div>
-            </div>
-            <div class="col-md-2">
-                <div class="stacked-diseases">
-                    <div>Total Disease Classes</div>
-                    <div>34</div>
-                    <form id="disease_classes_form">
-                    </form>
-                </div>
-            </div>
-        </div>
 
-
-    <h2>start viz</h2>
-    <div>
-    <script src="/static/js-visualizations/two-viz-combined/chartSetup.js"></script>
-    <script src="/static/js-visualizations/two-viz-combined/prepareData.js"></script>
-    <script src="/static/js-visualizations/two-viz-combined/radarChart.js"></script>
-    <!-- DotMatrix.js - from https://github.com/arpitnarechania/d3-dotmatrix -->	
-    <script src="/static/js-visualizations/two-viz-combined/dotMatrix.js"></script>
-    </div>
-    <h2>end viz</h2>
+<script src="/static/js-visualizations/two-viz-combined/chartSetup.js"></script>
+<script src="/static/js-visualizations/two-viz-combined/prepareData.js"></script>
+<script src="/static/js-visualizations/two-viz-combined/radarChart.js"></script>
+<!-- DotMatrix.js - from https://github.com/arpitnarechania/d3-dotmatrix -->	
+<script src="/static/js-visualizations/two-viz-combined/dotMatrix.js"></script>
 
 {% endblock %}
