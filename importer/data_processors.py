@@ -86,7 +86,7 @@ def import_chembl(config, engine, FORCE):
             f"-d {config['drugdata']['database']} " \
             f"-p {config['drugdata']['port']} " \
             f"-U {config['drugdata']['user']} " \
-            f"-w -c -j 2 ./data/chembl_26/chembl_26_postgresql/chembl_26_postgresql.dmp"
+            f"-w -j 2 ./data/chembl_26/chembl_26_postgresql/chembl_26_postgresql.dmp"
 
         # Run the import
         p = Popen(command, shell=True, env={
