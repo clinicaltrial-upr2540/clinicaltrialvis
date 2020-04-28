@@ -114,14 +114,17 @@ def get_plot_png(compound_name, engine):
     # get compound's therapeutic group 
 
     compound_ther_code = compound_dict.get("therapeutic_code")
+
     for obj in ther_objs: 
         ther_code = obj.get("ther_code")
         if ther_code == compound_ther_code:  
             fig.suptitle(f"{compound_name}'s Therap Group {ther_code} Compound Descriptors", fontsize=15)
+            ther_obj = obj 
             break 
         fig.suptitle("Compound Descriptors", fontsize=15)
 
-    ther_obj = ther_objs[0]
+    if compound_ther_code is None: 
+        ther_obj = ther_objs[0]
     ther_df = ther_obj.get("ther_df")
     ther_code = ther_obj.get("ther_code")
 
