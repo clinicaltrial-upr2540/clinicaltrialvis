@@ -48,7 +48,7 @@ def import_mesh(config, engine, FORCE):
 
         # retrieving the mesh term ids
         print("Reading MeSh data file...")
-        with open("../data/d2020.bin", mode='rb') as file:
+        with open("data/d2020.bin", mode='rb') as file:
             mesh = file.readlines()
 
         # Read through the data
