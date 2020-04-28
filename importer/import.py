@@ -88,9 +88,7 @@ def download_http(url, filename):
 
 
 # Begin main function here
-def main():
-    FORCE = False
-
+def main(FORCE):
     # Import database configuration
     config = ConfigParser()
     config.read("../app/database.conf")
@@ -107,21 +105,91 @@ def main():
 
                 # Perform the appropriate download type
                 if value["type"] == "ftp":
-                    download_ftp(value["ftp_site"], value["ftp_path"], value["filename"])
+                    try:
+                        download_ftp(value["ftp_site"], value["ftp_path"], value["filename"])
+                        value["downloaded"] = True
+                    except:
+                        print(f"Failed to download {value['filename']}")
+                        value["downloaded"] = False
                 if value["type"] == "http":
-                    download_http(value["url"], value["filename"])
+                    try:
+                        download_http(value["url"], value["filename"])
+                        value["downloaded"] = True
+                    except:
+                        print(f"Failed to download {value['filename']}")
+                        value["downloaded"] = False
             else:
                 print(f"{value['filename']} has already been downloaded.")
+                value["downloaded"] = True
+
+    # Clean the public schema
+    # THIS DELETES EVERYTHING IN public
+    with engine.connect() as conn:
+        conn.execute("DROP SCHEMA public CASCADE;")
+        conn.execute("CREATE SCHEMA public;")
 
     # Import ChemBL
-    data_processors.import_chembl(config, engine, FORCE)
-    data_processors.import_drugcentral(config, engine, FORCE)
-    data_processors.import_drugbank(config, engine, FORCE)
+    if(data_sources["chembl_26"]["downloaded"]):
+        try:
+            data_processors.import_chembl(config, engine, FORCE)
+            data_sources["chembl_26"]["imported"] = True
+        except Exception as e:
+            print("ERROR: Unable to import ChemBL")
+            print(e)
+            data_sources["chembl_26"]["imported"] = False
 
-    import_fda.import_fda(config, engine, FORCE)
-    import_pubchem.import_pubchem(config, engine, FORCE)
-    import_mesh.import_mesh(config, engine, FORCE)
+    # Import DrugCentral
+    if(data_sources["central_drug"]["downloaded"]):
+        try:
+            data_processors.import_drugcentral(config, engine, FORCE)
+            data_sources["central_drug"]["imported"] = True
+        except Exception as e:
+            print("ERROR: Unable to import DrugCentral")
+            print(e)
+            data_sources["central_drug"]["imported"] = False
+
+    # Import DrugBank
+    try:
+        data_processors.import_drugbank(config, engine, FORCE)
+        data_sources["drug_bank"]["imported"] = True
+    except Exception as e:
+        print("ERROR: Unable to import DrugCentral")
+        print(e)
+        data_sources["drug_bank"]["imported"] = False
+
+    if(data_sources["fda"]["downloaded"]):
+        try:
+            import_fda.import_fda(config, engine, FORCE)
+            data_sources["fda"]["imported"] = True
+        except Exception as e:
+            print("ERROR: Unable to import fda")
+            print(e)
+            data_sources["fda"]["imported"] = False
+
+    # Import pubchem
+    if not data_sources["drug_bank"]["imported"]:
+        print("ERROR: Unable to import PubChem without DrugBank data")
+    else:
+        try:
+            import_pubchem.import_pubchem(config, engine, FORCE)
+            data_sources["pubchem"]["imported"] = True
+        except Exception as e:
+            print("ERROR: Unable to import PubChem")
+            print(e)
+            data_sources["pubchem"]["imported"] = False
+
+    # Import MeSH
+    if not data_sources["drug_bank"]["imported"]:
+        print("ERROR: Unable to import MeSH without DrugBank data")
+    elif(data_sources["mesh"]["downloaded"]):
+        try:
+            import_mesh.import_mesh(config, engine, FORCE)
+            data_sources["mesh"]["imported"] = True
+        except Exception as e:
+            print("ERROR: Unable to import MeSH")
+            print(e)
+            data_sources["mesh"]["imported"] = False
 
 
 if __name__ == "__main__":
-    main()
+    main(False)
