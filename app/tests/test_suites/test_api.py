@@ -15,6 +15,14 @@ class TestAPI(TestCase):
             data = json.loads(resp.get_data(as_text=True))
             self.assertGreater(len(data['views']), 0)
 
+    # validate the content of the json to ensure the number of return views are greater than 1
+    def test_data_specific_view(self):
+        with app.test_client() as c:
+            resp = c.get('/data/view/compounds')
+            self.assertEqual(resp.status_code, 200)
+            data = json.loads(resp.get_data(as_text=True))
+            self.assertGreater(len(data['columns']), 0)
+
     # this test case makes a post case and validate the data['data'] of the response is returning rows from database
     def test_data_explore(self):
         with app.test_client() as c:
