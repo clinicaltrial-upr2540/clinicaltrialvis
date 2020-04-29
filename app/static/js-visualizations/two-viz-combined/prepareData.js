@@ -407,16 +407,14 @@ function prepareData(data){
 
     		$.each(companiesCategories,function(index,value){
     			//console.log(companiesCategories[index].name, companiesCategories[index].size);
-    			const compCountsFirstEl = $(".companies-counts > div");
     			const compCountsLastEl = $(".companies-counts > button");
     			//var idName = companiesCategories[index].name.substr(0, 3).toLowerCase();
     			//$(".companies-counts").attr("id", idName);
-   				$(compCountsFirstEl[index]).text(companiesCategories[index].size);
-   				$(compCountsLastEl[index]).text(companiesCategories[index].name);
+   				$(compCountsLastEl[index]).text(`${companiesCategories[index].name} (${companiesCategories[index].size})`);
    				/*var strForId = companiesCategories[index].name.toLowerCase();
    				strForId=strForId.replace(/^\w/, c => c.toUpperCase());
    				strForId=strForId.replace(/\s+/g, '');*/
-   				$(compCountsLastEl[index]).attr("id", companiesCategories[index].name).addClass("btn btn-light").attr("type", "button");
+   				$(compCountsLastEl[index]).attr("id", companiesCategories[index].name).addClass("btn btn-sm btn-block btn-secondary mb-1").attr("type", "button");
     		});
 
     		//text("VERY SMALL COMPANIES");
@@ -437,14 +435,14 @@ function prepareData(data){
 					//append the div
 					$(".form-check").eq(index).append($(checkbox));
 					$("input").addClass("form-check-input");
-					$("label").addClass("form-check-label");
+					$("label").addClass("form-check-label small");
 
 				});
 				//create a button
 				var button = "<button></button>";
 				$("#companies_form").append(button);
 				$("#companies_form > button").attr("id", "companies-confirm");
-				$("#companies-confirm").text("Confirm").addClass("btn btn-info").attr("type", "button");
+				$("#companies-confirm").text("Confirm").addClass("btn btn-info mt-2").attr("type", "button");
 			} //end populateCompaniesList function
 
 
