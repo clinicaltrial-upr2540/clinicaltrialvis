@@ -1,0 +1,44 @@
+{% extends "master.html" %}
+{% block body %}
+
+	<div class="row">
+		<div class="col">
+			<div class="card card-chart">
+				<div class="card-header">
+    				<h1>Drug targets by companies</h1>
+				</div>
+				<div class="card-body">
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="stacked-companies">
+                                <div class="h4">Select company size:</div>
+                                <form id="companies_form" class="mt-3 mb-3">
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div id="visualizationSpace" height = "300" ></div>
+                            <div class="radarChart"></div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="stacked-diseases">
+                                <div class="h4">Select disease class:</div>
+                                <form id="disease_classes_form">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+<script src="/static/js-visualizations/two-viz-combined/chartSetup.js"></script>
+<script src="/static/js-visualizations/two-viz-combined/prepareData.js"></script>
+<script src="/static/js-visualizations/two-viz-combined/radarChart.js"></script>
+<!-- DotMatrix.js - from https://github.com/arpitnarechania/d3-dotmatrix -->	
+<script src="/static/js-visualizations/two-viz-combined/dotMatrix.js"></script>
+
+{% endblock %}
