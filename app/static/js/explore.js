@@ -282,7 +282,13 @@ function buildDataPreviewTable(data, jsonPosted) {
     for (var view in jsonPosted["data_list"]) {
         if ("filters" in jsonPosted["data_list"][view]) {
             for (var filter in jsonPosted["data_list"][view]["filters"]) {
-                document.querySelector(`[data-view="${jsonPosted["data_list"][view]["view_name"]}"][data-column="${jsonPosted["data_list"][view]["filters"][filter]["column_name"]}"]`).value = jsonPosted["data_list"][view]["filters"][filter]["target"];
+                // Get the operator
+                var filterOperator = "";
+                if (jsonPosted["data_list"][view]["filters"][filter]["operator"] != "matches") {
+                    filterOperator = jsonPosted["data_list"][view]["filters"][filter]["operator"];
+                }
+
+                document.querySelector(`[data-view="${jsonPosted["data_list"][view]["view_name"]}"][data-column="${jsonPosted["data_list"][view]["filters"][filter]["column_name"]}"]`).value = `${filterOperator}${jsonPosted["data_list"][view]["filters"][filter]["target"]}`;
             }
         }
     }
