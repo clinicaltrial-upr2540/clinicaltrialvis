@@ -29,8 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Export button functionality
-    document.querySelector('#export-button').onclick = () => {
-        // Here, we might gather a list of the checked boxes on the left sidebar
+    $('#exportModal').on('shown.bs.modal', function (e) {
+        // Here, we gather a list of the checked boxes on the left sidebar
         // Here, gather a list of filters (none by default)
         var jsonToPost = buildDataRequest();
 
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Request the data
         requestExport(jsonToPost);
-    };
+    })
 
     /**
     End event listeners
@@ -223,13 +223,11 @@ function requestExport(jsonToPost) {
                 link.download = filename;
 
                 document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
 
                 // Remove the loading modal
                 $('#exportModal').modal('hide');
-
-                link.click();
-
-                document.body.removeChild(link);
             } catch(err) {
                 // Remove the loading modal
                 $('#exportModal').modal('hide');
