@@ -19,7 +19,7 @@ from io import BytesIO
 ############################################
 sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
 
-from basic_visuals import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict
+from explore_compounds import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict
 
 
 app = Flask(__name__)
@@ -120,7 +120,7 @@ def render_compound_explorer():
         descriptor_data = data_explore_post(descriptor_payload)
         descriptor_dict = get_descriptor_dict(descriptor_data)
         ba_dict = {} 
-        similar_dict = get_similar_dict(compound_name, descriptor_dict)  
+        similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)  
         return render_template('explore_compound.html', 
             compound_name=compound_name, 
             message=message, 
