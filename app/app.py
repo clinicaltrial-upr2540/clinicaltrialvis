@@ -117,7 +117,8 @@ def render_compound_explorer():
         compound_name = request.form.get("compound_name", "Phenylalanine") 
         message+= " Compound is "+compound_name
         descriptor_payload = get_descriptor_payload(compound_name) 
-        descriptor_dict = data_explore_post(descriptor_payload)
+        descriptor_data = data_explore_post(descriptor_payload)
+        descriptor_dict = get_descriptor_dict(descriptor_data)
         ba_dict = {} 
         similar_dict = {} 
         return render_template('explore_compound.html', 
@@ -235,6 +236,16 @@ def explore_data():
 ############################################
 # Utility Functions
 ############################################
+
+def get_descriptor_dict(descriptor_data): 
+    descriptor_dict = descriptor_data 
+    descriptor_data = json.loads(descriptor_data)
+    data_obj = descriptor_data.get("data", {}) 
+
+    view_column_names = data_obj.get("view_column_names", []) 
+    data = data_obj.get("data", []) 
+    
+    return descriptor_dict 
 
 
 def data_explore_post(payload): 
