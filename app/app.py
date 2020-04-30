@@ -243,9 +243,10 @@ def get_descriptor_dict(descriptor_data):
     data_obj = descriptor_data.get("data", {}) 
 
     view_column_names = data_obj.get("view_column_names", []) 
-    data = data_obj.get("data", []) 
+    column_names = [ item[1] for item in view_column_names] 
+    data = data_obj.get("data", [])[0] 
     
-    return descriptor_dict 
+    return dict(zip(column_names, data) )
 
 
 def data_explore_post(payload): 
