@@ -1,17 +1,96 @@
 {% extends "master.html" %}
 {% block body %}
 
-<div class="row justify-content-center">
-    <div class=" col ">
-        <div class="card">
-            <div class="card-header bg-transparent">
-                <h1>Hi there!</h1>
-            </div>
-
-            <div class="card-body">
-                <h5> TEST PUSH TO GIT</h5>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header bg-transparent">
+                    <h3 class="mb-0">Welcome</h3>
+                </div>
+                <div class="card-body">
+                    <div class="timeline timeline-one-side" data-timeline-content="axis"
+                         data-timeline-axis-style="dashed">
+                        <div class="timeline-block">
+                            <div class="timeline-content">
+                                <p class=" text-lg mt-1 mb-0">A user-friendly interface for navigating and exporting
+                                    data from the database. This database will also expose several API endpoints so
+                                    users can access the data programmatically. Finally, this application includes
+                                    several sample visualizations to demonstrate applications of the curated
+                                    dataset.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <div class="row">
+        <div class="col-xl-12 order-xl-1">
+            <div class="row">
+
+                <div class="col-lg-4">
+                    <a class="nav-link" href="/explore">
+                        <div class="card bg-gradient-danger border-0">
+                            <!-- Card body -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h3 class="card-title text-muted mb-0 text-white">Explore</h3>
+                                        <span class="h5 font-weight-bold mb-0 text-white">Curate and export drug data</span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="icon icon-shape bg-white text-dark rounded-circle shadow">
+                                            <i class="ni ni-active-40"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4">
+                    <a class="nav-link" href="/visualizations">
+                        <div class="card bg-gradient-danger border-0">
+                            <!-- Card body -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h3 class="card-title text-muted mb-0 text-white">Visualizations</h3>
+                                         <span class="h5 font-weight-bold mb-0 text-white">Intuitive visualizations</span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="icon icon-shape bg-white text-dark rounded-circle shadow">
+                                            <i class="ni ni-active-40"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4">
+                    <a class="nav-link" href="/compound/explore">
+                        <div class="card bg-gradient-danger border-0">
+                            <!-- Card body -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h3 class="card-title text-muted mb-0 text-white">Bioavailability</h3>
+                                         <span class="h5 font-weight-bold mb-0 text-white">Look up and predict compound bioavailability</span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="icon icon-shape bg-white text-dark rounded-circle shadow">
+                                            <i class="ni ni-active-40"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

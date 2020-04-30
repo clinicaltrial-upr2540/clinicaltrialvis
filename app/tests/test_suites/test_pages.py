@@ -27,3 +27,9 @@ class TestPages(TestCase):
         with app.test_client() as c:
             resp = c.get('/api')
             self.assertEqual(resp.status_code, 200)
+
+    # this test case hits the api of the application and checks that the api page is up and running
+    def test_compound_explore_page(self):
+        with app.test_client() as c:
+            resp = c.get('/api')
+            self.assertEqual(resp.status_code, 200)
