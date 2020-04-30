@@ -1,0 +1,54 @@
+{% extends "master.html" %}
+{% block body %}
+
+<div class="row">
+<div class="col">
+<div class="card h-100">
+<div class="card-body">
+<div class="row">
+<div class="col-12">
+
+<h1>Please enter a compound name</h1>
+
+<p> Try "Adefovir dipivoxil", "Atorvastatin", or "Amikacin" for a non-bioavailable compound. 
+    Try "Abacavir", "Acyclovir", or "Sumatriptan" for a bioavailable compound 
+</p>
+<form action="/compound/explore" method="post">
+    <input type="text" name="compound_name" > 
+    <input type="submit" value="Submit"> 
+</form>
+
+{% if descriptor_dict is defined %} 
+    <p> Data for descriptors is available :) </p>
+
+{% else %} 
+{% endif %} 
+
+
+<p>{{message}}</p>
+{% if compound_name is defined %} 
+    <img src="/compound/explore/{{compound_name}}/descriptors/png" style="width:100%"/>
+{% else %} 
+{% endif %} 
+
+{% if similar_dict is defined %} 
+    <p> Data for similar compounds is available :) </p>
+
+{% else %} 
+{% endif %} 
+
+
+{% if ba_dict is defined %} 
+    <p> Data for bioavailability is available :) </p>
+
+{% else %} 
+{% endif %} 
+
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

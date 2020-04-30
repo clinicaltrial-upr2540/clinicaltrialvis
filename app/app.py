@@ -19,7 +19,7 @@ from io import BytesIO
 ############################################
 sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
 
-from basic_visuals import get_plot_png_test, get_plot_png
+from basic_visuals import get_plot_png_test, get_plot_png, get_descriptor_payload
 
 
 app = Flask(__name__)
@@ -116,13 +116,20 @@ def render_compound_explorer():
         message="this is a POST request" 
         compound_name = request.form.get("compound_name", "Phenylalanine") 
         message+= " Compound is "+compound_name
-        return render_template('lookup_compound_descriptors.html', 
+        descriptor_payload = get_descriptor_payload(compound_name) 
+        descriptor_dict = data_explore_post(descriptor_payload)
+        ba_dict = {} 
+        similar_dict = {} 
+        return render_template('explore_compound.html', 
             compound_name=compound_name, 
-            message=message 
+            message=message, 
+            descriptor_dict=descriptor_dict, 
+            ba_dict=ba_dict, 
+            similar_dict=similar_dict, 
             ) 
     else: 
         message = "This is a GET request"
-        return render_template('lookup_compound_descriptors.html', message=message) 
+        return render_template('explore_compound.html', message=message) 
 
 ############################################
 # Routes to visualization data
@@ -166,7 +173,7 @@ def get_visualization_data(vis_data_name, data_format):
 ############################################
 
 # API endpoint to get a 9 descriptor plot for a compound
-@app.route("/compound/explore/<compound_name>/descriptors", methods=["GET"]) 
+@app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"]) 
 def compound_descriptors(compound_name): 
     return get_plot_png(compound_name, engine)
     # return f"compound name is {compound_name}" 
@@ -213,6 +220,24 @@ def explore_data():
     # If method is POST, this is a real API request
     if request.method == 'POST':
         payload = request.get_json()
+        return data_explore_post(payload)
+    # if the method is GET, then retrieve one of several sample responses.
+    # useful for development and testing of frontend
+    if request.method == 'GET':
+        from test_responses import list_of_responses
+
+        if request.args.get("download") == "true":
+            return (json.dumps(list_of_responses[0], indent=4))
+        else:
+            return (json.dumps(random.choice(list_of_responses[1:4]), indent=4))
+
+
+############################################
+# Utility Functions
+############################################
+
+
+def data_explore_post(payload): 
         if validate_explore_request(payload) is False:
             return
 
@@ -267,22 +292,6 @@ def explore_data():
                         zf.writestr(f"{viewname}.csv", csvdata)
                 memory_file.seek(0)
                 return send_file(memory_file, attachment_filename='export.zip', as_attachment=True)
-
-    # if the method is GET, then retrieve one of several sample responses.
-    # useful for development and testing of frontend
-    if request.method == 'GET':
-        from test_responses import list_of_responses
-
-        if request.args.get("download") == "true":
-            return (json.dumps(list_of_responses[0], indent=4))
-        else:
-            return (json.dumps(random.choice(list_of_responses[1:4]), indent=4))
-
-
-############################################
-# Utility Functions
-############################################
-
 # Check if there is a valid APi request
 # TODO: Replace this with a real 404 page
 def validate_explore_request(payload):
@@ -316,9 +325,9 @@ def get_from_snippet(payload):
 def get_select_snippet(payload, download):
     counter = 1
     if download:
-        result = " SELECT DISTINCT "
+        result = " SELECT DISTINCT  "
     else:
-        result = " SELECT "
+        result = " SELECT  "
 
     for item in payload.get("data_list"):
         view_name = item.get("view_name")
