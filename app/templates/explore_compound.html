@@ -35,12 +35,15 @@
 {% if similar_dict is defined %} 
     <p> Data for similar compounds is available :) </p>
 
+    {{similar_dict}} 
 {% else %} 
 {% endif %} 
 
 
 {% if ba_dict is defined %} 
     <p> Data for bioavailability is available :) </p>
+
+    {{ba_dict}}
 
 {% else %} 
 {% endif %} 

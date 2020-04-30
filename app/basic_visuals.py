@@ -62,6 +62,12 @@ def get_descriptor_payload(compound_name):
     return request_payload 
 
 
+
+def get_similar_dict(compound_name, descriptor_dict):  
+    similar_list = ["tweedle dee", "tweedle dum"] 
+    return similar_list 
+
+
 def get_plot_png_test(compound_name, engine): 
     return "test successful" 
 
