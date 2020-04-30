@@ -103,34 +103,32 @@ def render_explorer():
 # Page to look up a compound vs its therapeutic group's descriptors
 @app.route("/compound/explore/<compound_name>")
 def render_compound_descriptor_results(compound_name):
-    
-    return render_template('compound_vs_theragroup.html', 
-            compound_name=compound_name
-            ) 
+    return render_template('compound_vs_theragroup.html', compound_name=compound_name)
 
 
 # Page to look up a compound vs its therapeutic group's descriptors
 @app.route("/compound/explore", methods=["GET", "POST"])
 def render_compound_explorer():
-    if request.method=="POST": 
-        message="this is a POST request" 
-        compound_name = request.form.get("compound_name", "Phenylalanine") 
-        message+= " Compound is "+compound_name
-        descriptor_payload = get_descriptor_payload(compound_name) 
+    if request.method=="POST":
+        message="this is a POST request"
+        compound_name = request.form.get("compound_name", "Phenylalanine")
+        message += " Compound is " + compound_name
+        descriptor_payload = get_descriptor_payload(compound_name)
         descriptor_data = data_explore_post(descriptor_payload)
         descriptor_dict = get_descriptor_dict(descriptor_data)
-        ba_dict = {} 
-        similar_dict = {} 
-        return render_template('explore_compound.html', 
-            compound_name=compound_name, 
-            message=message, 
-            descriptor_dict=descriptor_dict, 
-            ba_dict=ba_dict, 
-            similar_dict=similar_dict, 
-            ) 
-    else: 
+        ba_dict = {}
+        similar_dict = {}
+        return render_template('explore_compound.html',
+            compound_name=compound_name,
+            message=message,
+            descriptor_dict=descriptor_dict,
+            ba_dict=ba_dict,
+            similar_dict=similar_dict,
+            )
+    else:
         message = "This is a GET request"
-        return render_template('explore_compound.html', message=message) 
+        return render_template('explore_compound.html', message=message)
+
 
 ############################################
 # Routes to visualization data
@@ -175,8 +173,8 @@ def get_visualization_data(vis_data_name, data_format):
 
 # API endpoint to get a 9 descriptor plot for a compound
 
-@app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"]) 
-def compound_descriptors(compound_name): 
+@app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"])
+def compound_descriptors(compound_name):
 
     return get_plot_png(compound_name, engine)
     # return f"compound name is {compound_name}"
@@ -240,18 +238,18 @@ def explore_data():
 # Utility Functions
 ############################################
 
-def get_descriptor_dict(descriptor_data): 
-    descriptor_dict = descriptor_data 
+def get_descriptor_dict(descriptor_data):
+    descriptor_dict = descriptor_data
     descriptor_data = json.loads(descriptor_data)
-    data_obj = descriptor_data.get("data", {}) 
+    data_obj = descriptor_data.get("data", {})
 
-    view_column_names = data_obj.get("view_column_names", []) 
-    data = data_obj.get("data", []) 
-    
-    return descriptor_dict 
+    view_column_names = data_obj.get("view_column_names", [])
+    data = data_obj.get("data", [])
+
+    return descriptor_dict
 
 
-def data_explore_post(payload): 
+def data_explore_post(payload):
         if validate_explore_request(payload) is False:
             return
 
@@ -306,6 +304,8 @@ def data_explore_post(payload):
                         zf.writestr(f"{viewname}.csv", csvdata)
                 memory_file.seek(0)
                 return send_file(memory_file, attachment_filename='export.zip', as_attachment=True)
+
+
 # Check if there is a valid APi request
 # TODO: Replace this with a real 404 page
 def validate_explore_request(payload):
