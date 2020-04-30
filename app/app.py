@@ -174,10 +174,13 @@ def get_visualization_data(vis_data_name, data_format):
 ############################################
 
 # API endpoint to get a 9 descriptor plot for a compound
+
 @app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"]) 
 def compound_descriptors(compound_name): 
+
     return get_plot_png(compound_name, engine)
-    # return f"compound name is {compound_name}" 
+    # return f"compound name is {compound_name}"
+
 
 # API endpoint to list available views in the curated dataset
 @app.route("/data/views", methods=['GET'])
@@ -446,10 +449,20 @@ def get_explore_response_as_csv(sql_string, payload):
 
 # Convert a single datum to a clean format for the CSV
 def clean_csv_value(value):
-    if isinstance(value, str):
+    if value is None or value == "null":
+        return("")
+    elif isinstance(value, str):
         return('"' + value.replace('"', '""') + '"')
     else:
         return(str(value))
+
+
+# Convert a single datum to a clean format for a JSON API response
+def clean_json_value(value):
+    if value is None or value == "null":
+        return("")
+    else:
+        return(value)
 
 
 # Get the list of views included in an API request
@@ -489,7 +502,7 @@ def get_column_names_from_payload(payload):
 
 # Function to serialize a SQL response as a Python list
 def get_data_list_obj_from_data(data):
-    return [list(row) for row in data]
+    return [list(map(clean_json_value, list(row))) for row in data]
 
 
 # Necessary to run app if app.py is executed as a script
