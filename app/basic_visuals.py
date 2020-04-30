@@ -30,10 +30,33 @@ def get_descriptor_payload(compound_name):
         "data_list": 
         [
 
+            {
+                "view_name": "compounds", 
+                "column_list": 
+                    [
+                        "molecular_weight", 
+                        "clogp", 
+                        "hbd", 
+                        "hba", 
+                        "psa", 
+                        "apka", 
+                        "aromatic_rings", 
+                        "rotatable_bonds",
+                    ], 
+                "filters": 
+                    [
+                        {
+                            "column_name": "compound_name", 
+                            "operator": "matches", 
+                            "target": compound_name,
+                        }
+                    ] 
+            } 
         ], 
         "join_style": "left",
         "export": "false",
-        "single_file": "true"   
+        "single_file": "true", 
+        "limit": 1
     }
 
     return request_payload 
