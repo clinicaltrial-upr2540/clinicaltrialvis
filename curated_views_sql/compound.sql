@@ -44,7 +44,8 @@ CREATE OR REPLACE MATERIALIZED VIEW curated.compound
   food_interactions,
   drug_interactions_count,
   toxicity,
-  atc_code
+  atc_code,
+  therapeutic_code
 )
 AS 
  WITH iupac AS (
@@ -161,7 +162,8 @@ AS
     drug.food_interactions,
     drug.drug_interactions_count,
     drug.toxicity,
-    drug_atc_codes.atc_code
+    drug_atc_codes.atc_code,
+    "substring"(drug_atc_codes.atc_code, 1, 1) AS therapeutic_code
    FROM drug_bank.drug drug
      LEFT JOIN drug_bank.drug_atc_codes drug_atc_codes ON drug_atc_codes.parent_key = drug.primary_key
      LEFT JOIN iupac ON drug.primary_key = iupac.drug_id
@@ -179,3 +181,4 @@ AS
      LEFT JOIN bpka ON bpka.drug_id = drug.primary_key
      LEFT JOIN apka ON apka.drug_id = drug.primary_key;
 
+COMMIT;
