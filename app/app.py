@@ -385,7 +385,11 @@ def get_where_snippet(payload):
                 operator = "LIKE"
             target = filter_obj.get("target")
 
-            this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'%{target}%\' '
+            if operator == "=" or operator == "!=":
+                this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'{target}\' '
+            else:
+                this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'%{target}%\' '
+
             result += this_snip
             condition_term = " AND "
 
