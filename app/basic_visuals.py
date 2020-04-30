@@ -12,6 +12,7 @@ from flask import Flask, make_response
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+
 # set up descriptors 
 descriptors = [
     'molecular_weight', 
@@ -23,6 +24,43 @@ descriptors = [
         'aromatic_rings',
         'rotatable_bonds'
 ]
+
+def get_descriptor_payload(compound_name): 
+    request_payload = {
+        "data_list": 
+        [
+
+            {
+                "view_name": "compounds", 
+                "column_list": 
+                    [
+                        "molecular_weight", 
+                        "clogp", 
+                        "hbd", 
+                        "hba", 
+                        "psa", 
+                        "apka", 
+                        "aromatic_rings", 
+                        "rotatable_bonds",
+                    ], 
+                "filters": 
+                    [
+                        {
+                            "column_name": "compound_name", 
+                            "operator": "matches", 
+                            "target": compound_name,
+                        }
+                    ] 
+            } 
+        ], 
+        "join_style": "left",
+        "export": "false",
+        "single_file": "true", 
+        "limit": 1
+    }
+
+    return request_payload 
+
 
 def get_plot_png_test(compound_name, engine): 
     return "test successful" 

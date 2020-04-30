@@ -29,8 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Export button functionality
-    document.querySelector('#export-button').onclick = () => {
-        // Here, we might gather a list of the checked boxes on the left sidebar
+    $('#exportModal').on('shown.bs.modal', function (e) {
+        // Here, we gather a list of the checked boxes on the left sidebar
         // Here, gather a list of filters (none by default)
         var jsonToPost = buildDataRequest();
 
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Request the data
         requestExport(jsonToPost);
-    };
+    })
 
     /**
     End event listeners
@@ -65,7 +65,7 @@ function buildSelectionSidebar() {
 
     // Add the sidebar table headers
     document.querySelector('#selection-sidebar').innerHTML = '';
-    thead.innerHTML = `<tr><th>View name</th><th>Enabled</th></tr>`;
+    thead.innerHTML = `<tr class="table-active"><th>Enabled</th><th>View name</th></tr>`;
     document.querySelector('#selection-sidebar').append(thead);
 
     // Get the list of views and append to sidebar
@@ -91,26 +91,24 @@ function buildSidebarViewEntry(viewList) {
     for (var key in viewList) {
         var columnRequest = new XMLHttpRequest();
         const tr = document.createElement('tr');
-        const tr2 = document.createElement('tr');
+        const hidden_tbody = document.createElement('tbody');
 
         // Build table row for view name and master switch
-        tr.innerHTML = `<td data-toggle="collapse" data-target="#${viewList[key]}fields" class="accordion-toggle">${viewList[key]} <small class="text-muted">click to expand</small></td>
-<td>
+        tr.setAttribute("class", "table-active");
+        tr.innerHTML = `<td>
     <label class="custom-toggle">
         <input type="checkbox" checked data-toggle="toggle" class="parent-checkbox" id="${viewList[key]}checkbox" name="${viewList[key]}">
         <span class="custom-toggle-slider rounded-circle parent-checkbox" data-label-off="All" data-label-on="All"></span>
     </label>
 </td>
-`;
+<td data-toggle="collapse" href="#${viewList[key]}fields" aria-expanded="false" aria-controls="${viewList[key]}fields" class="accordion-toggle"><a href="#">${viewList[key]} <small class="text-muted">click to expand</small></a></td>`;
 
-        // Build table row to contain the list of column headers
-        tr2.innerHTML = `<td class="hiddenRow" colspan="2">
-    <table class="table table-sm accordion-body collapse ml-3" id="${viewList[key]}fields">
-    </table>
-</td>`;
+        // Build tbody to contain the list of column headers
+        hidden_tbody.setAttribute("class", "collapse");
+        hidden_tbody.setAttribute("id", `${viewList[key]}fields`);
 
         document.querySelector('#selection-sidebar').append(tr);
-        document.querySelector('#selection-sidebar').append(tr2);
+        document.querySelector('#selection-sidebar').append(hidden_tbody);
 
         // Get the list of fields in the view and append to sidebar
         columnRequest.onreadystatechange = function() {
@@ -157,13 +155,13 @@ function buildSidebarColumnEntry(fieldList) {
         const tr = document.createElement('tr');
 
         // Build the table entry for a single column field
-        tr.innerHTML = `<td class="text-muted">${fieldList["columns"][key]["column_name"]}</td>
-<td>
+        tr.innerHTML = `<td class=>
     <label class="custom-toggle">
         <input type="checkbox" checked data-toggle="toggle" class="child-checkbox parent-${view}" data-parent="${view}" id="${view}.${fieldList["columns"][key]["column_name"]}" name="${view}.${fieldList["columns"][key]["column_name"]}">
-        <span class="custom-toggle-slider rounded-circle" data-label-off="No" data-label-on="Yes"></span>
+        <span class="custom-toggle-slider" data-label-off="No" data-label-on="Yes"></span>
     </label>
-</td>`;
+</td>
+<td class="text-muted">${fieldList["columns"][key]["column_name"]}</td>`;
         
         // Append the column to the sidebar
         document.querySelector(`#${view}fields`).append(tr);
@@ -225,13 +223,11 @@ function requestExport(jsonToPost) {
                 link.download = filename;
 
                 document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
 
                 // Remove the loading modal
                 $('#exportModal').modal('hide');
-
-                link.click();
-
-                document.body.removeChild(link);
             } catch(err) {
                 // Remove the loading modal
                 $('#exportModal').modal('hide');
@@ -282,7 +278,13 @@ function buildDataPreviewTable(data, jsonPosted) {
     for (var view in jsonPosted["data_list"]) {
         if ("filters" in jsonPosted["data_list"][view]) {
             for (var filter in jsonPosted["data_list"][view]["filters"]) {
-                document.querySelector(`[data-view="${jsonPosted["data_list"][view]["view_name"]}"][data-column="${jsonPosted["data_list"][view]["filters"][filter]["column_name"]}"]`).value = jsonPosted["data_list"][view]["filters"][filter]["target"];
+                // Get the operator
+                var filterOperator = "";
+                if (jsonPosted["data_list"][view]["filters"][filter]["operator"] != "matches") {
+                    filterOperator = jsonPosted["data_list"][view]["filters"][filter]["operator"];
+                }
+
+                document.querySelector(`[data-view="${jsonPosted["data_list"][view]["view_name"]}"][data-column="${jsonPosted["data_list"][view]["filters"][filter]["column_name"]}"]`).value = `${filterOperator}${jsonPosted["data_list"][view]["filters"][filter]["target"]}`;
             }
         }
     }

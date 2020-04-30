@@ -19,7 +19,7 @@ from io import BytesIO
 ############################################
 sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
 
-from basic_visuals import get_plot_png_test, get_plot_png
+from basic_visuals import get_plot_png_test, get_plot_png, get_descriptor_payload
 
 
 app = Flask(__name__)
@@ -75,6 +75,14 @@ def render_visualizations_page():
     return render_template('visualizations.html', page_title="Visualizations", result_list=result_list)
 
 
+# Menu to present all visualizations
+@app.route("/classes")
+def render_drug_classes():
+    # Query for full list of visualizations
+
+    return render_template('drug_classes.html', page_title="Visualizations", result={})
+
+
 # Page to show a single d3 visualization
 @app.route("/visualization/<vis_id>")
 def render_visualization(vis_id):
@@ -108,13 +116,21 @@ def render_compound_explorer():
         message="this is a POST request" 
         compound_name = request.form.get("compound_name", "Phenylalanine") 
         message+= " Compound is "+compound_name
-        return render_template('lookup_compound_descriptors.html', 
+        descriptor_payload = get_descriptor_payload(compound_name) 
+        descriptor_data = data_explore_post(descriptor_payload)
+        descriptor_dict = get_descriptor_dict(descriptor_data)
+        ba_dict = {} 
+        similar_dict = {} 
+        return render_template('explore_compound.html', 
             compound_name=compound_name, 
-            message=message 
+            message=message, 
+            descriptor_dict=descriptor_dict, 
+            ba_dict=ba_dict, 
+            similar_dict=similar_dict, 
             ) 
     else: 
         message = "This is a GET request"
-        return render_template('lookup_compound_descriptors.html', message=message) 
+        return render_template('explore_compound.html', message=message) 
 
 ############################################
 # Routes to visualization data
@@ -158,10 +174,13 @@ def get_visualization_data(vis_data_name, data_format):
 ############################################
 
 # API endpoint to get a 9 descriptor plot for a compound
-@app.route("/compound/explore/<compound_name>/descriptors", methods=["GET"]) 
+
+@app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"]) 
 def compound_descriptors(compound_name): 
+
     return get_plot_png(compound_name, engine)
-    # return f"compound name is {compound_name}" 
+    # return f"compound name is {compound_name}"
+
 
 # API endpoint to list available views in the curated dataset
 @app.route("/data/views", methods=['GET'])
@@ -205,6 +224,34 @@ def explore_data():
     # If method is POST, this is a real API request
     if request.method == 'POST':
         payload = request.get_json()
+        return data_explore_post(payload)
+    # if the method is GET, then retrieve one of several sample responses.
+    # useful for development and testing of frontend
+    if request.method == 'GET':
+        from test_responses import list_of_responses
+
+        if request.args.get("download") == "true":
+            return (json.dumps(list_of_responses[0], indent=4))
+        else:
+            return (json.dumps(random.choice(list_of_responses[1:4]), indent=4))
+
+
+############################################
+# Utility Functions
+############################################
+
+def get_descriptor_dict(descriptor_data): 
+    descriptor_dict = descriptor_data 
+    descriptor_data = json.loads(descriptor_data)
+    data_obj = descriptor_data.get("data", {}) 
+
+    view_column_names = data_obj.get("view_column_names", []) 
+    data = data_obj.get("data", []) 
+    
+    return descriptor_dict 
+
+
+def data_explore_post(payload): 
         if validate_explore_request(payload) is False:
             return
 
@@ -259,22 +306,6 @@ def explore_data():
                         zf.writestr(f"{viewname}.csv", csvdata)
                 memory_file.seek(0)
                 return send_file(memory_file, attachment_filename='export.zip', as_attachment=True)
-
-    # if the method is GET, then retrieve one of several sample responses.
-    # useful for development and testing of frontend
-    if request.method == 'GET':
-        from test_responses import list_of_responses
-
-        if request.args.get("download") == "true":
-            return (json.dumps(list_of_responses[0], indent=4))
-        else:
-            return (json.dumps(random.choice(list_of_responses[1:4]), indent=4))
-
-
-############################################
-# Utility Functions
-############################################
-
 # Check if there is a valid APi request
 # TODO: Replace this with a real 404 page
 def validate_explore_request(payload):
@@ -308,9 +339,9 @@ def get_from_snippet(payload):
 def get_select_snippet(payload, download):
     counter = 1
     if download:
-        result = " SELECT DISTINCT "
+        result = " SELECT DISTINCT  "
     else:
-        result = " SELECT "
+        result = " SELECT  "
 
     for item in payload.get("data_list"):
         view_name = item.get("view_name")
@@ -418,10 +449,20 @@ def get_explore_response_as_csv(sql_string, payload):
 
 # Convert a single datum to a clean format for the CSV
 def clean_csv_value(value):
-    if isinstance(value, str):
+    if value is None or value == "null":
+        return("")
+    elif isinstance(value, str):
         return('"' + value.replace('"', '""') + '"')
     else:
         return(str(value))
+
+
+# Convert a single datum to a clean format for a JSON API response
+def clean_json_value(value):
+    if value is None or value == "null":
+        return("")
+    else:
+        return(value)
 
 
 # Get the list of views included in an API request
@@ -461,7 +502,7 @@ def get_column_names_from_payload(payload):
 
 # Function to serialize a SQL response as a Python list
 def get_data_list_obj_from_data(data):
-    return [list(row) for row in data]
+    return [list(map(clean_json_value, list(row))) for row in data]
 
 
 # Necessary to run app if app.py is executed as a script
