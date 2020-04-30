@@ -120,8 +120,14 @@ def get_similar_compounds_by_descriptor(engine, compound_name, descriptor):
          from 
         stats 
         ) 
-        select * from ranked where rank_w_in_group < 5
+        select 
+        compound_name, 
+        "{descriptor}", 
+        norm_diff
+        "{descriptor}"
+        from ranked where rank_w_in_group < 5
         order by therapeutic_code, rank_w_in_group
+        limit 10
         ; 
         """
     with engine.connect() as conn: 
