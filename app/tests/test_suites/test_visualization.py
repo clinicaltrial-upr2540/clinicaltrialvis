@@ -1,16 +1,9 @@
 import json
 import sys
-from dataclasses import dataclass
-from typing import Optional, List, Any
 from unittest import TestCase
-
 import pandas
 
 from app.app import app
-
-import sqlalchemy
-from dataclasses_json import dataclass_json
-from app.basic_visuals import get_compounds_data, get_compound_data
 from configparser import ConfigParser
 from pathlib import Path
 
@@ -47,3 +40,11 @@ class TestVisualization(TestCase):
             self.assertGreater(len(data['data']), 0)
             df = pandas.DataFrame(data['data'])
             self.assertGreater(df.loc[df['company'] == 'AAIPHARMA LLC'].size, 0)
+
+    # validate the content of the cdc data to ensure the json is returned and has content
+    # Validates at least one of the company name is 'AAIPHARMA LLC'
+    def test_render_visualization_id(self):
+        with app.test_client() as c:
+            resp = c.get('/visualization/217')
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.mimetype, 'text/html')

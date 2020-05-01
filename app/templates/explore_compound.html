@@ -1,55 +1,146 @@
 {% extends "master.html" %}
 {% block body %}
 
-<div class="row">
-<div class="col">
-<div class="card h-100">
-<div class="card-body">
-<div class="row">
-<div class="col-12">
+    <div class="row">
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
 
-<h1>Please enter a compound name</h1>
+                            <h1>Please enter a compound name</h1>
 
-<p> Try "Adefovir dipivoxil", "Atorvastatin", or "Amikacin" for a non-bioavailable compound. 
-    Try "Abacavir", "Acyclovir", or "Sumatriptan" for a bioavailable compound 
-</p>
-<form action="/compound/explore" method="post">
-    <input type="text" name="compound_name" > 
-    <input type="submit" value="Submit"> 
-</form>
-
-{% if descriptor_dict is defined %} 
-    <p> Data for descriptors is available :) </p>
-
-    {{descriptor_dict}}
-{% else %} 
-{% endif %} 
+                            <p> Try "Adefovir dipivoxil", "Atorvastatin", or "Amikacin" for a non-bioavailable compound.
+                                Try "Abacavir", "Acyclovir", or "Sumatriptan" for a bioavailable compound
+                            </p>
+                            <form action="/compound/explore" method="post">
+                                <input type="text" name="compound_name">
+                                <input type="submit" value="Submit">
+                            </form>
 
 
-<p>{{message}}</p>
-{% if compound_name is defined %} 
-    <img src="/compound/explore/{{compound_name}}/descriptors/png" style="width:100%"/>
-{% else %} 
-{% endif %} 
-
-{% if similar_dict is defined %} 
-    <p> Data for similar compounds is available :) </p>
-
-{% else %} 
-{% endif %} 
+                            <p>{{ message }}</p>
+                            {% if compound_name is defined %}
+                                <img src="/compound/explore/{{ compound_name }}/descriptors/png" style="width:100%"/>
+                                </br>
+                            {% else %}
+                            {% endif %}
 
 
-{% if ba_dict is defined %} 
-    <p> Data for bioavailability is available :) </p>
-
-{% else %} 
-{% endif %} 
+                            </br>
 
 
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+
+                            {% if descriptor_dict is defined %}
+
+                                <div class="card">
+                                    <!-- Card header -->
+                                    <div class="card-header">
+                                        <h3 class="mb-0">Compound descriptor values</h3>
+                                    </div>
+                                    <div class="table-responsive py-4">
+                                        <table class="table table-flush" id="datatable-basic">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                {% for col_name_list in descriptor_dict %}
+                                                    <th>{{ col_name_list }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                {% for row in descriptor_dict %}
+
+                                                    <td>{{ descriptor_dict[row] }}</td>
+
+                                                {% endfor %}
+                                            </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            {% else %}
+                            {% endif %}
+
+                            {% if similar_dict is defined %}
+                                <div class="card">
+                                    <!-- Card header -->
+                                    <div class="card-header">
+                                        <h3 class="mb-0">Similar compounds by descriptors</h3>
+                                    </div>
+                                    <div class="table-responsive py-4">
+
+
+                                        {% for tbl in similar_dict %}
+                                            <div class="card-header">
+                                                <h3 class="mb-0">{{ tbl }}</h3>
+                                            </div>
+                                            <table class="table table-flush" id="datatable-basic">
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    {% for temp2 in similar_dict[tbl][2].keys() %}
+                                                        <th>{{ temp2 }}</th>
+                                                    {% endfor %}
+
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for temp in similar_dict[tbl] %}
+                                                    <tr>
+                                                        {% for key,value in temp.items() %}
+                                                            <td>{{ value }}</td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            </br>
+                                            </br>
+                                        {% endfor %}
+
+                                    </div>
+                                </div>
+                            {% else %}
+                            {% endif %}
+                               {% if ba_dict is defined %}
+
+                                <div class="card">
+                                    <!-- Card header -->
+                                    <div class="card-header">
+                                        <h3 class="mb-0">Bio availability</h3>
+                                    </div>
+                                    <div class="table-responsive py-4">
+                                        <table class="table table-flush" id="datatable-basic">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                {% for temp2 in ba_dict[0].keys() %}
+                                                    <th>{{ temp2 }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for row in ba_dict %}
+                                            <tr>
+                                                {% for key, value in row.items() %}
+
+                                                    <td>{{ value }}</td>
+
+                                                {% endfor %}
+                                            </tr>
+                                              {% endfor %}
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            {% else %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
+

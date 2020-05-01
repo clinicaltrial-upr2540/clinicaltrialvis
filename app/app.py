@@ -19,7 +19,7 @@ from io import BytesIO
 ############################################
 sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
 
-from basic_visuals import get_plot_png_test, get_plot_png, get_descriptor_payload
+from explore_compounds import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict, get_ba_dict
 
 
 app = Flask(__name__)
@@ -101,29 +101,26 @@ def render_explorer():
 
 
 # Page to look up a compound vs its therapeutic group's descriptors
-@app.route("/compound/explore/<compound_name>")
-def render_compound_descriptor_results(compound_name):
-    return render_template('compound_vs_theragroup.html', compound_name=compound_name)
-
-
-# Page to look up a compound vs its therapeutic group's descriptors
 @app.route("/compound/explore", methods=["GET", "POST"])
 def render_compound_explorer():
-    if request.method=="POST":
-        message="this is a POST request"
+    if request.method == "POST":
+        message = "this is a POST request"
         compound_name = request.form.get("compound_name", "Phenylalanine")
         message += " Compound is " + compound_name
+
         descriptor_payload = get_descriptor_payload(compound_name)
         descriptor_data = data_explore_post(descriptor_payload)
         descriptor_dict = get_descriptor_dict(descriptor_data)
-        ba_dict = {}
-        similar_dict = {}
+
+        ba_dict = get_ba_dict(engine, compound_name)
+
+        similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)
         return render_template('explore_compound.html',
-            compound_name=compound_name,
-            message=message,
-            descriptor_dict=descriptor_dict,
-            ba_dict=ba_dict,
-            similar_dict=similar_dict,
+                compound_name=compound_name,
+                message=message,
+                descriptor_dict=descriptor_dict,
+                ba_dict=ba_dict,
+                similar_dict=similar_dict
             )
     else:
         message = "This is a GET request"
@@ -239,14 +236,14 @@ def explore_data():
 ############################################
 
 def get_descriptor_dict(descriptor_data):
-    descriptor_dict = descriptor_data
     descriptor_data = json.loads(descriptor_data)
     data_obj = descriptor_data.get("data", {})
 
     view_column_names = data_obj.get("view_column_names", [])
-    data = data_obj.get("data", [])
+    column_names = [item[1] for item in view_column_names]
+    data = data_obj.get("data", [])[0]
 
-    return descriptor_dict
+    return dict(zip(column_names, data))
 
 
 def data_explore_post(payload):

@@ -42,6 +42,22 @@ class TestAPI(TestCase):
             data = json.loads(resp.get_data(as_text=True))
             self.assertGreater(len(data['data']), 0)
 
+    def test_data_explore_with_download(self):
+        with app.test_client() as c:
+            # create a sample request
+            request = PayloadRequest()
+            request.export = "true"
+            request.join_style = "inner"
+            request.single_file = "false"
+            request.limit = 25
+            datalist = DataList()
+            datalist.view_name = "compounds"
+            datalist.column_list = ["drug_id"]
+            datalist.filters = []
+            request.data_list = [datalist]
+            resp = c.post('/data/explore', data=request.to_json(), content_type='application/json')
+            self.assertEqual(resp.status_code, 200)
+            self.assertGreater(len(resp.get_data()), 0)
 
 @dataclass_json
 @dataclass
