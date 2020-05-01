@@ -45,6 +45,7 @@ CREATE OR REPLACE MATERIALIZED VIEW curated.compound
   drug_interactions_count,
   toxicity,
   atc_code,
+  atc_level_4,
   therapeutic_code
 )
 AS 
@@ -163,7 +164,8 @@ AS
     drug.drug_interactions_count,
     drug.toxicity,
     drug_atc_codes.atc_code,
-    "substring"(drug_atc_codes.atc_code, 1, 1) AS therapeutic_code
+    drug_atc_codes.level_4 AS atc_level_4,
+    drug_atc_codes.code_4 AS therapeutic_code
    FROM drug_bank.drug drug
      LEFT JOIN drug_bank.drug_atc_codes drug_atc_codes ON drug_atc_codes.parent_key = drug.primary_key
      LEFT JOIN iupac ON drug.primary_key = iupac.drug_id
