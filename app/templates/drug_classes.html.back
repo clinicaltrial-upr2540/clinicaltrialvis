@@ -1,0 +1,28 @@
+{% extends "master.html" %}
+{% block body %}
+
+	<div class="row">
+		<div class="col">
+			<div class="card card-chart">
+				<div class="card-header card-header-danger">
+					<div class="ct-chart">
+
+					</div>
+				</div>
+				<div class="card-body">
+				</div>
+				<div class="card-footer">
+					<div class="stats">
+						<i class="material-icons">bar_chart</i> Created with data from ChemBL
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+    <h2>start viz</h2>
+	<script src="/static/js-visualizations/two-viz-combined/prepareData.js"></script>
+    <h2>end viz</h2>
+
+{% endblock %}

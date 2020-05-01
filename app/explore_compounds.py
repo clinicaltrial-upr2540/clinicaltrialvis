@@ -62,8 +62,101 @@ def get_descriptor_payload(compound_name):
     return request_payload 
 
 
+
+def get_similar_dict(engine, compound_name, descriptor_dict):  
+
+    similar_dict = {} 
+
+    for descriptor in descriptors: 
+        descriptor_similar_list = get_similar_compounds_by_descriptor(engine, compound_name, descriptor)
+        similar_dict[descriptor] = descriptor_similar_list
+
+    return similar_dict 
+
+
 def get_plot_png_test(compound_name, engine): 
     return "test successful" 
+
+
+def get_similar_compounds_by_descriptor(engine, compound_name, descriptor): 
+
+    params = {"compound_name": compound_name} 
+
+    sql_str = f"""
+        WITH refs AS
+        (
+          SELECT DISTINCT compound_name,
+                 "{descriptor}"::float, 
+                 therapeutic_code
+          FROM curated.compounds
+          WHERE compound_name LIKE :compound_name
+        ), 
+        group_stats as (
+          select * from curated.compound_statistics 
+          WHERE therapeutic_code in (select therapeutic_code from refs) 
+        ), 
+        theragroup as 
+        (
+          select distinct compound_name,
+                 "{descriptor}"::float, 
+                 therapeutic_code
+          FROM curated.compounds
+          WHERE therapeutic_code in (select therapeutic_code from refs) 
+        ), 
+        stats as (
+        SELECT 
+        theragroup.compound_name, 
+        theragroup."{descriptor}", 
+        abs((refs."{descriptor}"-theragroup."{descriptor}")/group_stats."stddev_{descriptor}") as norm_diff, 
+        refs.therapeutic_code
+        from refs 
+        inner join theragroup on ( theragroup.therapeutic_code = refs.therapeutic_code) 
+        inner join group_stats on ( group_stats.therapeutic_code = refs.therapeutic_code)
+        ), 
+        ranked as (
+        select 
+        *, 
+        rank() over (PARTITION BY therapeutic_code ORDER BY norm_diff) as rank_w_in_group
+         from 
+        stats 
+        ) 
+        select 
+        compound_name, 
+        "{descriptor}", 
+        norm_diff, 
+        "{descriptor}"
+        from ranked where rank_w_in_group < 5
+        order by therapeutic_code, rank_w_in_group
+        limit 10
+        ; 
+        """
+    with engine.connect() as conn: 
+        cursor = conn.execute(text(sql_str), params)
+
+    data = [dict(row) for row in cursor]
+    return data 
+
+
+def get_ba_dict(engine, compound_name): 
+    sql_str = """
+            SELECT 
+            DISTINCT 
+            bioavailability as drugbank_BA_boolean, 
+            bioavailability_phrase, 
+            bioavailability_percent, 
+            bioavailability_percent as predicted_BA_percent_if_able 
+            FROM curated.compound 
+            WHERE compound_name LIKE :compound_name
+            """ 
+    params = {"compound_name": compound_name} 
+
+    with engine.connect() as conn: 
+        cursor = conn.execute(text(sql_str), params) 
+    
+    results = [dict(row) for row in cursor] 
+
+    return results 
+
 
 def get_compounds_data(engine): 
 

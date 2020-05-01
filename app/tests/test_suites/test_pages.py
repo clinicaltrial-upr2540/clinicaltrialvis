@@ -28,8 +28,13 @@ class TestPages(TestCase):
             resp = c.get('/api')
             self.assertEqual(resp.status_code, 200)
 
-    # this test case hits the api of the application and checks that the api page is up and running
+    # this test case hits the compound/explore of the application
     def test_compound_explore_page(self):
         with app.test_client() as c:
-            resp = c.get('/api')
+            resp = c.get('/compound/explore')
+            self.assertEqual(resp.status_code, 200)
+
+    def test_render_drug_classes(self):
+        with app.test_client() as c:
+            resp = c.get('/classes')
             self.assertEqual(resp.status_code, 200)
