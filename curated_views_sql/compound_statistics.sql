@@ -22,25 +22,25 @@ CREATE OR REPLACE MATERIALIZED VIEW curated.compound_statistics
   stddev_rotatable_bonds
 )
 AS 
- SELECT "substring"(compounds.atc_code, 1, 1) AS therapeutic_code,
-    count(DISTINCT compounds.drug_id) AS samples,
-    avg(compounds.molecular_weight::double precision) AS avg_molecular_weight,
-    stddev(compounds.molecular_weight::double precision) AS stddev_molecular_weight,
-    avg(compounds.clogp::double precision) AS avg_clogp,
-    stddev(compounds.clogp::double precision) AS stddev_clogp,
-    avg(compounds.hbd::double precision) AS avg_hbd,
-    stddev(compounds.hbd::double precision) AS stddev_hbd,
-    avg(compounds.hba::double precision) AS avg_hba,
-    stddev(compounds.hba::double precision) AS stddev_hba,
-    avg(compounds.psa::double precision) AS avg_psa,
-    stddev(compounds.psa::double precision) AS stddev_psa,
-    avg(compounds.apka::double precision) AS avg_apka,
-    stddev(compounds.apka::double precision) AS stddev_apka,
-    avg(compounds.aromatic_rings::double precision) AS avg_aromatic_rings,
-    stddev(compounds.aromatic_rings::double precision) AS stddev_aromatic_rings,
-    avg(compounds.rotatable_bonds::double precision) AS avg_rotatable_bonds,
-    stddev(compounds.rotatable_bonds::double precision) AS stddev_rotatable_bonds
-   FROM curated.compounds
-  GROUP BY ("substring"(compounds.atc_code, 1, 1));
+ SELECT "substring"(compound.atc_code, 1, 1) AS therapeutic_code,
+    count(DISTINCT compound.drug_id) AS samples,
+    avg(compound.molecular_weight::double precision) AS avg_molecular_weight,
+    stddev(compound.molecular_weight::double precision) AS stddev_molecular_weight,
+    avg(compound.clogp::double precision) AS avg_clogp,
+    stddev(compound.clogp::double precision) AS stddev_clogp,
+    avg(compound.hbd::double precision) AS avg_hbd,
+    stddev(compound.hbd::double precision) AS stddev_hbd,
+    avg(compound.hba::double precision) AS avg_hba,
+    stddev(compound.hba::double precision) AS stddev_hba,
+    avg(compound.psa::double precision) AS avg_psa,
+    stddev(compound.psa::double precision) AS stddev_psa,
+    avg(compound.apka::double precision) AS avg_apka,
+    stddev(compound.apka::double precision) AS stddev_apka,
+    avg(compound.aromatic_rings::double precision) AS avg_aromatic_rings,
+    stddev(compound.aromatic_rings::double precision) AS stddev_aromatic_rings,
+    avg(compound.rotatable_bonds::double precision) AS avg_rotatable_bonds,
+    stddev(compound.rotatable_bonds::double precision) AS stddev_rotatable_bonds
+   FROM curated.compound
+  GROUP BY ("substring"(compound.atc_code, 1, 1));
 
 COMMIT;
