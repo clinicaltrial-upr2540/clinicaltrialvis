@@ -19,7 +19,7 @@ from io import BytesIO
 ############################################
 sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
 
-from explore_compounds import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict
+from explore_compounds import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict, get_ba_dict
 
 
 app = Flask(__name__)
@@ -116,10 +116,13 @@ def render_compound_explorer():
         message="this is a POST request" 
         compound_name = request.form.get("compound_name", "Phenylalanine") 
         message+= " Compound is "+compound_name
+
         descriptor_payload = get_descriptor_payload(compound_name) 
         descriptor_data = data_explore_post(descriptor_payload)
         descriptor_dict = get_descriptor_dict(descriptor_data)
-        ba_dict = {} 
+
+        ba_dict = get_ba_dict(engine, compound_name) 
+
         similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)  
         return render_template('explore_compound.html', 
             compound_name=compound_name, 
@@ -241,7 +244,6 @@ def explore_data():
 ############################################
 
 def get_descriptor_dict(descriptor_data): 
-    descriptor_dict = descriptor_data 
     descriptor_data = json.loads(descriptor_data)
     data_obj = descriptor_data.get("data", {}) 
 

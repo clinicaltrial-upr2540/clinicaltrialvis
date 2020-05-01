@@ -137,6 +137,27 @@ def get_similar_compounds_by_descriptor(engine, compound_name, descriptor):
     return data 
 
 
+def get_ba_dict(engine, compound_name): 
+    sql_str = """
+            SELECT 
+            DISTINCT 
+            bioavailability as drugbank_BA_boolean, 
+            bioavailability_phrase, 
+            bioavailability_percent, 
+            bioavailability_percent as predicted_BA_percent_if_able 
+            FROM curated.compound 
+            WHERE compound_name LIKE :compound_name
+            """ 
+    params = {"compound_name": compound_name} 
+
+    with engine.connect() as conn: 
+        cursor = conn.execute(text(sql_str), params) 
+    
+    results = [dict(row) for row in cursor] 
+
+    return results 
+
+
 def get_compounds_data(engine): 
 
     with engine.connect() as conn: 
