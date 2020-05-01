@@ -1,11 +1,13 @@
 DROP MATERIALIZED VIEW IF EXISTS curated.compound CASCADE;
 
-CREATE OR REPLACE MATERIALIZED VIEW curated.compound
+CREATE  MATERIALIZED VIEW curated.compound 
 (
   drug_id,
   iupac,
   smiles,
   bioavailability,
+  bioavailability_phrase,
+  bioavailability_percent,
   molecular_weight,
   molecular_formula,
   clogp,
@@ -120,11 +122,38 @@ AS
             drug_calculated_properties.value AS apka
            FROM drug_bank.drug_calculated_properties
           WHERE drug_calculated_properties.kind = 'pKa (strongest acidic)'::text
-        )
+        ), 
+        oral_perc_ba as (
+    SELECT distinct primary_key, 
+       
+         COALESCE(
+           substring(lower(absorption) from 'oral bioavailability [a-z. (0-9]+ [0-9.]+%'), 
+           substring(lower(absorption) FROM 'bioavailability [a-z. (-]+ [0-9.]+%'), 
+           substring(lower(absorption) FROM 'bioavailability .+ [0-9.]+%')
+       ) AS bioavailability_phrase, 
+       substring( 
+          substring(
+             COALESCE(
+               substring(lower(absorption) from 'oral bioavailability [a-z. (0-9]+ [0-9.]+%'), 
+               substring(lower(absorption) FROM 'bioavailability [a-z. (-]+ [0-9.]+%'), 
+               substring(lower(absorption) FROM 'bioavailability .+ [0-9.]+%')
+             ) 
+          from '[0-9.]+%' 
+          ) 
+       from '[0-9.]+'
+       ) AS bioavailability_percent, 
+       absorption
+FROM   drug_bank.drug 
+where absorption like '%bioavailab%'
+and absorption like '%oral%'    
+
+  ) 
  SELECT DISTINCT drug.primary_key AS drug_id,
     iupac.iupac,
     smiles.smiles,
     ba.value AS bioavailability,
+    oral_perc_ba.bioavailability_phrase, 
+        oral_perc_ba.bioavailability_percent, 
     mw.mw AS molecular_weight,
     mf.mf AS molecular_formula,
     clogp.clogp,
@@ -181,6 +210,60 @@ AS
      LEFT JOIN rb ON rb.drug_id = drug.primary_key
      LEFT JOIN ar ON ar.drug_id = drug.primary_key
      LEFT JOIN bpka ON bpka.drug_id = drug.primary_key
-     LEFT JOIN apka ON apka.drug_id = drug.primary_key;
+     LEFT JOIN apka ON apka.drug_id = drug.primary_key
+     left join oral_perc_ba on oral_perc_ba.primary_key = drug.primary_key ;
 
 COMMIT;
+/*
+DROP MATERIALIZED VIEW IF EXISTS curated.compound_statistics CASCADE;
+
+CREATE  MATERIALIZED VIEW curated.compound_statistics
+(
+  therapeutic_code,
+  samples,
+  avg_molecular_weight,
+  stddev_molecular_weight,
+  avg_clogp,
+  stddev_clogp,
+  avg_hbd,
+  stddev_hbd,
+  avg_hba,
+  stddev_hba,
+  avg_psa,
+  stddev_psa,
+  avg_apka,
+  stddev_apka,
+  avg_aromatic_rings,
+  stddev_aromatic_rings,
+  avg_rotatable_bonds,
+  stddev_rotatable_bonds
+)
+AS 
+ SELECT compound.therapeutic_code,
+    count(DISTINCT compound.drug_id) AS samples,
+    avg(compound.molecular_weight::double precision) AS avg_molecular_weight,
+    stddev(compound.molecular_weight::double precision) AS stddev_molecular_weight,
+    avg(compound.clogp::double precision) AS avg_clogp,
+    stddev(compound.clogp::double precision) AS stddev_clogp,
+    avg(compound.hbd::double precision) AS avg_hbd,
+    stddev(compound.hbd::double precision) AS stddev_hbd,
+    avg(compound.hba::double precision) AS avg_hba,
+    stddev(compound.hba::double precision) AS stddev_hba,
+    avg(compound.psa::double precision) AS avg_psa,
+    stddev(compound.psa::double precision) AS stddev_psa,
+    avg(compound.apka::double precision) AS avg_apka,
+    stddev(compound.apka::double precision) AS stddev_apka,
+    avg(compound.aromatic_rings::double precision) AS avg_aromatic_rings,
+    stddev(compound.aromatic_rings::double precision) AS stddev_aromatic_rings,
+    avg(compound.rotatable_bonds::double precision) AS avg_rotatable_bonds,
+    stddev(compound.rotatable_bonds::double precision) AS stddev_rotatable_bonds
+   FROM curated.compound
+  GROUP BY compound.therapeutic_code;
+
+COMMIT;
+
+create view curated.compounds as select * from curated.compound
+;
+
+COMMIT;
+*/ 
