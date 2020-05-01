@@ -101,12 +101,12 @@ def render_explorer():
 
 
 # Page to look up a compound vs its therapeutic group's descriptors
-@app.route("/compound/explore/<compound_name>")
-def render_compound_descriptor_results(compound_name):
-    
-    return render_template('compound_vs_theragroup.html', 
-            compound_name=compound_name
-            ) 
+# @app.route("/compound/explore/<compound_name>")
+# def render_compound_descriptor_results(compound_name):
+#
+#     return render_template('compound_vs_theragroup.html',
+#             compound_name=compound_name
+#             )
 
 
 # Page to look up a compound vs its therapeutic group's descriptors
@@ -129,7 +129,7 @@ def render_compound_explorer():
             message=message, 
             descriptor_dict=descriptor_dict, 
             ba_dict=ba_dict, 
-            similar_dict=similar_dict, 
+            similar_dict=similar_dict
             ) 
     else: 
         message = "This is a GET request"
