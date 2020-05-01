@@ -1,0 +1,7 @@
+sqlalchemy
+datetime
+flask
+configparser
+pandas
+numpy
+matplotlib
