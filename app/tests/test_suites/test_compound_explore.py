@@ -11,6 +11,7 @@ import sqlalchemy
 from app.app import app
 from app.explore_compounds import get_compounds_data, get_compound_data, get_descriptor_payload, get_ba_dict
 
+
 p = Path(sys.path[0])
 
 # Import database configuration
