@@ -25,7 +25,7 @@ function heatmapChart(id, diseaseClasses, companies, descriptor) {
 
 //Load the data and draw heatmap
 
-d3.csv("/static/js-visualizations/all-viz-combined/cdc_descriptors_diseases.csv", function(error, data){
+d3.csv("/static/js-visualizations/all-viz-combined/cdc_descriptors.csv", function(error, data){
 
   //create a collection of values that correspond to the companies passed to the function
   var dataByCompany=d3.nest()
