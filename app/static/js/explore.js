@@ -97,7 +97,7 @@ function buildSidebarViewEntry(viewList) {
         tr.setAttribute("class", "table-active");
         tr.innerHTML = `<td>
     <label class="custom-toggle">
-        <input type="checkbox" checked data-toggle="toggle" class="parent-checkbox" id="${viewList[key]}checkbox" name="${viewList[key]}">
+        <input type="checkbox" data-toggle="toggle" class="parent-checkbox" id="${viewList[key]}checkbox" name="${viewList[key]}">
         <span class="custom-toggle-slider rounded-circle parent-checkbox" data-label-off="All" data-label-on="All"></span>
     </label>
 </td>
@@ -157,7 +157,7 @@ function buildSidebarColumnEntry(fieldList) {
         // Build the table entry for a single column field
         tr.innerHTML = `<td class=>
     <label class="custom-toggle">
-        <input type="checkbox" checked data-toggle="toggle" class="child-checkbox parent-${view}" data-parent="${view}" id="${view}.${fieldList["columns"][key]["column_name"]}" name="${view}.${fieldList["columns"][key]["column_name"]}">
+        <input type="checkbox" data-toggle="toggle" class="child-checkbox parent-${view}" data-parent="${view}" id="${view}.${fieldList["columns"][key]["column_name"]}" name="${view}.${fieldList["columns"][key]["column_name"]}">
         <span class="custom-toggle-slider" data-label-off="No" data-label-on="Yes"></span>
     </label>
 </td>
