@@ -17,7 +17,8 @@ from io import BytesIO
 ############################################
 # Import local modules
 ############################################
-sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
+APP_PATH = str(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(APP_PATH)
 
 from explore_compounds import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict, get_ba_dict
 
@@ -29,14 +30,11 @@ app.config['TESTING'] = True
 # Startup tasks go here (load/check data)
 ############################################
 
-# Set current working path
-current_path = str(os.path.dirname(os.path.realpath(__file__)))
-
 # Import database configuration
 config = ConfigParser()
 
 # config.read("database.conf")
-config.read(f"{current_path}/database.conf")
+config.read(f"{APP_PATH}/database.conf")
 
 
 # Set up and establish database engine
