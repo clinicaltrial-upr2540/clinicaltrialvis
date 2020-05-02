@@ -387,7 +387,7 @@ distinctDiseasesClasses = distinctDiseasesClasses.sort();
 					//append the div
 					$(".form-check").eq(index).append($(checkbox));
 					$("input").addClass("form-check-input");
-					$("label").addClass("form-check-label");
+					$("label").addClass("form-check-label small");
 
 				});
 				//create a button
@@ -420,7 +420,7 @@ distinctDiseasesClasses = distinctDiseasesClasses.sort();
 					//append the div
 					$(".disease-class").eq(index).append($(checkbox));
 					$("input").addClass("form-check-input");
-					$("label").addClass("form-check-label");
+					$("label").addClass("form-check-label small");
 
 					});
 				
@@ -532,7 +532,7 @@ distinctDiseasesClasses = distinctDiseasesClasses.sort();
 				var buttonIdStr='#'+buttonId;
 				$(parentId).append(button);
 				$(position).attr("id", buttonId);
-				$(buttonIdStr).text(textValue).addClass("btn btn-info").attr("type", "button");
+				$(buttonIdStr).text(textValue).addClass("btn btn-info mt-2").attr("type", "button");
 
 			} //end createButton function
 
