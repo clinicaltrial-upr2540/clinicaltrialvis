@@ -12,7 +12,7 @@ function boxWhiskerChart(id, diseaseClasses, companies, descriptor) {
   //line for Flask deployment
 
   //line for local deployment
-  d3.csv("/static/js-visualizations/all-viz-combined/cdc_descriptors.csv", function(data) {
+  d3.csv("/vis/cdc_descriptors/csv", function(data) {
 
     //create a collection of values that correspond to the companies passed to the function
     var dataByCompany=d3.nest()
