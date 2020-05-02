@@ -508,4 +508,4 @@ def get_data_list_obj_from_data(data):
 
 # Necessary to run app if app.py is executed as a script
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
