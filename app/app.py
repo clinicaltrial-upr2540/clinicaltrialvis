@@ -21,6 +21,7 @@ APP_PATH = str(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(APP_PATH)
 
 from explore_compounds import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict, get_ba_dict
+import visualization_setup
 
 app = Flask(__name__)
 app.config['TESTING'] = True
@@ -53,7 +54,10 @@ DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['
 engine = sqlalchemy.create_engine(DATABASE_URL)
 
 # Refresh visualization data
-# import visualization_setup
+try:
+    visualization_setup.import_visualization_demos(engine)
+except Exception:
+    print("WARNING: Unable to refresh visualization data.")
 
 
 ############################################
