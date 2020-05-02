@@ -11,16 +11,6 @@ from configparser import ConfigParser
 def import_visualization_demos(engine):
     visualization_list = [
         {
-            "name": "two-viz-combined",
-            "title": "Drug Targets by Companies",
-            "description": "Radar Chart",
-            "thumbnail": "radar.png",
-            "classes": "radarChart",
-            "dataset": "cdcdata",
-            "data_format": "json",
-            "scripts": "chartSetup.js,dotMatrix.js,radarChart.js,prepareData.js"
-        },
-        {
             "name": "radar",
             "title": "Drug Targets by Companies",
             "description": "Radar Chart",
