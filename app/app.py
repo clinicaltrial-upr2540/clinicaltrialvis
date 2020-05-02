@@ -17,27 +17,36 @@ from io import BytesIO
 ############################################
 # Import local modules
 ############################################
-sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
+APP_PATH = str(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(APP_PATH)
 
 from explore_compounds import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict, get_ba_dict
-
+import visualization_setup
 
 app = Flask(__name__)
 app.config['TESTING'] = True
 
 ############################################
-# Startup tasks go here (load/check data)
+# Startup tasks go here (load/check config)
 ############################################
 
-# Set current working path
-current_path = str(os.path.dirname(os.path.realpath(__file__)))
-
-# Import database configuration
+# Import database configuration from file
 config = ConfigParser()
+config.read(f"{APP_PATH}/database.conf")
 
-# config.read("database.conf")
-config.read(f"{current_path}/database.conf")
-
+# If environment variables are present, override config file
+if "drugdata" not in config:
+    config["drugdata"] = {}
+if "DB_USER" in os.environ:
+    config["drugdata"]["user"] = os.environ.get("DB_USER")
+if "DB_PASSWORD" in os.environ:
+    config["drugdata"]["password"] = os.environ.get("DB_PASSWORD")
+if "DB_HOST" in os.environ:
+    config["drugdata"]["host"] = os.environ.get("DB_HOST")
+if "DB_PORT" in os.environ:
+    config["drugdata"]["port"] = os.environ.get("DB_PORT")
+if "DB_NAME" in os.environ:
+    config["drugdata"]["database"] = os.environ.get("DB_NAME")
 
 # Set up and establish database engine
 # URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
@@ -45,7 +54,10 @@ DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['
 engine = sqlalchemy.create_engine(DATABASE_URL)
 
 # Refresh visualization data
-# import visualization_setup
+try:
+    visualization_setup.import_visualization_demos(engine)
+except Exception:
+    print("WARNING: Unable to refresh visualization data.")
 
 
 ############################################
@@ -72,15 +84,13 @@ def render_visualizations_page():
         result = conn.execute("SELECT * FROM application.visualizations;").fetchall()
     result_list = [dict(row) for row in result]
 
-    return render_template('visualizations.html', page_title="Visualizations", result_list=result_list)
+    return render_template('visualizations.html', page_title="Demo Visualizations", result_list=result_list)
 
 
-# Menu to present all visualizations
+# Unified visualization to explore drug companies
 @app.route("/classes")
 def render_drug_classes():
-    # Query for full list of visualizations
-
-    return render_template('drug_classes.html', page_title="Visualizations", result={})
+    return render_template('drug_classes.html', page_title="Explore Targets By Company", result={})
 
 
 # Page to show a single d3 visualization
@@ -95,13 +105,13 @@ def render_visualization(vis_id):
 
 
 # Page to explore and explort data
-@app.route("/explore")
+@app.route("/explore/data")
 def render_explorer():
-    return render_template('explore.html', page_title="Explore")
+    return render_template('explore.html', page_title="Explore Data")
 
 
 # Page to look up a compound vs its therapeutic group's descriptors
-@app.route("/compound/explore", methods=["GET", "POST"])
+@app.route("/explore/compound", methods=["GET", "POST"])
 def render_compound_explorer():
     if request.method == "POST":
         compound_name = request.form.get("compound_name", '')
@@ -137,7 +147,7 @@ def render_compound_explorer():
             )
     else:
         message = "This is a GET request"
-        return render_template('explore_compound.html', message=message)
+        return render_template('explore_compound.html', message=message, page_title="Explore A Compound")
 
 
 ############################################
@@ -524,4 +534,4 @@ def get_data_list_obj_from_data(data):
 
 # Necessary to run app if app.py is executed as a script
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

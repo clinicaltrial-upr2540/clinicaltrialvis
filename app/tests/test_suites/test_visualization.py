@@ -45,6 +45,6 @@ class TestVisualization(TestCase):
     # Validates at least one of the company name is 'AAIPHARMA LLC'
     def test_render_visualization_id(self):
         with app.test_client() as c:
-            resp = c.get('/visualization/217')
+            resp = c.get('/visualization/1')
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.mimetype, 'text/html')

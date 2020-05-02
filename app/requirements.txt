@@ -1,0 +1,8 @@
+psycopg2-binary
+sqlalchemy
+datetime
+flask
+configparser
+pandas
+numpy
+matplotlib

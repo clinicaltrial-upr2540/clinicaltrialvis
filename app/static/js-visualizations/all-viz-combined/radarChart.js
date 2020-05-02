@@ -1,11 +1,17 @@
 
 //Radar Chart Function inspired by Nadieh Bremer, VisualCinnamon.com
 
-
 	
 function radarChart(id, data, options) {
 
-	//settings of the radar chart
+	//remove any previously created chart from DOM that had the same id
+	const item = document.querySelector(id)
+		while (item.firstChild) {
+  		item.removeChild(item.firstChild)
+	}
+
+
+	//configurations
 	var cfg = {
 	 w: 300,				//Width of the circle
 	 h: 300,				//Height of the circle
@@ -25,12 +31,15 @@ function radarChart(id, data, options) {
 	 legend:false 					//legend		
 	};
 	
-	//Add all of the options into a settings variable cfg
+	//put all of the configuration options into a variable called cfg
 	if('undefined' !== typeof options){
 	  for(var i in options){
 		if('undefined' !== typeof options[i]){ cfg[i] = options[i]; }
 	  }
 	}//end if
+
+///////
+	// data part
 
 	//select distinct disease classes from the data for the names of Axis
 	var diseaseArray= new Array();
@@ -47,14 +56,13 @@ function radarChart(id, data, options) {
 		};
 	extractDiseases(diseaseArray);
 
-	//for debugging
-	//console.log(diseaseArray);
 
 	let distinctDiseaseClasses = [...new Set(diseaseArray)];
 	distinctDiseaseClasses = distinctDiseaseClasses.sort();
 
 
-	//If the supplied maxValue is smaller than the actual one, replace by the max in the data
+	//if the configuration value of maxValue is smaller than the calculated value, based on the max number of drugs to be visualized,
+	// replace by the max in the data
 	var maxValue = Math.max(cfg.maxValue, d3.max(data, function(i){
 		var maxPerCompany = d3.max(i.map(
 			function(o){ return o.counts; }
@@ -62,55 +70,44 @@ function radarChart(id, data, options) {
 		return maxPerCompany;
 	}));
 
+///////////
+	//visualization part
 
-	//Names of each axis
+	//axis 
 	var allAxis = (distinctDiseaseClasses.map(function(el){return el})),	//Names of each axis
 		total = allAxis.length,					//The number of different axes
 		radius = Math.min(cfg.w/2, cfg.h/2), 			//Radius of the outermost circle
 		Format = d3.format('.0f'),			 	//Percentage formatting
 		angleSlice = Math.PI * 2 / total;			//The width in radians of each "slice"
 	
-	//Scale for the radius
+	//radius scale
 	var rScale = d3.scaleLinear()
 		.range([0, radius])
 		.domain([0, maxValue]);
 		
-	/////////////////////////////////////////////////////////
-	//////////// Create the container SVG and g /////////////
-	/////////////////////////////////////////////////////////
 
-	//Remove whatever chart with the same id/class was present before
-	d3.select(id).select("svg").remove();
-
-
-	//Initiate the radar chart SVG
+	//append svg element with width, height and class
 	var svg = d3.select(id).append("svg")
 			.attr("width",  cfg.w + cfg.margin.left + cfg.margin.right)
 			.attr("height", cfg.h + cfg.margin.top + cfg.margin.bottom)
 			.attr("class", "radar"+id);
-	//Append a g element		
+	
+	//append a g elementt		
 	var g = svg.append("g")
-			.attr("transform", "translate(" + (cfg.w/2 + cfg.margin.left) + "," + (cfg.h/2 + cfg.margin.top) + ")");
+			.attr("transform", "translate(" + (cfg.w/2 + cfg.margin.left) + "," + (cfg.h/2 + cfg.margin.top/1.8) + ")");
 	
-	/////////////////////////////////////////////////////////
-	////////// Glow filter for some extra pizzazz ///////////
-	/////////////////////////////////////////////////////////
-	
-	//Filter for the outside glow
+	//filter for the outside glow
 	var filter = g.append('defs').append('filter').attr('id','glow'),
 		feGaussianBlur = filter.append('feGaussianBlur').attr('stdDeviation','2.5').attr('result','coloredBlur'),
 		feMerge = filter.append('feMerge'),
 		feMergeNode_1 = feMerge.append('feMergeNode').attr('in','coloredBlur'),
 		feMergeNode_2 = feMerge.append('feMergeNode').attr('in','SourceGraphic');
 
-	/////////////////////////////////////////////////////////
-	/////////////// Draw the Circular grid //////////////////
-	/////////////////////////////////////////////////////////
-	
-	//Wrapper for the grid & axes
+	//draw the grid	
+	//wrapper for the grid & axes
 	var axisGrid = g.append("g").attr("class", "axisWrapper");
 	
-	//Draw the background circles
+	//draw the background circles
 	axisGrid.selectAll(".levels")
 	   .data(d3.range(1,(cfg.levels+1)).reverse())
 	   .enter()
@@ -122,7 +119,7 @@ function radarChart(id, data, options) {
 		.style("fill-opacity", cfg.opacityCircles)
 		.style("filter" , "url(#glow)");
 
-	//Text indicating at what % each level is
+	//text indicating at what % each level is
 	axisGrid.selectAll(".axisLabel")
 	   .data(d3.range(1,(cfg.levels+1)).reverse())
 	   .enter().append("text")
@@ -130,21 +127,19 @@ function radarChart(id, data, options) {
 	   .attr("x", 4)
 	   .attr("y", function(d){return -d*radius/cfg.levels;})
 	   .attr("dy", "0.4em")
-	   .style("font-size", "10px")
+	   .style("font-size", "12px")
 	   .attr("fill", "#737373")
 	   .text(function(d,i) { return Format(maxValue * d/cfg.levels); });
 
-	/////////////////////////////////////////////////////////
-	//////////////////// Draw the axes //////////////////////
-	/////////////////////////////////////////////////////////
-	
-	//Create the straight lines radiating outward from the center
+	//draw the axis	
+	//create straight radius lines
 	var axis = axisGrid.selectAll(".axis")
 		.data(allAxis)
 		.enter()
 		.append("g")
 		.attr("class", "axis");
-	//Append the lines
+	
+	//append the lines
 	axis.append("line")
 		.attr("x1", 0)
 		.attr("y1", 0)
@@ -154,10 +149,10 @@ function radarChart(id, data, options) {
 		.style("stroke", "white")
 		.style("stroke-width", "2px");
 
-	//Append the labels at each axis
+	//append the labels to each of the axis
 	axis.append("text")
 		.attr("class", "legend")
-		.style("font-size", "11px")
+		.style("font-size", "12px")
 		.attr("text-anchor", "middle")
 		.attr("dy", "0.35em")
 		.attr("x", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice*i - Math.PI/2); })
@@ -165,11 +160,9 @@ function radarChart(id, data, options) {
 		.text(function(d){return d})
 		.call(wrap, cfg.wrapWidth);
 
-	/////////////////////////////////////////////////////////
-	///////////// Draw the radar chart blobs ////////////////
-	/////////////////////////////////////////////////////////
+	//draw the actual radar chart
 	
-	//The radial line function
+	//create the the radial line
 	var radarLine = d3.radialLine()
 		.curve(d3.curveLinearClosed)
 		.radius(function(d) { return rScale(d.counts); })
@@ -179,13 +172,13 @@ function radarChart(id, data, options) {
 		radarLine.curve(d3.curveCardinalClosed);
 	}
 				
-	//Create a wrapper for the blobs	
+	//create a wrapper for the chart data	
 	var blobWrapper = g.selectAll(".radarWrapper")
 		.data(data)
 		.enter().append("g")
 		.attr("class", "radarWrapper");
 			
-	//Append the backgrounds	
+	//append the backgrounds of the areas for each of the companies		
 	blobWrapper
 		.append("path")
 		.attr("class", "radarArea")
@@ -193,23 +186,23 @@ function radarChart(id, data, options) {
 		.style("fill", function(d,i) { return cfg.color(i); })
 		.style("fill-opacity", cfg.opacityArea)
 		.on('mouseover', function (d,i){
-			//Dim all blobs
+			//change opacity of non-selected area
 			d3.selectAll(".radarArea")
 				.transition().duration(200)
 				.style("fill-opacity", 0.1); 
-			//Bring back the hovered over blob
+			//show the selected area
 			d3.select(this)
 				.transition().duration(200)
 				.style("fill-opacity", 0.7);	
 		})
 		.on('mouseout', function(){
-			//Bring back all blobs
+			//show all of the areas
 			d3.selectAll(".radarArea")
 				.transition().duration(200)
 				.style("fill-opacity", cfg.opacityArea);
 		});
 		
-	//Create the outlines	
+	//create the outlines	
 	blobWrapper.append("path")
 		.attr("class", "radarStroke")
 		.attr("d", function(d,i) { return radarLine(d); })
@@ -218,7 +211,7 @@ function radarChart(id, data, options) {
 		.style("fill", "none")
 		.style("filter" , "url(#glow)");		
 	
-	//Append the circles
+	//append the circles or edges of the area objects
 	blobWrapper.selectAll(".radarCircle")
 		.data(function(d,i) { return d; })
 		.enter().append("circle")
@@ -229,17 +222,13 @@ function radarChart(id, data, options) {
 		.style("fill", function(d,i,j) { return cfg.color(j); })
 		.style("fill-opacity", 0.8);
 
-	/////////////////////////////////////////////////////////
-	//////// Append invisible circles for tooltip ///////////
-	/////////////////////////////////////////////////////////
-	
-	//Wrapper for the invisible circles on top
+	//wrapper for the invisible circles to be used for tooltip
 	var blobCircleWrapper = g.selectAll(".radarCircleWrapper")
 		.data(data)
 		.enter().append("g")
 		.attr("class", "radarCircleWrapper");
 		
-	//Append a set of invisible circles on top for the mouseover pop-up
+	//append a set of invisible circles on top for the mouseover pop-up
 	blobCircleWrapper.selectAll(".radarInvisibleCircle")
 		.data(function(d,i) { return d; })
 		.enter().append("circle")
@@ -265,56 +254,12 @@ function radarChart(id, data, options) {
 				.style("opacity", 0);
 		});
 		
-	//Set up the small tooltip for when you hover over a circle
+	//set up a tooltip for hover over functionality
 	var tooltip = g.append("text")
 		.attr("class", "tooltip")
 		.style("opacity", 0);
-		//takeoff the legend
-	/*
-		if (cfg.legend !== false && typeof cfg.legend === "object") {
-		let legendZone = svg.append('g');
-		let names = data.map(el => el[0].company);
-		if (cfg.legend.title) {
-			let title = legendZone.append("text")
-				.attr("class", "title")
-				.attr('transform', `translate(${cfg.legend.translateX},${cfg.legend.translateY})`)
-				.attr("x", cfg.w - 70)
-				.attr("y", 10)
-				.attr("font-size", "12px")
-				.attr("fill", "#404040")
-				.text(cfg.legend.title);
-		}
-		let legend = legendZone.append("g")
-			.attr("class", "legend")
-			.attr("height", 100)
-			.attr("width", 200)
-			.attr('transform', `translate(${cfg.legend.translateX},${cfg.legend.translateY + 20})`);
-		// Create rectangles markers
-		legend.selectAll('rect')
-		  .data(names)
-		  .enter()
-		  .append("rect")
-		  .attr("x", cfg.w - 65)
-		  .attr("y", (d,i) => i * 20)
-		  .attr("width", 10)
-		  .attr("height", 10)
-		  .style("fill", (d,i) => cfg.color(i));
-		// Create labels
-		legend.selectAll('text')
-		  .data(names)
-		  .enter()
-		  .append("text")
-		  .attr("x", cfg.w - 52)
-		  .attr("y", (d,i) => i * 20 + 9)
-		  .attr("font-size", "11px")
-		  .attr("fill", "#737373")
-		  .text(d => d);
-	}
-	*/
-
-	/////////////////////////////////////////////////////////
-	/////////////////// Helper Function /////////////////////
-	/////////////////////////////////////////////////////////
+	
+	// create rectangles markers
 
 	//Taken from http://bl.ocks.org/mbostock/7555321
 	//Wraps SVG text	
