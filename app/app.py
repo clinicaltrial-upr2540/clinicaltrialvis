@@ -104,9 +104,10 @@ def render_explorer():
 @app.route("/compound/explore", methods=["GET", "POST"])
 def render_compound_explorer():
     if request.method == "POST":
-        message = "this is a POST request"
-        compound_name = request.form.get("compound_name", "Phenylalanine")
-        message += " Compound is " + compound_name
+        compound_name = request.form.get("compound_name", '')
+        if compound_name == '': compound_name = None
+
+        message=f"Information about {compound_name}. "
 
         descriptor_payload = get_descriptor_payload(compound_name)
         descriptor_data = data_explore_post(descriptor_payload)
@@ -115,6 +116,18 @@ def render_compound_explorer():
         ba_dict = get_ba_dict(engine, compound_name)
 
         similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)
+
+        if (descriptor_dict == {}): 
+            descriptor_dict = None 
+
+        if len(ba_dict) < 1: 
+            ba_dict = None
+            message += "Bioavailability information not available. "
+
+        if (similar_dict.get('molecular_weight') == []): 
+            similar_dict = None 
+            message += "Similar compound information not available. "
+
         return render_template('explore_compound.html',
                 compound_name=compound_name,
                 message=message,
@@ -241,9 +254,12 @@ def get_descriptor_dict(descriptor_data):
 
     view_column_names = data_obj.get("view_column_names", [])
     column_names = [item[1] for item in view_column_names]
-    data = data_obj.get("data", [])[0]
+    if len(data_obj.get("data", [])) > 0: 
+        data = data_obj.get("data", [])[0]
 
-    return dict(zip(column_names, data))
+        return dict(zip(column_names, data))
+    else: 
+        return {}
 
 
 def data_explore_post(payload):
