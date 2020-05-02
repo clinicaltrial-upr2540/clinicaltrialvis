@@ -10,8 +10,8 @@
 
                             <h1>Please enter a compound name</h1>
 
-                            <p> Try "Adefovir dipivoxil", "Atorvastatin", or "Amikacin" for a non-bioavailable compound.
-                                Try "Abacavir", "Acyclovir", or "Sumatriptan" for a bioavailable compound
+                            <p> Try "Adefovir dipivoxil", "Atorvastatin", or "Amikacin" for compounds where DrugBank BA is False.
+                                Try "Abacavir", "Tramadol", or "Sumatriptan" for compounds where DrugBank BA is True.
                             </p>
                             <form action="/compound/explore" method="post">
                                 <input type="text" name="compound_name">
@@ -20,18 +20,9 @@
 
 
                             <p>{{ message }}</p>
-                            {% if compound_name is defined %}
-                                <img src="/compound/explore/{{ compound_name }}/descriptors/png" style="width:100%"/>
-                                </br>
-                            {% else %}
-                            {% endif %}
 
 
-                            </br>
-
-
-
-                            {% if descriptor_dict is defined %}
+                            {% if descriptor_dict is not none %}
 
                                 <div class="card">
                                     <!-- Card header -->
@@ -63,7 +54,55 @@
                             {% else %}
                             {% endif %}
 
-                            {% if similar_dict is defined %}
+
+                           {% if ba_dict is not none %}
+
+                                <div class="card">
+                                    <!-- Card header -->
+                                    <div class="card-header">
+                                        <h3 class="mb-0">Bioavailability</h3>
+                                        <p>What is interesting here is that many compounds that DrugBank indicates has False bioavailability actually have non-zero BA percentages in their absorption free-text fields. See Amikacin as an example. Or go to the /explore page and search for compounds where "bioavailability" is "0", but "bioavailability_percent" is ">0" in the search field. </p>
+                                    </div>
+
+                                    <div class="table-responsive py-4">
+                                        <table class="table table-flush" id="datatable-basic">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                {% for temp2 in ba_dict[0].keys() %}
+                                                    <th>{{ temp2 }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for row in ba_dict %}
+                                            <tr>
+                                                {% for key, value in row.items() %}
+
+                                                    <td>{{ value }}</td>
+
+                                                {% endfor %}
+                                            </tr>
+                                              {% endfor %}
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            {% else %}
+                            {% endif %}
+
+
+
+                            {% if descriptor_dict is not none %}
+                                <img src="/compound/explore/{{ compound_name }}/descriptors/png" style="width:100%"/>
+                                </br>
+
+                            </br>
+
+                            {% else %}
+                            {% endif %}
+
+                            {% if similar_dict is not none  %}
                                 <div class="card">
                                     <!-- Card header -->
                                     <div class="card-header">
@@ -103,39 +142,9 @@
                                 </div>
                             {% else %}
                             {% endif %}
-                               {% if ba_dict is defined %}
 
-                                <div class="card">
-                                    <!-- Card header -->
-                                    <div class="card-header">
-                                        <h3 class="mb-0">Bio availability</h3>
-                                    </div>
-                                    <div class="table-responsive py-4">
-                                        <table class="table table-flush" id="datatable-basic">
-                                            <thead class="thead-light">
-                                            <tr>
-                                                {% for temp2 in ba_dict[0].keys() %}
-                                                    <th>{{ temp2 }}</th>
-                                                {% endfor %}
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for row in ba_dict %}
-                                            <tr>
-                                                {% for key, value in row.items() %}
 
-                                                    <td>{{ value }}</td>
 
-                                                {% endfor %}
-                                            </tr>
-                                              {% endfor %}
-                                            </tbody>
-                                        </table>
-
-                                    </div>
-                                </div>
-                            {% else %}
-                            {% endif %}
                         </div>
                     </div>
                 </div>
