@@ -106,6 +106,7 @@ def get_similar_compounds_by_descriptor(engine, compound_name, descriptor):
         stats as (
         SELECT 
         theragroup.compound_name, 
+        atc_level_4,
         theragroup."{descriptor}", 
         abs((refs."{descriptor}"-theragroup."{descriptor}")/group_stats."stddev_{descriptor}") as norm_diff, 
         refs.therapeutic_code
@@ -123,10 +124,10 @@ def get_similar_compounds_by_descriptor(engine, compound_name, descriptor):
         select 
         compound_name, 
         "{descriptor}", 
-        norm_diff, 
-        "{descriptor}"
+        norm_diff as difference_score, 
+        atc_level_4
         from ranked where rank_w_in_group < 5
-        order by therapeutic_code, rank_w_in_group
+        order by therapeutic_code, rank_w_in_group, norm_diff
         limit 10
         ; 
         """
@@ -141,10 +142,9 @@ def get_ba_dict(engine, compound_name):
     sql_str = """
             SELECT 
             DISTINCT 
-            bioavailability as drugbank_BA_boolean, 
-            bioavailability_phrase, 
-            bioavailability_percent, 
-            bioavailability_percent as predicted_BA_percent_if_able 
+            bioavailability::bool as drugank_is_BA_truefalse, 
+            bioavailability_percent as freetext_BA_lookup, 
+            bioavailability_percent as predicted_BA_percent_if_possible
             FROM curated.compound 
             WHERE compound_name LIKE :compound_name
             """ 
