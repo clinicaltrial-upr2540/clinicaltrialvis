@@ -22,20 +22,30 @@ sys.path.append(APP_PATH)
 
 from explore_compounds import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict, get_ba_dict
 
-
 app = Flask(__name__)
 app.config['TESTING'] = True
 
 ############################################
-# Startup tasks go here (load/check data)
+# Startup tasks go here (load/check config)
 ############################################
 
-# Import database configuration
+# Import database configuration from file
 config = ConfigParser()
-
-# config.read("database.conf")
 config.read(f"{APP_PATH}/database.conf")
 
+# If environment variables are present, override config file
+if "drugdata" not in config:
+    config["drugdata"] = {}
+if "DB_USER" in os.environ:
+    config["drugdata"]["user"] = os.environ.get("DB_USER")
+if "DB_PASSWORD" in os.environ:
+    config["drugdata"]["password"] = os.environ.get("DB_PASSWORD")
+if "DB_HOST" in os.environ:
+    config["drugdata"]["host"] = os.environ.get("DB_HOST")
+if "DB_PORT" in os.environ:
+    config["drugdata"]["port"] = os.environ.get("DB_PORT")
+if "DB_NAME" in os.environ:
+    config["drugdata"]["database"] = os.environ.get("DB_NAME")
 
 # Set up and establish database engine
 # URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
