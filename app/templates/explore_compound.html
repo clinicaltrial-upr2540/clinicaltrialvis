@@ -22,7 +22,7 @@
                             <p>{{ message }}</p>
 
 
-                            {% if descriptor_dict is not none %}
+                            {% if (descriptor_dict is defined) and (descriptor_dict is not none) %}
 
                                 <div class="card">
                                     <!-- Card header -->
@@ -55,7 +55,7 @@
                             {% endif %}
 
 
-                           {% if ba_dict is not none %}
+                           {% if (ba_dict is defined) and  (ba_dict is not none) %}
 
                                 <div class="card">
                                     <!-- Card header -->
@@ -93,7 +93,7 @@
 
 
 
-                            {% if descriptor_dict is not none %}
+                            {% if (descriptor_dict is defined) and ( descriptor_dict is not none) %}
                                 <img src="/compound/explore/{{ compound_name }}/descriptors/png" style="width:100%"/>
                                 </br>
 
@@ -102,7 +102,7 @@
                             {% else %}
                             {% endif %}
 
-                            {% if similar_dict is not none  %}
+                            {% if (similar_dict is defined) and  (similar_dict is not none)  %}
                                 <div class="card">
                                     <!-- Card header -->
                                     <div class="card-header">
