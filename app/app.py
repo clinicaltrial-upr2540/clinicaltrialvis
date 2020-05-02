@@ -115,9 +115,10 @@ def render_explorer():
 def render_compound_explorer():
     if request.method == "POST":
         compound_name = request.form.get("compound_name", '')
-        if compound_name == '': compound_name = None
+        if compound_name == '':
+            compound_name = None
 
-        message=f"Information about {compound_name}. "
+        message = f"Information about {compound_name}."
 
         descriptor_payload = get_descriptor_payload(compound_name)
         descriptor_data = data_explore_post(descriptor_payload)
@@ -127,24 +128,24 @@ def render_compound_explorer():
 
         similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)
 
-        if (descriptor_dict == {}): 
-            descriptor_dict = None 
+        if (descriptor_dict == {}):
+            descriptor_dict = None
 
-        if len(ba_dict) < 1: 
+        if len(ba_dict) < 1:
             ba_dict = None
             message += "Bioavailability information not available. "
 
-        if (similar_dict.get('molecular_weight') == []): 
-            similar_dict = None 
+        if (similar_dict.get('molecular_weight') == []):
+            similar_dict = None
             message += "Similar compound information not available. "
 
         return render_template('explore_compound.html',
-                compound_name=compound_name,
-                message=message,
-                descriptor_dict=descriptor_dict,
-                ba_dict=ba_dict,
-                similar_dict=similar_dict
-            )
+                               compound_name=compound_name,
+                               message=message,
+                               descriptor_dict=descriptor_dict,
+                               ba_dict=ba_dict,
+                               similar_dict=similar_dict
+                               )
     else:
         message = "This is a GET request"
         return render_template('explore_compound.html', message=message, page_title="Explore A Compound")
@@ -192,7 +193,6 @@ def get_visualization_data(vis_data_name, data_format):
 ############################################
 
 # API endpoint to get a 9 descriptor plot for a compound
-
 @app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"])
 def compound_descriptors(compound_name):
 
@@ -264,11 +264,11 @@ def get_descriptor_dict(descriptor_data):
 
     view_column_names = data_obj.get("view_column_names", [])
     column_names = [item[1] for item in view_column_names]
-    if len(data_obj.get("data", [])) > 0: 
+    if len(data_obj.get("data", [])) > 0:
         data = data_obj.get("data", [])[0]
 
         return dict(zip(column_names, data))
-    else: 
+    else:
         return {}
 
 
