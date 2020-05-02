@@ -84,15 +84,13 @@ def render_visualizations_page():
         result = conn.execute("SELECT * FROM application.visualizations;").fetchall()
     result_list = [dict(row) for row in result]
 
-    return render_template('visualizations.html', page_title="Visualizations", result_list=result_list)
+    return render_template('visualizations.html', page_title="Demo Visualizations", result_list=result_list)
 
 
-# Menu to present all visualizations
+# Unified visualization to explore drug companies
 @app.route("/classes")
 def render_drug_classes():
-    # Query for full list of visualizations
-
-    return render_template('drug_classes.html', page_title="Visualizations", result={})
+    return render_template('drug_classes.html', page_title="Explore Targets By Company", result={})
 
 
 # Page to show a single d3 visualization
@@ -107,13 +105,13 @@ def render_visualization(vis_id):
 
 
 # Page to explore and explort data
-@app.route("/explore")
+@app.route("/explore/data")
 def render_explorer():
-    return render_template('explore.html', page_title="Explore")
+    return render_template('explore.html', page_title="Explore Data")
 
 
 # Page to look up a compound vs its therapeutic group's descriptors
-@app.route("/compound/explore", methods=["GET", "POST"])
+@app.route("/explore/compound", methods=["GET", "POST"])
 def render_compound_explorer():
     if request.method == "POST":
         compound_name = request.form.get("compound_name", '')
@@ -149,7 +147,7 @@ def render_compound_explorer():
             )
     else:
         message = "This is a GET request"
-        return render_template('explore_compound.html', message=message)
+        return render_template('explore_compound.html', message=message, page_title="Explore A Compound")
 
 
 ############################################
