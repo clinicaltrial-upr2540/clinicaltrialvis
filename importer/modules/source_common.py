@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import requests
+
 
 def uberprint(toprint):
     print("\n" + ("*" * len(toprint)) + "****")
@@ -27,3 +29,10 @@ def validate_table(engine, schema, table):
         return True
     else:
         return False
+
+
+def download_http(url, filename, PATH):
+    filedata = requests.get(url)
+
+    with open(f"{PATH}/data/{filename}", 'wb') as f:
+        f.write(filedata.content)
