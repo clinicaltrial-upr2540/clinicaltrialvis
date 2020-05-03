@@ -7,22 +7,6 @@ from subprocess import Popen
 from sqlalchemy.exc import ProgrammingError
 
 
-def uberprint(toprint):
-    print("\n" + ("*" * len(toprint)) + "****")
-    print(f"* {toprint} *")
-    print("*" * len(toprint) + "****\n")
-
-
-def check_for_schema(engine, schema):
-    with engine.connect() as conn:
-        result = conn.execute(f"SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = '{schema}');").fetchone()
-
-    if list(result)[0] is True:
-        return True
-    else:
-        return False
-
-
 # Function to import DrugCentral
 def import_drugcentral(config, engine, FORCE):
     # If the schema doesn't exist of FORCE is specified, run the import
@@ -102,36 +86,3 @@ def import_chembl(config, engine, FORCE):
         uberprint("IMPORT OF ChemBL COMPLETE")
     else:
         uberprint("SKIPPING IMPORT OF ChemBL")
-
-
-# Function to import drugbank data
-def import_drugbank(config, engine, FORCE):
-    # If the schema doesn't exist of FORCE is specified, run the import
-    if FORCE or not check_for_schema(engine, "drug_bank"):
-        uberprint("IMPORTING DrugBank")
-
-        # Drop any old versions of the schema
-        with engine.connect() as conn:
-            conn.execute("drop schema if exists drug_bank cascade;")
-
-        # Build command to import drugbank data
-        command = f"./modules/import_drugbank.R " \
-            f"{config['drugdata']['host']} " \
-            f"{config['drugdata']['port']} " \
-            f"{config['drugdata']['database']} " \
-            f"{config['drugdata']['user']} " \
-            f"{config['drugdata']['password']} " \
-            f"/Users/gsanna/git/clinicaltrialvis/importer/data/drugbank_full_database.xml"
-
-        # Run the import
-        p = Popen(command, shell=True)
-        p.wait()
-
-        # Rename the public schema and make a new one
-        with engine.connect() as conn:
-            conn.execute("alter schema public rename to drug_bank;")
-            conn.execute("create schema public;")
-
-        uberprint("IMPORT OF DrugBank COMPLETE")
-    else:
-        uberprint("SKIPPING IMPORT OF DrugBank")
