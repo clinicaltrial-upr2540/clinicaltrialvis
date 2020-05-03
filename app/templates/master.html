@@ -12,18 +12,18 @@
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
 
 	<!-- Argon CSS -->
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/argon.css') }}" type="text/css">
+	<link rel="stylesheet" href="{{ url_for('static', filename='frameworks/css/argon.css') }}" type="text/css">
 
 	<!-- Argon scripts -->
 	<!-- Core -->
-	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/js.cookie.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/jquery.scrollbar/jquery.scrollbar.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/jquery-scrollLock.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='frameworks/js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='frameworks/js/bootstrap.bundle.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='frameworks/js/js.cookie.js') }}"></script>
+	<script src="{{ url_for('static', filename='frameworks/js/jquery.scrollbar/jquery.scrollbar.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='frameworks/js/jquery-scrollLock.min.js') }}"></script>
 
 	<!-- Argon JS -->
-	<script src="{{ url_for('static', filename='js/argon.js') }}"></script>
+	<script src="{{ url_for('static', filename='frameworks/js/argon.js') }}"></script>
 
 	{% if result is defined %}
 	<!-- D3.js -->
@@ -37,9 +37,6 @@
 
 	<!-- Plotly js -->
 	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-	<!-- Visualization-specific CSS -->
-	<link rel="stylesheet" href="/static/css/visualizations/{{ result['name'] }}.css" type="text/css">
 	{% endif %}
 
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" type="text/css">
