@@ -4,7 +4,6 @@
 //Plotly.d3.csv('/vis/splomdata/csv/splom_data_C14.csv', function(err, rows){
 //line for Flask deployment
 Plotly.d3.csv('/static/visualizations/datafiles/splom_data_C14.csv', function(err, rows){
-
 // create data collection of companies to be used as a color in 3d-bubble-plot 
   var companies = d3.map(rows, function(d){return d.group;}).keys();
 
