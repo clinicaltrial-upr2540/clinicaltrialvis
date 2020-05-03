@@ -1,17 +1,16 @@
-import json 
 import pandas as pd
-import numpy as np
-import sqlalchemy
-from sqlalchemy.sql import text 
-import io 
+from sqlalchemy.sql import text
+import io
+from flask import make_response
+
 import matplotlib.pyplot as plt
-
-from sqlalchemy.orm import sessionmaker
-from configparser import ConfigParser
-from flask import Flask, make_response
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
 
+# Set TkAgg backend on MacOS to prevent crashes
+from sys import platform
+if platform == 'darwin':
+    import matplotlib
+    matplotlib.use("TkAgg")
 
 # set up descriptors 
 descriptors = [
