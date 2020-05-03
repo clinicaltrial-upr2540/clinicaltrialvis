@@ -152,43 +152,6 @@ def render_compound_explorer():
 
 
 ############################################
-# Routes to visualization data
-############################################
-
-# This route is a fake API for the D3 visualizations to get their prepared
-#   datasets out of the database
-# TODO: Replace this with queries of the actual curated dataset
-@app.route("/vis/<vis_data_name>/<data_format>")
-def get_visualization_data(vis_data_name, data_format):
-    with engine.connect() as conn:
-        query_result = conn.execute(f"SELECT * FROM application.{vis_data_name}").fetchall()
-    query_result = [dict(row) for row in query_result]
-
-    popped_result = []
-
-    # We don't want to include IDs
-    for item in query_result:
-        item.pop("id")
-        popped_result.append(item)
-
-    # Return as a json file
-    if data_format == "json":
-        # Store values in a var to pass to js
-        data = {}
-        data["data"] = popped_result
-
-        return(json.dumps(data))
-    # Return as a CSV
-    else:
-        csv_output = ",".join(popped_result[0].keys())
-
-        for row in popped_result:
-            csv_output = csv_output + "\n" + ",".join(map(str, row.values()))
-
-        return(csv_output)
-
-
-############################################
 # Routes to API endpoints go here
 ############################################
 

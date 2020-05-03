@@ -18,7 +18,7 @@ var svg = d3.select("#box-whisker")
 //line for local deployment
 //d3.csv("/vis/heatmapdata/csv/heatmap_data_CO6.csv", function(data){
 //line for Flask deployment
-d3.csv("/vis/heatmapdata/csv", function(data) {
+d3.csv("/static/visualizations/datafiles/heatmap_data_CO6.csv", function(data) {
 
   // create data collections and compute statistics that are necessary to draw the box
   var sumstat = d3.nest()
