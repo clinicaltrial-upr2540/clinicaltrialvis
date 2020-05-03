@@ -16,7 +16,6 @@ def import_visualization_demos(engine):
             "description": "Radar Chart",
             "thumbnail": "radar.png",
             "classes": "radarChart",
-            "dataset": "cdcdata",
             "data_format": "json",
             "scripts": "chartSetup.js,dotMatrix.js,radarChart.js"
         },
@@ -26,7 +25,6 @@ def import_visualization_demos(engine):
             "description": "Dot Matrix Diagram",
             "thumbnail": "dotmatrix.png",
             "classes": "dotMatrixChart",
-            "dataset": "cdcdata",
             "data_format": "json",
             "scripts": "chartSetup.js,dotMatrix.js,radarChart.js"
         },
@@ -36,7 +34,6 @@ def import_visualization_demos(engine):
             "description": "3D Bubble Chart",
             "thumbnail": "3d_bubbles.png",
             "classes": "bubble-plot-3d",
-            "dataset": "splomdata",
             "data_format": "csv",
             "scripts": "bubble-plot-3d.js"
         },
@@ -46,7 +43,6 @@ def import_visualization_demos(engine):
             "description": "Box and Whisker Chart",
             "thumbnail": "box-whisker.png",
             "classes": "box-whisker-plotly",
-            "dataset": "heatmapdata",
             "data_format": "csv",
             "scripts": "box-whisker-plotly.js"
         },
@@ -56,7 +52,6 @@ def import_visualization_demos(engine):
             "description": "Heat Map",
             "thumbnail": "heatmap.png",
             "classes": "heatmap,dataset-picker",
-            "dataset": "heatmapdata",
             "data_format": "csv",
             "scripts": "heatmap.js"
         },
@@ -66,7 +61,6 @@ def import_visualization_demos(engine):
             "description": "Scatterplot Matrix",
             "thumbnail": "splom.png",
             "classes": "splom-plot",
-            "dataset": "splomdata",
             "data_format": "csv",
             "scripts": "splom.js"
         }
@@ -75,7 +69,7 @@ def import_visualization_demos(engine):
     with engine.connect() as conn:
         print("Refreshing visualization data...")
 
-        # Create the table if necessary
+        # Drop and recreate
         conn.execute("set search_path to application;")
         conn.execute("DROP TABLE IF EXISTS visualizations;")
         conn.execute("CREATE TABLE visualizations (id SERIAL PRIMARY KEY, \
@@ -84,13 +78,12 @@ def import_visualization_demos(engine):
                                         description VARCHAR, \
                                         thumbnail VARCHAR, \
                                         classes VARCHAR, \
-                                        dataset VARCHAR, \
                                         data_format VARCHAR, \
                                         scripts VARCHAR);")
 
         for visualization in visualization_list:
-            conn.execute(f"INSERT INTO visualizations (\"name\", title, description, thumbnail, classes, dataset, data_format, scripts) VALUES \
-                        (\'{visualization['name']}\', \'{visualization['title']}\', \'{visualization['description']}\', \'{visualization['thumbnail']}\', \'{visualization['classes']}\', \'{visualization['dataset']}\', \'{visualization['data_format']}\', \'{visualization['scripts']}\')")
+            conn.execute(f"INSERT INTO visualizations (\"name\", title, description, thumbnail, classes, data_format, scripts) VALUES \
+                        (\'{visualization['name']}\', \'{visualization['title']}\', \'{visualization['description']}\', \'{visualization['thumbnail']}\', \'{visualization['classes']}\', \'{visualization['data_format']}\', \'{visualization['scripts']}\')")
 
 
 if __name__ == "__main__":
