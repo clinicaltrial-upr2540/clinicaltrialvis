@@ -12,9 +12,9 @@ if platform == 'darwin':
     import matplotlib
     matplotlib.use("TkAgg")
 
-# set up descriptors 
+# set up descriptors
 descriptors = [
-    'molecular_weight', 
+    'molecular_weight',
      'clogp',
         'hbd',
         'hba',
