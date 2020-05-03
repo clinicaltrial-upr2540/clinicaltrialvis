@@ -3,7 +3,7 @@
 //line for local deployment
 //Plotly.d3.csv('/vis/splomdata/csv/splom_data_C14.csv', function(err, rows){
 //line for Flask deployment
-Plotly.d3.csv('/vis/splomdata/csv', function(err, rows){
+Plotly.d3.csv('/static/visualizations/datafiles/splom_data_C14.csv', function(err, rows){
 
 //reads the data
     function unpack(rows, key) {

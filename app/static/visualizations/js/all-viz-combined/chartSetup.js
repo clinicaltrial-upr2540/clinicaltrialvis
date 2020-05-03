@@ -38,7 +38,7 @@
 //Load the data and call function to draw the dotmatrix
 //line for local deployment
 
-	d3.json("/vis/cdc_data_all/json", function(error, data){
+	d3.json("/static/visualizations/datafiles/all_cdc_data.json", function(error, data){
 //line for Flask deployment
 //d3.json("/vis/cdcdata/json", function(error, data){
 		prepareData(data);

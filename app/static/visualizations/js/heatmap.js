@@ -36,7 +36,7 @@ svg.append("text")
 //line for local deployment
 //d3.csv('/vis/heatmap/csv/heatmap_data_CO6.csv', function(err, data){
 //line for Flask deployment
-d3.csv("/vis/heatmapdata/csv", function(data) {
+d3.csv("/static/visualizations/datafiles/heatmap_data_CO6.csv", function(data) {
 
   //labels for rows ('group' or company) and columns('variable' or drug)
   var myGroups = d3.map(data, function(d){return d.group;}).keys();
