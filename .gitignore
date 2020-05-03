@@ -1,7 +1,10 @@
 # configuration files 
-*.conf 
+*.conf
+
 # Mac files
+**/__MACOSX/*
 .DS_Store
+._*
 
 # VS Code IDE files
 **/.vscode/*
