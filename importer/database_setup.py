@@ -12,6 +12,7 @@ sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}/modules")
 
 import source_common
 import source_drugbank
+import source_fda
 from source_common import *
 
 data_sources = {
@@ -54,8 +55,10 @@ def main(config, engine, CURRENT_PATH, FORCE):
     # Check if data sources have already been imported
     if source_drugbank.validate_data(engine):
         data_sources["drug_bank"]["imported"] = True
+    if source_fda.validate_data(engine):
+        data_sources["fda"]["imported"] = True
 
-    # Import DrugBank data
+    # DrugBank IMPORT PROCESS
     if not data_sources["drug_bank"]["imported"] or FORCE:
         drugbank_data = source_drugbank.validate_downloaded_file(CURRENT_PATH)
 
@@ -66,6 +69,23 @@ def main(config, engine, CURRENT_PATH, FORCE):
             uberprint("SKIPPING IMPORT OF DrugBank")
     else:
         uberprint("SKIPPING IMPORT OF DrugBank")
+
+    # FDA IMPORT PROCESS
+    if not data_sources["fda"]["imported"] or FORCE:
+        # Download FDA data
+        source_fda.download(CURRENT_PATH)
+        source_fda.validate_downloaded_file(CURRENT_PATH)
+
+        fda_data = source_fda.validate_downloaded_file(CURRENT_PATH)
+
+        # Import FDA data
+        if fda_data:
+            source_fda.import_to_db(config, engine, CURRENT_PATH, FORCE)
+        else:
+            print("Unable to find FDA data file.")
+            uberprint("SKIPPING IMPORT OF FDA")
+    else:
+        uberprint("SKIPPING IMPORT OF FDA")
 
 
 if __name__ == "__main__":
@@ -80,4 +100,4 @@ if __name__ == "__main__":
     DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
     engine = sqlalchemy.create_engine(DATABASE_URL)
 
-    main(config, engine, CURRENT_PATH, True)
+    main(config, engine, CURRENT_PATH, False)
