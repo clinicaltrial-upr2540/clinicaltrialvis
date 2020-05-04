@@ -74,7 +74,6 @@ def main(config, engine, CURRENT_PATH, FORCE):
     if not data_sources["fda"]["imported"] or FORCE:
         # Download FDA data
         source_fda.download(CURRENT_PATH)
-        source_fda.validate_downloaded_file(CURRENT_PATH)
 
         fda_data = source_fda.validate_downloaded_file(CURRENT_PATH)
 
@@ -84,6 +83,8 @@ def main(config, engine, CURRENT_PATH, FORCE):
         else:
             print("Unable to find FDA data file.")
             uberprint("SKIPPING IMPORT OF FDA")
+
+        source_fda.cleanup(CURRENT_PATH)
     else:
         uberprint("SKIPPING IMPORT OF FDA")
 
@@ -100,4 +101,4 @@ if __name__ == "__main__":
     DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
     engine = sqlalchemy.create_engine(DATABASE_URL)
 
-    main(config, engine, CURRENT_PATH, False)
+    main(config, engine, CURRENT_PATH, True)
