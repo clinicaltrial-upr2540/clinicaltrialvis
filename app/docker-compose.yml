@@ -1,0 +1,7 @@
+version: '3'
+services:
+  pharmadata4u:
+    build: .
+    ports:
+      - "5000:5000"
+    image: pharmadata/pharmadata4u:latest
