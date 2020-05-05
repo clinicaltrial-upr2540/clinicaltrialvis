@@ -42,7 +42,7 @@ class TestCompoundExplore(TestCase):
         with app.test_client() as c:
             req = requests.Request
             req.data = '{"compound_name": "Atorvastatin"}'
-            resp = c.get('/compound/explore')
+            resp = c.get('/explore/compound')
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.default_mimetype, 'text/html')
 
