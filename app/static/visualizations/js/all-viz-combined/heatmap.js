@@ -214,8 +214,6 @@ var tooltipDescriptor = "<br>"+ descriptor.toUpperCase() + ": "
       .html(d.compound + tooltipDescriptor + d["descriptor"])
       .style('top', (d3.event.layerY - 30) + 'px')
       .style('left', (d3.event.layerX + 20) + 'px')
-      //.style("left", (d3.mouse(this)[0]+300) + "px")
-      //.style("top", (d3.mouse(this)[1]) + "px")
   }
   var mouseleave = function(d) {
     tooltip

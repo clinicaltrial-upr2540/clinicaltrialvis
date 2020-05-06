@@ -127,8 +127,6 @@ function dotMatrixChart(id,dataset,options){
                 .append("svg")
                 .attr("width", width + margin.left + margin.right + width/2)
                 .attr("height", svg_height+ margin.top + margin.bottom);
-                //.attr("height", height + margin.top + margin.bottom);
-                //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     //populate y axis
     svg.append("g")
