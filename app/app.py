@@ -17,27 +17,36 @@ from io import BytesIO
 ############################################
 # Import local modules
 ############################################
-sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
+APP_PATH = str(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(APP_PATH)
 
 from explore_compounds import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict, get_ba_dict
-
+import visualization_setup
 
 app = Flask(__name__)
 app.config['TESTING'] = True
 
 ############################################
-# Startup tasks go here (load/check data)
+# Startup tasks go here (load/check config)
 ############################################
 
-# Set current working path
-current_path = str(os.path.dirname(os.path.realpath(__file__)))
-
-# Import database configuration
+# Import database configuration from file
 config = ConfigParser()
+config.read(f"{APP_PATH}/database.conf")
 
-# config.read("database.conf")
-config.read(f"{current_path}/database.conf")
-
+# If environment variables are present, override config file
+if "drugdata" not in config:
+    config["drugdata"] = {}
+if "DB_USER" in os.environ:
+    config["drugdata"]["user"] = os.environ.get("DB_USER")
+if "DB_PASSWORD" in os.environ:
+    config["drugdata"]["password"] = os.environ.get("DB_PASSWORD")
+if "DB_HOST" in os.environ:
+    config["drugdata"]["host"] = os.environ.get("DB_HOST")
+if "DB_PORT" in os.environ:
+    config["drugdata"]["port"] = os.environ.get("DB_PORT")
+if "DB_NAME" in os.environ:
+    config["drugdata"]["database"] = os.environ.get("DB_NAME")
 
 # Set up and establish database engine
 # URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
@@ -45,7 +54,10 @@ DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['
 engine = sqlalchemy.create_engine(DATABASE_URL)
 
 # Refresh visualization data
-# import visualization_setup
+try:
+    visualization_setup.import_visualization_demos(engine)
+except Exception:
+    print("WARNING: Unable to refresh visualization data.")
 
 
 ############################################
@@ -72,15 +84,13 @@ def render_visualizations_page():
         result = conn.execute("SELECT * FROM application.visualizations;").fetchall()
     result_list = [dict(row) for row in result]
 
-    return render_template('visualizations.html', page_title="Visualizations", result_list=result_list)
+    return render_template('visualizations.html', page_title="Demo Visualizations", result_list=result_list)
 
 
-# Menu to present all visualizations
+# Unified visualization to explore drug companies
 @app.route("/classes")
 def render_drug_classes():
-    # Query for full list of visualizations
-
-    return render_template('drug_classes.html', page_title="Visualizations", result={})
+    return render_template('drug_classes.html', page_title="Explore Targets By Company", result={})
 
 
 # Page to show a single d3 visualization
@@ -95,19 +105,20 @@ def render_visualization(vis_id):
 
 
 # Page to explore and explort data
-@app.route("/explore")
+@app.route("/explore/data")
 def render_explorer():
-    return render_template('explore.html', page_title="Explore")
+    return render_template('explore.html', page_title="Explore Data")
 
 
 # Page to look up a compound vs its therapeutic group's descriptors
-@app.route("/compound/explore", methods=["GET", "POST"])
+@app.route("/explore/compound", methods=["GET", "POST"])
 def render_compound_explorer():
     if request.method == "POST":
         compound_name = request.form.get("compound_name", '')
-        if compound_name == '': compound_name = None
+        if compound_name == '':
+            compound_name = None
 
-        message=f"Information about {compound_name}. "
+        message = f"Information about {compound_name}."
 
         descriptor_payload = get_descriptor_payload(compound_name)
         descriptor_data = data_explore_post(descriptor_payload)
@@ -117,64 +128,27 @@ def render_compound_explorer():
 
         similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)
 
-        if (descriptor_dict == {}): 
-            descriptor_dict = None 
+        if (descriptor_dict == {}):
+            descriptor_dict = None
 
-        if len(ba_dict) < 1: 
+        if len(ba_dict) < 1:
             ba_dict = None
             message += "Bioavailability information not available. "
 
-        if (similar_dict.get('molecular_weight') == []): 
-            similar_dict = None 
+        if (similar_dict.get('molecular_weight') == []):
+            similar_dict = None
             message += "Similar compound information not available. "
 
         return render_template('explore_compound.html',
-                compound_name=compound_name,
-                message=message,
-                descriptor_dict=descriptor_dict,
-                ba_dict=ba_dict,
-                similar_dict=similar_dict
-            )
+                               compound_name=compound_name,
+                               message=message,
+                               descriptor_dict=descriptor_dict,
+                               ba_dict=ba_dict,
+                               similar_dict=similar_dict
+                               )
     else:
         message = "This is a GET request"
-        return render_template('explore_compound.html', message=message)
-
-
-############################################
-# Routes to visualization data
-############################################
-
-# This route is a fake API for the D3 visualizations to get their prepared
-#   datasets out of the database
-# TODO: Replace this with queries of the actual curated dataset
-@app.route("/vis/<vis_data_name>/<data_format>")
-def get_visualization_data(vis_data_name, data_format):
-    with engine.connect() as conn:
-        query_result = conn.execute(f"SELECT * FROM application.{vis_data_name}").fetchall()
-    query_result = [dict(row) for row in query_result]
-
-    popped_result = []
-
-    # We don't want to include IDs
-    for item in query_result:
-        item.pop("id")
-        popped_result.append(item)
-
-    # Return as a json file
-    if data_format == "json":
-        # Store values in a var to pass to js
-        data = {}
-        data["data"] = popped_result
-
-        return(json.dumps(data))
-    # Return as a CSV
-    else:
-        csv_output = ",".join(popped_result[0].keys())
-
-        for row in popped_result:
-            csv_output = csv_output + "\n" + ",".join(map(str, row.values()))
-
-        return(csv_output)
+        return render_template('explore_compound.html', message=message, page_title="Explore A Compound")
 
 
 ############################################
@@ -182,7 +156,6 @@ def get_visualization_data(vis_data_name, data_format):
 ############################################
 
 # API endpoint to get a 9 descriptor plot for a compound
-
 @app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"])
 def compound_descriptors(compound_name):
 
@@ -254,11 +227,11 @@ def get_descriptor_dict(descriptor_data):
 
     view_column_names = data_obj.get("view_column_names", [])
     column_names = [item[1] for item in view_column_names]
-    if len(data_obj.get("data", [])) > 0: 
+    if len(data_obj.get("data", [])) > 0:
         data = data_obj.get("data", [])[0]
 
         return dict(zip(column_names, data))
-    else: 
+    else:
         return {}
 
 

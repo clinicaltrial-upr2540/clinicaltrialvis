@@ -18,8 +18,12 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            <div id="visualizationSpace" height = "300" ></div>
-                            <div class="radarChart"></div>
+                            <div id="visualizationSpace" width="900" height = "600"></div>
+                            <!--this div is important for the space separation -->
+                            <div id="emptySpace" width="900" height = "100" visibility="hidden"></div>
+                            <div class="choice_buttons"></div>
+                            <div class="descriptor_buttons_d"></div>
+                            <div class="descriptor_buttons_c"></div>
                         </div>
                         <div class="col-md-2">
                             <div class="stacked-diseases">
@@ -29,16 +33,20 @@
                             </div>
                         </div>
                     </div>
+                    <div id="output">
+                    </div>
 
 				</div>
 			</div>
 		</div>
 	</div>
 
-<script src="/static/js-visualizations/two-viz-combined/chartSetup.js"></script>
-<script src="/static/js-visualizations/two-viz-combined/prepareData.js"></script>
-<script src="/static/js-visualizations/two-viz-combined/radarChart.js"></script>
-<!-- DotMatrix.js - from https://github.com/arpitnarechania/d3-dotmatrix -->	
-<script src="/static/js-visualizations/two-viz-combined/dotMatrix.js"></script>
+<script src="/static/visualizations/js/all-viz-combined/chartSetup.js"></script>
+<script src="/static/visualizations/js/all-viz-combined/prepareData.js"></script>
+<script src="/static/visualizations/js/all-viz-combined/radarChart.js"></script>
+<!-- DotMatrix.js - from https://github.com/arpitnarechania/d3-dotmatrix -->    
+<script src="/static/visualizations/js/all-viz-combined/dotMatrix.js"></script>
+<script src="/static/visualizations/js/all-viz-combined/heatmap.js"></script>
+<script src="/static/visualizations/js/all-viz-combined/box-whisker.js"></script>
 
 {% endblock %}
