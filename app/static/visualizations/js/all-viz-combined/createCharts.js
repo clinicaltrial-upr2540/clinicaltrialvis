@@ -102,21 +102,7 @@ function createCharts(data, dataCollection){
     companiesCategories.push({"size": Object.keys(mediumSmallIndexes).length, "name": "MEDIUM SMALL", "companiesIndexes": mediumSmallIndexes});
     companiesCategories.push({"size": Object.keys(mediumLargeIndexes).length, "name": "MEDIUM LARGE", "companiesIndexes": mediumLargeIndexes});
     companiesCategories.push({"size": Object.keys(largeIndexes).length, "name": "LARGE", "companiesIndexes": largeIndexes});
-    companiesCategories.push({"size": Object.keys(veryLargeIndexes).length, "name": "VERY LARGE", "companiesIndexes": veryLargeIndexes});
-
-    //for debugging
-    console.log("companiesCategories", companiesCategories.length);
-    console.log("VERY SMALL COMPANIES", verySmallIndexes);
-    console.log("SMALL COMPANIES", smallIndexes);
-    console.log("MEDIUM SMALL COMPANIES", mediumSmallIndexes);
-    console.log("MEDIUM LARGE COMPANIES", mediumLargeIndexes);
-    console.log("LARGE COMPANIES", largeIndexes);
-    console.log("VERY LARGE COMPANIES", veryLargeIndexes);
-
-
-
-    		
-			
+    companiesCategories.push({"size": Object.keys(veryLargeIndexes).length, "name": "VERY LARGE", "companiesIndexes": veryLargeIndexes});			
 
 		}); //end document ready
 } //end createCharts
