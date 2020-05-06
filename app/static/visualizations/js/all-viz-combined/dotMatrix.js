@@ -250,10 +250,14 @@ function dotMatrixChart(id,dataset,options){
 
     //create tooltip
 
-    var tooltip = d3.select("body")
+    var tooltip = d3.select("#visualizationSpace")
     .append('div')
+    .style("opacity", 0)
     .attr('class', 'tooltip')
-    .attr('style', 'position:absolute; opacity:0');
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px");
 
     //populate tooltip with a name of the company, disease class and a number of drugs within the disease class
     tooltip.append('div')
