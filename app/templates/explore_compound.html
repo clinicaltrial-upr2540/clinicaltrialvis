@@ -1,0 +1,155 @@
+{% extends "master.html" %}
+{% block body %}
+
+    <div class="row">
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+
+                            <h1>Please enter a compound name</h1>
+
+                            <p> Try "Adefovir dipivoxil", "Atorvastatin", or "Amikacin" for compounds where DrugBank BA is False.
+                                Try "Abacavir", "Tramadol", or "Sumatriptan" for compounds where DrugBank BA is True.
+                            </p>
+                            <form action="/explore/compound" method="post">
+                                <input type="text" name="compound_name">
+                                <input type="submit" value="Submit">
+                            </form>
+
+
+                            <p>{{ message }}</p>
+
+
+                            {% if (descriptor_dict is defined) and (descriptor_dict is not none) %}
+
+                                <div class="card">
+                                    <!-- Card header -->
+                                    <div class="card-header">
+                                        <h3 class="mb-0">Compound descriptor values</h3>
+                                    </div>
+                                    <div class="table-responsive py-4">
+                                        <table class="table table-flush" id="datatable-basic">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                {% for col_name_list in descriptor_dict %}
+                                                    <th>{{ col_name_list }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                {% for row in descriptor_dict %}
+
+                                                    <td>{{ descriptor_dict[row] }}</td>
+
+                                                {% endfor %}
+                                            </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            {% else %}
+                            {% endif %}
+
+
+                           {% if (ba_dict is defined) and  (ba_dict is not none) %}
+
+                                <div class="card">
+                                    <!-- Card header -->
+                                    <div class="card-header">
+                                        <h3 class="mb-0">Bioavailability</h3>
+                                        <p>What is interesting here is that many compounds that DrugBank indicates has False bioavailability actually have non-zero BA percentages in their absorption free-text fields. See Amikacin as an example. Or go to the /explore page and search for compounds where "bioavailability" is "0", but "bioavailability_percent" is ">0" in the search field. </p>
+                                    </div>
+
+                                    <div class="table-responsive py-4">
+                                        <table class="table table-flush" id="datatable-basic">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                {% for temp2 in ba_dict[0].keys() %}
+                                                    <th>{{ temp2 }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for row in ba_dict %}
+                                            <tr>
+                                                {% for key, value in row.items() %}
+
+                                                    <td>{{ value }}</td>
+
+                                                {% endfor %}
+                                            </tr>
+                                              {% endfor %}
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            {% else %}
+                            {% endif %}
+
+
+
+                            {% if (descriptor_dict is defined) and ( descriptor_dict is not none) %}
+                                <img src="/compound/explore/{{ compound_name }}/descriptors/png" style="width:100%"/>
+                                </br>
+
+                            </br>
+
+                            {% else %}
+                            {% endif %}
+
+                            {% if (similar_dict is defined) and  (similar_dict is not none)  %}
+                                <div class="card">
+                                    <!-- Card header -->
+                                    <div class="card-header">
+                                        <h3 class="mb-0">Similar compounds by descriptors</h3>
+                                    </div>
+                                    <div class="table-responsive py-4">
+
+
+                                        {% for tbl in similar_dict %}
+                                            <div class="card-header">
+                                                <h3 class="mb-0">{{ tbl }}</h3>
+                                            </div>
+                                            <table class="table table-flush" id="datatable-basic">
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    {% for temp2 in similar_dict[tbl][2].keys() %}
+                                                        <th>{{ temp2 }}</th>
+                                                    {% endfor %}
+
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for temp in similar_dict[tbl] %}
+                                                    <tr>
+                                                        {% for key,value in temp.items() %}
+                                                            <td>{{ value }}</td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            </br>
+                                            </br>
+                                        {% endfor %}
+
+                                    </div>
+                                </div>
+                            {% else %}
+                            {% endif %}
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

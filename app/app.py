@@ -1,36 +1,63 @@
 #!/usr/bin/env python3
 
+import os
 import json
 import sqlalchemy
-import pathlib
 import datetime
+import zipfile
+import random
+import sys
 
-from flask import Flask, render_template, request, make_response
-from sqlalchemy.orm import scoped_session, sessionmaker
+from flask import Flask, render_template, request, make_response, send_file
 from sqlalchemy.sql import text
 from configparser import ConfigParser
+from io import BytesIO
 
-import random
+
+############################################
+# Import local modules
+############################################
+APP_PATH = str(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(APP_PATH)
+
+from explore_compounds import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict, get_ba_dict
+import visualization_setup
 
 app = Flask(__name__)
 app.config['TESTING'] = True
 
 ############################################
-# Startup tasks go here (load/check data)
+# Startup tasks go here (load/check config)
 ############################################
 
-# Connect to the database
-# Set the DB URL and schema to use
-# URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
-DATABASE_URL = "postgresql://app_user:flask_app_user_role@drugdata.cgi8bzi5jc1o.us-east-1.rds.amazonaws.com:5432/drugdata"
-
-# Set up and establish connection
-engine = sqlalchemy.create_engine(DATABASE_URL)
-db = scoped_session(sessionmaker(bind=engine))
-
-# What does this config do? Let's eliminate it if possible
+# Import database configuration from file
 config = ConfigParser()
-config.readfp(open(f"{pathlib.Path(__file__).parent.absolute()}/config/configuration.conf"))
+config.read(f"{APP_PATH}/database.conf")
+
+# If environment variables are present, override config file
+if "drugdata" not in config:
+    config["drugdata"] = {}
+if "DB_USER" in os.environ:
+    config["drugdata"]["user"] = os.environ.get("DB_USER")
+if "DB_PASSWORD" in os.environ:
+    config["drugdata"]["password"] = os.environ.get("DB_PASSWORD")
+if "DB_HOST" in os.environ:
+    config["drugdata"]["host"] = os.environ.get("DB_HOST")
+if "DB_PORT" in os.environ:
+    config["drugdata"]["port"] = os.environ.get("DB_PORT")
+if "DB_NAME" in os.environ:
+    config["drugdata"]["database"] = os.environ.get("DB_NAME")
+
+# Set up and establish database engine
+# URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
+DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
+engine = sqlalchemy.create_engine(DATABASE_URL)
+
+# Refresh visualization data
+try:
+    visualization_setup.import_visualization_demos(engine)
+except Exception:
+    print("WARNING: Unable to refresh visualization data.")
 
 
 ############################################
@@ -57,7 +84,13 @@ def render_visualizations_page():
         result = conn.execute("SELECT * FROM application.visualizations;").fetchall()
     result_list = [dict(row) for row in result]
 
-    return render_template('visualizations.html', page_title="Visualizations", result_list=result_list)
+    return render_template('visualizations.html', page_title="Demo Visualizations", result_list=result_list)
+
+
+# Unified visualization to explore drug companies
+@app.route("/classes")
+def render_drug_classes():
+    return render_template('drug_classes.html', page_title="Explore Targets By Company", result={})
 
 
 # Page to show a single d3 visualization
@@ -72,47 +105,63 @@ def render_visualization(vis_id):
 
 
 # Page to explore and explort data
-@app.route("/explore")
+@app.route("/explore/data")
 def render_explorer():
-    return render_template('explore.html', page_title="Explore")
+    return render_template('explore.html', page_title="Explore Data")
 
 
-############################################
-# Routes to visualization data
-############################################
-@app.route("/vis/<vis_data_name>/<data_format>")
-def get_visualization_data(vis_data_name, data_format):
-    with engine.connect() as conn:
-        query_result = conn.execute(f"SELECT * FROM application.{vis_data_name}").fetchall()
-    query_result = [dict(row) for row in query_result]
+# Page to look up a compound vs its therapeutic group's descriptors
+@app.route("/explore/compound", methods=["GET", "POST"])
+def render_compound_explorer():
+    if request.method == "POST":
+        compound_name = request.form.get("compound_name", '')
+        if compound_name == '':
+            compound_name = None
 
-    popped_result = []
+        message = f"Information about {compound_name}."
 
-    # We don't want to include IDs
-    for item in query_result:
-        item.pop("id")
-        popped_result.append(item)
+        descriptor_payload = get_descriptor_payload(compound_name)
+        descriptor_data = data_explore_post(descriptor_payload)
+        descriptor_dict = get_descriptor_dict(descriptor_data)
 
-    # Return as a json file
-    if data_format == "json":
-        # Store values in a var to pass to js
-        data = {}
-        data["data"] = popped_result
+        ba_dict = get_ba_dict(engine, compound_name)
 
-        return(json.dumps(data))
-    # Return as a CSV
+        similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)
+
+        if (descriptor_dict == {}):
+            descriptor_dict = None
+
+        if len(ba_dict) < 1:
+            ba_dict = None
+            message += "Bioavailability information not available. "
+
+        if (similar_dict.get('molecular_weight') == []):
+            similar_dict = None
+            message += "Similar compound information not available. "
+
+        return render_template('explore_compound.html',
+                               compound_name=compound_name,
+                               message=message,
+                               descriptor_dict=descriptor_dict,
+                               ba_dict=ba_dict,
+                               similar_dict=similar_dict
+                               )
     else:
-        csv_output = ",".join(popped_result[0].keys())
-
-        for row in popped_result:
-            csv_output = csv_output + "\n" + ",".join(map(str, row.values()))
-
-        return(csv_output)
+        message = "This is a GET request"
+        return render_template('explore_compound.html', message=message, page_title="Explore A Compound")
 
 
 ############################################
 # Routes to API endpoints go here
 ############################################
+
+# API endpoint to get a 9 descriptor plot for a compound
+@app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"])
+def compound_descriptors(compound_name):
+
+    return get_plot_png(compound_name, engine)
+    # return f"compound name is {compound_name}"
+
 
 # API endpoint to list available views in the curated dataset
 @app.route("/data/views", methods=['GET'])
@@ -130,10 +179,9 @@ def views():
     return (json.dumps(response, indent=4, separators=(',', ': ')))
 
 
+# API endpoint to list the columns in a single view
 @app.route("/data/view/<view_name>", methods=['GET'])
 def view_info(view_name):
-    from test_responses import sample_view_info
-
     with engine.connect() as conn:
         result = conn.execute(f"SELECT column_name, data_type \
             FROM information_schema.columns \
@@ -149,55 +197,15 @@ def view_info(view_name):
     return (json.dumps(return_data, indent=4))
 
 
+# API endpoint for querying data from one or more views in the curated dataset
+# Supports returning results as a JSON object, as a single CSV, or as a zip file
+#   containing one CSV for each view
 @app.route("/data/explore", methods=['GET', 'POST'])
 def explore_data():
-    # if method is POST
+    # If method is POST, this is a real API request
     if request.method == 'POST':
         payload = request.get_json()
-        if validate_explore_request(payload) is False:
-            return
-
-        if payload.get("export") == "false":
-            where_snippet = get_where_snippet(payload)
-            from_snippet = get_from_snippet(payload)
-            select_snippet = get_select_snippet(payload, False)
-            limit_snippet = get_limit_snippet(payload)
-
-            sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
-            results = get_explore_response(sql_string, payload)
-
-            results["sql"] = sql_string
-            return json.dumps(results, indent=4)
-
-        elif payload.get("export") == "true":
-            # IF this is a single file download, the data is exactly the same as render, just need to turn it into a file
-            if payload.get("single_file") == "true":
-                where_snippet = get_where_snippet(payload)
-                from_snippet = get_from_snippet(payload)
-                select_snippet = get_select_snippet(payload, True)
-                limit_snippet = get_limit_snippet(payload)
-
-                sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
-                results = get_explore_response_as_csv(sql_string, payload)
-
-                # results["sql"] = sql_string
-
-                # Create a response object and set headers so it will download as file
-                response = make_response(results)
-                response.headers['Content-Type'] = "application/octet-stream"
-                response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
-
-                return(response)
-
-            # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets
-            # the only thing that is different is the SELECT statement
-            else:
-                pass
-
-            # with each view, a JSON is constructed
-            # from that JSON, a file is made and added to a zip file
-            # once all views have been iterated thru, return the zip file
-
+        return data_explore_post(payload)
     # if the method is GET, then retrieve one of several sample responses.
     # useful for development and testing of frontend
     if request.method == 'GET':
@@ -213,6 +221,79 @@ def explore_data():
 # Utility Functions
 ############################################
 
+def get_descriptor_dict(descriptor_data):
+    descriptor_data = json.loads(descriptor_data)
+    data_obj = descriptor_data.get("data", {})
+
+    view_column_names = data_obj.get("view_column_names", [])
+    column_names = [item[1] for item in view_column_names]
+    if len(data_obj.get("data", [])) > 0:
+        data = data_obj.get("data", [])[0]
+
+        return dict(zip(column_names, data))
+    else:
+        return {}
+
+
+def data_explore_post(payload):
+        if validate_explore_request(payload) is False:
+            return
+
+        # If "export" is false, return a JSON object to build a preview table
+        if payload.get("export") == "false":
+            where_snippet = get_where_snippet(payload)
+            from_snippet = get_from_snippet(payload)
+            select_snippet = get_select_snippet(payload, False)
+            limit_snippet = get_limit_snippet(payload)
+
+            sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
+            results = get_explore_response(sql_string, payload)
+
+            results["sql"] = sql_string
+            return json.dumps(results, indent=4)
+
+        elif payload.get("export") == "true":
+            # IF this is a single file download, the data is exactly the same as render, just need to turn it into a CSV
+            if payload.get("single_file") == "true":
+                where_snippet = get_where_snippet(payload)
+                from_snippet = get_from_snippet(payload)
+                select_snippet = get_select_snippet(payload, True)
+                limit_snippet = get_limit_snippet(payload)
+
+                sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
+                results = get_explore_response_as_csv(sql_string, payload)
+
+                # Create a response object and set headers so it will download as file
+                response = make_response(results)
+                response.headers['Content-Type'] = "application/octet-stream"
+                response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
+
+                return(response)
+
+            # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets
+            else:
+                csv_data_dict = {}
+                memory_file = BytesIO()
+
+                for view in payload["data_list"]:
+                    where_snippet = get_where_snippet(payload)
+                    from_snippet = get_from_snippet(payload)
+                    select_snippet = get_single_view_select_snippet(view)
+                    limit_snippet = get_limit_snippet(payload)
+
+                    sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
+                    csv_data_dict[view["view_name"]] = get_explore_response_as_csv(sql_string, payload)
+
+                # Add all views to an in-memory zip file and return
+                with zipfile.ZipFile(memory_file, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
+                    for viewname, csvdata in csv_data_dict.items():
+                        zf.writestr(f"{viewname}.csv", csvdata)
+                memory_file.seek(0)
+                return send_file(memory_file, attachment_filename='export.zip', as_attachment=True)
+
+
+# Check if there is a valid APi request
+# TODO: Replace this with a real 404 page
 def validate_explore_request(payload):
     if payload is None:
         return "404 error needed"
@@ -220,6 +301,7 @@ def validate_explore_request(payload):
         return True
 
 
+# Function to build the "FROM" portion of a query, with join
 def get_from_snippet(payload):
     join_options = {"inner": "INNER", "left": "LEFT OUTER"}
     join_term = join_options.get(payload.get("join_style"), "INNER")
@@ -243,9 +325,9 @@ def get_from_snippet(payload):
 def get_select_snippet(payload, download):
     counter = 1
     if download:
-        result = " SELECT DISTINCT "
+        result = " SELECT DISTINCT  "
     else:
-        result = " SELECT "
+        result = " SELECT  "
 
     for item in payload.get("data_list"):
         view_name = item.get("view_name")
@@ -258,6 +340,22 @@ def get_select_snippet(payload, download):
     # return " SELECT drug_id, compound_name, smiles, clogp "
 
 
+# Function to return SELECT part of query for a multi-file download
+# Only select fields from one view at a time
+def get_single_view_select_snippet(view_data):
+    counter = 1
+    result = " SELECT DISTINCT "
+
+    view_name = view_data.get("view_name")
+    column_list = view_data.get("column_list")
+    for column_name in column_list:
+        result += f'"{view_name}"."{column_name}", '
+        counter += 1
+
+    return result[0:len(result) - 2]
+
+
+# Function to build the "WHERE" portion of the query, with all fields
 def get_where_snippet(payload):
     result = " "
     condition_term = " WHERE "
@@ -273,13 +371,18 @@ def get_where_snippet(payload):
                 operator = "LIKE"
             target = filter_obj.get("target")
 
-            this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'%{target}%\' '
+            if operator == "=" or operator == "!=":
+                this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'{target}\' '
+            else:
+                this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'%{target}%\' '
+
             result += this_snip
             condition_term = " AND "
 
     return result
 
 
+# Function to define the "LIMIT" portion of a query
 def get_limit_snippet(payload):
     if payload.get("export") == "true":
         return ""
@@ -287,6 +390,7 @@ def get_limit_snippet(payload):
     return f" LIMIT {limit} "
 
 
+# Query the database and serialize results as a Python dict
 def get_explore_response(sql_string, payload):
     cmd = text(sql_string)
     data = None
@@ -309,6 +413,7 @@ def get_explore_response(sql_string, payload):
     return results
 
 
+# Query the database and serialize the results as a CSV
 def get_explore_response_as_csv(sql_string, payload):
     cmd = text(sql_string)
     data = None
@@ -332,13 +437,25 @@ def get_explore_response_as_csv(sql_string, payload):
     return(result)
 
 
+# Convert a single datum to a clean format for the CSV
 def clean_csv_value(value):
-    if isinstance(value, str):
+    if value is None or value == "null":
+        return("")
+    elif isinstance(value, str):
         return('"' + value.replace('"', '""') + '"')
     else:
         return(str(value))
 
 
+# Convert a single datum to a clean format for a JSON API response
+def clean_json_value(value):
+    if value is None or value == "null":
+        return("")
+    else:
+        return(value)
+
+
+# Get the list of views included in an API request
 def get_view_names_from_payload(payload):
     view_names = []
 
@@ -348,6 +465,8 @@ def get_view_names_from_payload(payload):
     return view_names
 
 
+# Get the list of columns included in an API request
+# Returns a list of tuples (view, column)
 def get_view_column_names_from_payload(payload):
     view_column_names = []
 
@@ -359,6 +478,8 @@ def get_view_column_names_from_payload(payload):
     return view_column_names
 
 
+# Get the list of columns included in an API request
+# This is run against individual views, so it returns only a list of columns
 def get_column_names_from_payload(payload):
     column_names = []
 
@@ -369,9 +490,11 @@ def get_column_names_from_payload(payload):
     return column_names
 
 
+# Function to serialize a SQL response as a Python list
 def get_data_list_obj_from_data(data):
-    return [list(row) for row in data]
+    return [list(map(clean_json_value, list(row))) for row in data]
 
 
+# Necessary to run app if app.py is executed as a script
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

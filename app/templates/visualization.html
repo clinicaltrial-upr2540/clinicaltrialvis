@@ -31,7 +31,7 @@
 	</div>
 
 	{% for script in result['scripts'].split(',') %}
-	<script src="/static/js-visualizations/{{ result['name'] }}/{{ script }}"></script>
+	<script src="/static/visualizations/js/{{ script }}"></script>
 	{% endfor %}
 
 {% endblock %}
