@@ -224,7 +224,7 @@ function boxWhiskerChart(id, diseaseClasses, companies, descriptor) {
 
     //calls plotly function to create box-whisker plot
     id=id.substring(1);
-    Plotly.newPlot(id, dataForStyled, layout);
+    Plotly.newPlot(id, dataForStyled, layout, {displayModeBar: false});
 
   }) //end d3.csv function
 

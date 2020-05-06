@@ -16,6 +16,7 @@
 	var radarChartOptions = {
 	  w: width,
 	  h: height,
+	  svg_height:600,
 	  margin: margin,
 	  maxValue: 6,
 	  levels: 6,
@@ -27,6 +28,8 @@
 	};
 
 	var dotChartOptions = {
+		svg_height: 600,
+		h:height,
 	    dot_radius : 4,
 	    no_of_circles_in_a_row: 25,
         dot_padding_left : 5,

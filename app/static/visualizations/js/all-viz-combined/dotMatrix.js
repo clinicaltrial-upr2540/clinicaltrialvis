@@ -17,6 +17,8 @@ function dotMatrixChart(id,dataset,options){
     var dotPaddingRight = options.dot_padding_right;
     var dotPaddingTop = options.dot_padding_top;
     var dotPaddingBottom = options.dot_padding_bottom;
+    var h = options.h;
+    var svg_height = options.svg_height;
 
     //error handling for the lack of settings
     if(isNaN(dotRadius)){
@@ -36,6 +38,9 @@ function dotMatrixChart(id,dataset,options){
     }
     if(isNaN(dotPaddingBottom)){
         throw new Error("dot_padding_bottom must be a Number");
+    }
+    if(isNaN(h)){
+        throw new Error("height must be a Number");
     }
 
 
@@ -87,6 +92,7 @@ function dotMatrixChart(id,dataset,options){
     var	margin = {top: dotRadius*10, right: dotRadius*15, bottom: dotRadius*10, left: dotRadius*30},
     height = numberOfLines * (dotRadius*2 + dotPaddingBottom + dotPaddingTop),
     width = (dotRadius*2 + dotPaddingLeft + dotPaddingRight) * noOfCirclesInARow;
+    //height = numberOfLines * (dotRadius*2 + dotPaddingBottom + dotPaddingTop),
 
     // set x-axis and y-axis - scale, range, axis, ticks, domain
     var	xScale = d3.scaleLinear().range([margin.left, width]);
@@ -109,13 +115,18 @@ function dotMatrixChart(id,dataset,options){
     xScale.domain([0,noOfCirclesInARow]);
     yScale.domain([0,d3.max(dataset,function(d){return companyScale(d.company)+1;})]);
     yScale.domain([0,d3.max(dataset,function(d){return companyScale(d.company)+1;})]);
+    
+    //check that svg_height is not smaller that height necessary for the dotMatrix
+    //if it is, take the bigger value
+    if (height>svg_height){
+        svg_height=height;
+    }
 
     //create and append the svg element to the dotMatrixChart element of the page
     var svg = d3.select(id)
                 .append("svg")
                 .attr("width", width + margin.left + margin.right + width/2)
-                .attr("height", height + margin.top + margin.bottom);
-                //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                .attr("height", svg_height+ margin.top + margin.bottom);
 
     //populate y axis
     svg.append("g")
@@ -236,9 +247,15 @@ function dotMatrixChart(id,dataset,options){
       .text(function(d){return d});
 
     //create tooltip
-    var tooltip = d3.select("body")
+
+    var tooltip = d3.select("#visualizationSpace")
     .append('div')
-    .attr('class', 'tooltip');
+    .style("opacity", 0)
+    .attr('class', 'tooltip')
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px");
 
     //populate tooltip with a name of the company, disease class and a number of drugs within the disease class
     tooltip.append('div')
