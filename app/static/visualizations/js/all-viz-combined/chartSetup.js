@@ -16,7 +16,7 @@ var margin = {top: 100, right: 100, bottom: 100, left: 100},
 var radarChartOptions = {
 	w: width,
 	h: height,
-	svg_height:600,
+	svg_height: 600,
 	margin: margin,
 	maxValue: 6,
 	levels: 6,
