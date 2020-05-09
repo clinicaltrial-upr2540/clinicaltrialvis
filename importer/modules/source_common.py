@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 -u
 
 # Module with various utility functions to support the process of downloading and
 # importing data into the ChemDataExplorer database

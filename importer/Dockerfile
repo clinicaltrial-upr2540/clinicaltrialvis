@@ -8,5 +8,5 @@ RUN apt update \
     && pip install -r requirements.txt \
     && ./modules/install_dependencies.R
 
-ENTRYPOINT [ "python" ]
+ENTRYPOINT [ "python", "-u" ]
 CMD [ "database_setup.py" ]
