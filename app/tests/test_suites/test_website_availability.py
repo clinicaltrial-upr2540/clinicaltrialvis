@@ -12,7 +12,7 @@ class TestPages(TestCase):
     # this test case hits the explore of the application and checks that the explore page is up and running
     def test_explore_page(self):
         with app.test_client() as c:
-            resp = c.get('/explore')
+            resp = c.get('/explore/data')
             self.assertEqual(resp.status_code, 200)
 
     # this test case hits the visualizations of the application and checks that the visualizations page is up and
@@ -31,7 +31,7 @@ class TestPages(TestCase):
     # this test case hits the compound/explore of the application
     def test_compound_explore_page(self):
         with app.test_client() as c:
-            resp = c.get('/compound/explore')
+            resp = c.get('explore/compound')
             self.assertEqual(resp.status_code, 200)
 
     def test_render_drug_classes(self):

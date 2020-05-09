@@ -193,7 +193,7 @@ d3.csv("/static/visualizations/datafiles/all_cdc_descriptors.csv", function(erro
 var tooltipDescriptor = "<br>"+ descriptor.toUpperCase() + ": "
   var tooltip = d3.select(id)
     .append("div")
-    .style("opacity", 0)
+    .attr('style', 'position:absolute; opacity:0')
     .attr("class", "tooltip")
     .style("background-color", "white")
     .style("border", "solid")
@@ -212,8 +212,8 @@ var tooltipDescriptor = "<br>"+ descriptor.toUpperCase() + ": "
   var mousemove = function(d) {
     tooltip
       .html(d.compound + tooltipDescriptor + d["descriptor"])
-      .style("left", (d3.mouse(this)[0]+300) + "px")
-      .style("top", (d3.mouse(this)[1]) + "px")
+      .style('top', (d3.event.layerY - 30) + 'px')
+      .style('left', (d3.event.layerX + 20) + 'px')
   }
   var mouseleave = function(d) {
     tooltip
