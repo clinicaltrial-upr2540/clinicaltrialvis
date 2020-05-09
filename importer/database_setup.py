@@ -16,6 +16,7 @@ import source_pubchem
 import source_fda
 import source_mesh
 import source_chembl
+import source_drugcentral
 from source_common import *
 
 data_sources = {
@@ -73,7 +74,7 @@ def main(config, engine, CURRENT_PATH, FORCE):
 
         # Import FDA data
         if fda_data:
-            source_fda.import_to_db(config, engine, CURRENT_PATH, FORCE)
+            source_fda.import_to_db(config, engine, CURRENT_PATH)
         else:
             print("Unable to find FDA data file.")
             uberprint("SKIPPING IMPORT OF FDA")
@@ -129,6 +130,26 @@ def main(config, engine, CURRENT_PATH, FORCE):
         source_chembl.cleanup(CURRENT_PATH)
     else:
         uberprint("SKIPPING IMPORT OF ChemBL")
+
+    # DrugCentral IMPORT PROCESS
+    if source_drugcentral.validate_data(engine):
+        data_sources["central_drug"]["imported"] = True
+    if not data_sources["central_drug"]["imported"] or FORCE:
+        # Download DrugCentral data
+        source_drugcentral.download(CURRENT_PATH)
+
+        drugcentral_data = source_drugcentral.validate_downloaded_file(CURRENT_PATH)
+
+        # Import ChemBL data
+        if drugcentral_data:
+            source_drugcentral.import_to_db(config, engine, CURRENT_PATH)
+        else:
+            print("Unable to find DrugCentral data file.")
+            uberprint("SKIPPING IMPORT OF DrugCentral")
+
+        source_drugcentral.cleanup(CURRENT_PATH)
+    else:
+        uberprint("SKIPPING IMPORT OF DrugCentral")
 
 
 if __name__ == "__main__":
