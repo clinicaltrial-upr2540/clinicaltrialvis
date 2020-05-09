@@ -70,7 +70,7 @@ def validate_data(engine):
     return result
 
 
-# DrugBank data isn't public and can't actually be downloaded
+# Download the FDA data files
 def download(PATH):
     print("Downloading FDA data.")
     download_http("https://www.fda.gov/media/89850/download", "fda.zip", PATH)
