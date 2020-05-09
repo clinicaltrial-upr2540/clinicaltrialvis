@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
+# Module with various utility functions to support the process of downloading and
+# importing data into the ChemDataExplorer database
+
 import requests
+
+from ftplib import FTP
 
 
 def uberprint(toprint):
@@ -31,8 +36,25 @@ def validate_table(engine, schema, table):
         return False
 
 
+# Function to download a data file via HTTP
 def download_http(url, filename, PATH):
     filedata = requests.get(url)
 
     with open(f"{PATH}/data/{filename}", 'wb') as f:
         f.write(filedata.content)
+
+
+# Function to download a data file via FTP
+def download_ftp(ftp_site, ftp_path, filename, PATH):
+    # Set up FTP connection
+    ftp = FTP(ftp_site)
+    ftp.login()
+    ftp.cwd(ftp_path)
+
+    # Open file for writing and download file
+    file = open(f"{PATH}/data/{filename}", 'wb')
+    ftp.retrbinary('RETR ' + filename, file.write)
+
+    # Close file and FTP connection
+    file.close()
+    ftp.quit()

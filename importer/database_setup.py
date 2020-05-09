@@ -14,6 +14,7 @@ import source_common
 import source_drugbank
 import source_pubchem
 import source_fda
+import source_mesh
 from source_common import *
 
 data_sources = {
@@ -94,6 +95,26 @@ def main(config, engine, CURRENT_PATH, FORCE):
         source_pubchem.import_to_db(config, engine, CURRENT_PATH)
     else:
         uberprint("SKIPPING IMPORT OF PUBCHEM")
+
+    # MeSH IMPORT PROCESS
+    if source_mesh.validate_data(engine):
+        data_sources["mesh"]["imported"] = True
+    if not data_sources["mesh"]["imported"] or FORCE:
+        # Download MeSH data
+        source_mesh.download(CURRENT_PATH)
+
+        mesh_data = source_mesh.validate_downloaded_file(CURRENT_PATH)
+
+        # Import FDA data
+        if mesh_data:
+            source_mesh.import_to_db(config, engine, CURRENT_PATH)
+        else:
+            print("Unable to find MeSH data file.")
+            uberprint("SKIPPING IMPORT OF MeSH")
+
+        source_mesh.cleanup(CURRENT_PATH)
+    else:
+        uberprint("SKIPPING IMPORT OF MeSH")
 
 
 if __name__ == "__main__":
