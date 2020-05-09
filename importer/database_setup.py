@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 -u
 
 import os
 import sys
@@ -45,18 +45,12 @@ data_sources = {
 
 
 def main(config, engine, CURRENT_PATH, FORCE):
-    # Check if data sources have already been imported
-    if source_drugbank.validate_data(engine):
-        data_sources["drug_bank"]["imported"] = True
-    if source_fda.validate_data(engine):
-        data_sources["fda"]["imported"] = True
-
     # DrugBank IMPORT PROCESS
-    if not data_sources["drug_bank"]["imported"] or FORCE:
+    if not source_drugbank.validate_data(engine) or FORCE:
         drugbank_data = source_drugbank.validate_downloaded_file(CURRENT_PATH)
 
         if drugbank_data:
-            source_drugbank.import_to_db(config, engine, drugbank_data, FORCE)
+            source_drugbank.import_to_db(config, engine, drugbank_data)
         else:
             print("Unable to find DrugBank data file.")
             uberprint("SKIPPING IMPORT OF DrugBank")

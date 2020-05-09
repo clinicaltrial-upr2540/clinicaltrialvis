@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 -u
 
 from zipfile import ZipFile
 from subprocess import Popen
@@ -136,36 +136,32 @@ def download():
 
 
 # Function to import drugbank data
-def import_to_db(config, engine, PATH, FORCE):
-    # If the schema doesn't exist of FORCE is specified, run the import
-    if FORCE or not check_for_schema(engine, "drug_bank"):
-        uberprint("IMPORTING DrugBank")
+def import_to_db(config, engine, PATH):
+    uberprint("IMPORTING DrugBank")
 
-        # Drop any old versions of the schema
-        with engine.connect() as conn:
-            conn.execute("drop schema if exists drug_bank cascade;")
+    # Drop any old versions of the schema
+    with engine.connect() as conn:
+        conn.execute("drop schema if exists drug_bank cascade;")
 
-        # Build command to import drugbank data
-        command = f"./modules/import_drugbank.R " \
-            f"{config['drugdata']['host']} " \
-            f"{config['drugdata']['port']} " \
-            f"{config['drugdata']['database']} " \
-            f"{config['drugdata']['user']} " \
-            f"{config['drugdata']['password']} " \
-            f"{PATH}"
+    # Build command to import drugbank data
+    command = f"./modules/import_drugbank.R " \
+        f"{config['drugdata']['host']} " \
+        f"{config['drugdata']['port']} " \
+        f"{config['drugdata']['database']} " \
+        f"{config['drugdata']['user']} " \
+        f"{config['drugdata']['password']} " \
+        f"{PATH}"
 
-        # Run the import
-        p = Popen(command, shell=True)
-        p.wait()
+    # Run the import
+    p = Popen(command, shell=True)
+    p.wait()
 
-        # Rename the public schema and make a new one
-        with engine.connect() as conn:
-            conn.execute("alter schema public rename to drug_bank;")
-            conn.execute("create schema public;")
+    # Rename the public schema and make a new one
+    with engine.connect() as conn:
+        conn.execute("alter schema public rename to drug_bank;")
+        conn.execute("create schema public;")
 
-        uberprint("IMPORT OF DrugBank COMPLETE")
-    else:
-        uberprint("SKIPPING IMPORT OF DrugBank")
+    uberprint("IMPORT OF DrugBank COMPLETE")
 
 
 def cleanup():
