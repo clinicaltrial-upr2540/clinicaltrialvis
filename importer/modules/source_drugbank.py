@@ -25,7 +25,7 @@ def validate_downloaded_file(CURRENT_PATH):
         if path.exists(f"{item}{FILENAME}.zip"):
             # Unzip the thing
             with ZipFile(f"{item}{FILENAME}.zip", 'r') as zipObj:
-                zipObj.extractall(str(path.dirname(item)))
+                zipObj.extractall(f"{CURRENT_PATH}/data")
             break
 
     # Loop through dirs again to find the actual XML
@@ -144,13 +144,13 @@ def import_to_db(config, engine, PATH):
         conn.execute("drop schema if exists drug_bank cascade;")
 
     # Build command to import drugbank data
-    command = f"./modules/import_drugbank.R " \
+    command = f"{PATH}/modules/import_drugbank.R " \
         f"{config['drugdata']['host']} " \
         f"{config['drugdata']['port']} " \
         f"{config['drugdata']['database']} " \
         f"{config['drugdata']['user']} " \
         f"{config['drugdata']['password']} " \
-        f"{PATH}"
+        f"{PATH}/data/drugbank_all_full_database.xml"
 
     # Run the import
     p = Popen(command, shell=True)

@@ -50,7 +50,7 @@ def main(config, engine, CURRENT_PATH, FORCE):
         drugbank_data = source_drugbank.validate_downloaded_file(CURRENT_PATH)
 
         if drugbank_data:
-            source_drugbank.import_to_db(config, engine, drugbank_data)
+            source_drugbank.import_to_db(config, engine, CURRENT_PATH)
         else:
             print("Unable to find DrugBank data file.")
             uberprint("SKIPPING IMPORT OF DrugBank")
