@@ -77,7 +77,7 @@ def download(PATH):
 
 
 # Function to import fda data
-def import_to_db(config, engine, PATH, FORCE):
+def import_to_db(config, engine, PATH):
     uberprint("IMPORTING FDA")
 
     # get data file names
@@ -172,5 +172,5 @@ if __name__ == "__main__":
 
     download(CURRENT_PATH)
     validate_downloaded_file(CURRENT_PATH)
-    import_to_db(config, engine, CURRENT_PATH, True)
+    import_to_db(config, engine, CURRENT_PATH)
     cleanup(CURRENT_PATH)
