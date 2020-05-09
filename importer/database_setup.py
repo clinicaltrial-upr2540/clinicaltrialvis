@@ -158,7 +158,21 @@ if __name__ == "__main__":
 
     # Import database configuration
     config = ConfigParser()
-    config.read("./database.conf")
+    config.read(f"{CURRENT_PATH}/database.conf")
+
+    # If environment variables are present, override config file
+    if "drugdata" not in config:
+        config["drugdata"] = {}
+    if "DB_USER" in os.environ:
+        config["drugdata"]["user"] = os.environ.get("DB_USER")
+    if "DB_PASSWORD" in os.environ:
+        config["drugdata"]["password"] = os.environ.get("DB_PASSWORD")
+    if "DB_HOST" in os.environ:
+        config["drugdata"]["host"] = os.environ.get("DB_HOST")
+    if "DB_PORT" in os.environ:
+        config["drugdata"]["port"] = os.environ.get("DB_PORT")
+    if "DB_NAME" in os.environ:
+        config["drugdata"]["database"] = os.environ.get("DB_NAME")
 
     # Connect to database
     DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
