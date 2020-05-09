@@ -15,35 +15,29 @@ import source_drugbank
 import source_pubchem
 import source_fda
 import source_mesh
+import source_chembl
 from source_common import *
 
 data_sources = {
     "central_drug": {
-        "downloaded": False,
         "imported": False
     },
     "chembl_26": {
-        "downloaded": False,
         "imported": False
     },
     "drug_bank": {
-        "downloaded": False,
         "imported": False
     },
     "fda": {
-        "downloaded": False,
         "imported": False
     },
     "mesh": {
-        "downloaded": False,
         "imported": False
     },
     "pubchem": {
-        "downloaded": False,
         "imported": False
     },
     "top200": {
-        "downloaded": False,
         "imported": False
     }
 }
@@ -105,7 +99,7 @@ def main(config, engine, CURRENT_PATH, FORCE):
 
         mesh_data = source_mesh.validate_downloaded_file(CURRENT_PATH)
 
-        # Import FDA data
+        # Import MeSH data
         if mesh_data:
             source_mesh.import_to_db(config, engine, CURRENT_PATH)
         else:
@@ -115,6 +109,26 @@ def main(config, engine, CURRENT_PATH, FORCE):
         source_mesh.cleanup(CURRENT_PATH)
     else:
         uberprint("SKIPPING IMPORT OF MeSH")
+
+    # ChemBL IMPORT PROCESS
+    if source_chembl.validate_data(engine):
+        data_sources["chembl_26"]["imported"] = True
+    if not data_sources["chembl_26"]["imported"] or FORCE:
+        # Download ChemBL data
+        source_chembl.download(CURRENT_PATH)
+
+        chembl_data = source_chembl.validate_downloaded_file(CURRENT_PATH)
+
+        # Import ChemBL data
+        if chembl_data:
+            source_chembl.import_to_db(config, engine, CURRENT_PATH)
+        else:
+            print("Unable to find ChemBL data file.")
+            uberprint("SKIPPING IMPORT OF ChemBL")
+
+        source_chembl.cleanup(CURRENT_PATH)
+    else:
+        uberprint("SKIPPING IMPORT OF ChemBL")
 
 
 if __name__ == "__main__":
