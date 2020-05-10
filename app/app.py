@@ -115,6 +115,7 @@ def render_explorer():
 def render_compound_explorer():
     if request.method == "POST":
         compound_name = request.form.get("compound_name", '')
+        compound_name = compound_name.capitalize()
         if compound_name == '':
             compound_name = None
 
@@ -123,6 +124,7 @@ def render_compound_explorer():
         descriptor_payload = get_descriptor_payload(compound_name)
         descriptor_data = data_explore_post(descriptor_payload)
         descriptor_dict = get_descriptor_dict(descriptor_data)
+        descriptor_dict['molecular_weight'] = round(float(descriptor_dict['molecular_weight']), 3)
 
         ba_dict = get_ba_dict(engine, compound_name)
 

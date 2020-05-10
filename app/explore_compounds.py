@@ -122,8 +122,8 @@ def get_similar_compounds_by_descriptor(engine, compound_name, descriptor):
         ) 
         select 
         compound_name, 
-        "{descriptor}", 
-        norm_diff as difference_score, 
+         round("{descriptor}"::numeric, 3),  
+        round(norm_diff::numeric, 3) as difference_score,
         atc_level_4
         from ranked where rank_w_in_group < 5
         order by therapeutic_code, rank_w_in_group, norm_diff
@@ -145,7 +145,7 @@ def get_ba_dict(engine, compound_name):
             bioavailability_percent as freetext_BA_lookup, 
             bioavailability_percent as predicted_BA_percent_if_possible
             FROM curated.compound 
-            WHERE compound_name LIKE :compound_name
+            WHERE compound_name ILIKE :compound_name
             """ 
     params = {"compound_name": compound_name} 
 
@@ -166,7 +166,7 @@ def get_compounds_data(engine):
             substring(atc_code, 1, 1) as therapeutic_code, 
             compound_name, 
             bioavailability, 
-            molecular_weight, 
+            round(molecular_weight::numeric, 3) as molecular_weight, 
             clogp,
             hbd,
             hba,
@@ -198,7 +198,7 @@ def get_compound_data(compound_name, engine):
             substring(atc_code, 1, 1) as therapeutic_code, 
             compound_name, 
             bioavailability, 
-            molecular_weight, 
+            round(molecular_weight::numeric, 3) as molecular_weight, 
             clogp,
             hbd,
             hba,
