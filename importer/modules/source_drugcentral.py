@@ -131,7 +131,7 @@ def import_to_db(config, engine, PATH):
         conn.execute("DROP SCHEMA IF EXISTS central_drug CASCADE;")
 
     # Build command to import DrugCentral data
-    command = f"/usr/local/bin/psql -h {config['drugdata']['host']} " \
+    command = f"{find_binary('psql')} -h {config['drugdata']['host']} " \
         f"-d {config['drugdata']['database']} " \
         f"-p {config['drugdata']['port']} " \
         f"-U {config['drugdata']['user']} " \

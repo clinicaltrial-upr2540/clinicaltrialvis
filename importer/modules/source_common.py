@@ -4,6 +4,7 @@
 # importing data into the ChemDataExplorer database
 
 import requests
+import os
 
 from ftplib import FTP
 
@@ -58,3 +59,25 @@ def download_ftp(ftp_site, ftp_path, filename, PATH):
     # Close file and FTP connection
     file.close()
     ftp.quit()
+
+
+# Function to find executables for Popen scripts
+# (paths change depending on OS)
+def find_binary(binary_name):
+    result = f"/usr/local/bin/{binary_name}"
+    PATHS = [
+        "/usr/local/sbin",
+        "/usr/local/bin",
+        "/usr/sbin",
+        "/usr/bin",
+        "/sbin",
+        "/bin",
+        "/Library/Apple/usr/bin"
+    ]
+
+    for item in PATHS:
+        if os.path.exists(f"{item}/{binary_name}"):
+            result = f"{item}/{binary_name}"
+            break
+
+    return(result)
