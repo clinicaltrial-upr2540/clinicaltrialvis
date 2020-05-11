@@ -7,5 +7,6 @@ Dependencies
     - python3
     - unixodbc
     - mariadb-connector-c
+    - psqlodbc
 - Install Python requirements with pip
 - Install R requirements with... something

@@ -1,4 +1,4 @@
 requests
 sqlalchemy
 pandas
-psycopg2
+psycopg2-binary
