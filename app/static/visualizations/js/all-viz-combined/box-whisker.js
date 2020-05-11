@@ -9,9 +9,6 @@ function boxWhiskerChart(id, diseaseClasses, companies, descriptor) {
   }
 
   // read the data
-  //line for Flask deployment
-
-  //line for local deployment
   d3.csv("/static/visualizations/datafiles/all_cdc_descriptors.csv", function(data) {
 
     //create a collection of values that correspond to the companies passed to the function
@@ -80,10 +77,6 @@ function boxWhiskerChart(id, diseaseClasses, companies, descriptor) {
       })
       .entries(arr3);
 
-   // create additional data collections for drug groups and drugs as well as for axis
-
-    /*var myGroups = d3.map(data, function(d){return d.company;}).keys();
-    var myDrugs = d3.map(data, function(d){return d.compound;}).keys();*/
 
     //creates an array of the values that are truncated, given orginal list, an array to push value into and a string to add when truncating 
     function truncateNames(arr, originalList, strAdded){
@@ -193,9 +186,10 @@ function boxWhiskerChart(id, diseaseClasses, companies, descriptor) {
         }],
         yaxis: {
             autorange: true,
+            type:'linear',
             showgrid: true,
             zeroline: true,
-            dtick: 10,
+            ntick: 10,
             gridcolor: 'rgb(255, 255, 255)',
             gridwidth: 1,
             zerolinecolor: 'rgb(255, 255, 255)',

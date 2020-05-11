@@ -95,91 +95,86 @@ function prepareData(data){
     var objTotal = JSON.stringify(Object.assign({}, array_Total)); 
 
 
-//slice an array to create an object by elements positions from - to
-//to create objects for the companies categories
-function toObject(arr, from, to) { 
-    var group_obj = {}; 
-    for (var i = 0; i < arr.length; ++i) 
-    	if (arr[i] >= from && arr[i] <= to){
-        	group_obj[i] = arr[i]; 
-    	}
-    return group_obj; 
-} //end function to Object
+	//slice an array to create an object by elements positions from - to
+	//to create objects for the companies categories
+	function toObject(arr, from, to) { 
+	    var group_obj = {}; 
+	    for (var i = 0; i < arr.length; ++i) 
+	    	if (arr[i] >= from && arr[i] <= to){
+	        	group_obj[i] = arr[i]; 
+	    	}
+	    return group_obj; 
+	} //end function to Object
 
-///////////////////////////////////////////////
-//////////////////*COMPANIES*//////////////////
-///////////////////////////////////////////////
+	///////////////////////////////////////////////
+	//////////////////*COMPANIES*//////////////////
+	///////////////////////////////////////////////
 
-//create objects for the companies categories
-//const verySmallIndexes = toObject(array_Total, a_threshhold,b_threshhold-1);
-const verySmallIndexes = toObject(array_Total, a_threshhold,b_threshhold-1);
-const smallIndexes = toObject(array_Total, b_threshhold,c_threshhold-1);
-const mediumSmallIndexes = toObject(array_Total, c_threshhold,d_threshhold-1);
-const mediumLargeIndexes = toObject(array_Total, d_threshhold,e_threshhold-1);
-const largeIndexes = toObject(array_Total, e_threshhold,500);
-const veryLargeIndexes = toObject(array_Total, 501,max+1);
-
-
-companiesCategories.push({"size": Object.keys(verySmallIndexes).length, "name": "VERY SMALL", "companiesIndexes": verySmallIndexes});
-companiesCategories.push({"size": Object.keys(smallIndexes).length, "name": "SMALL", "companiesIndexes": smallIndexes});
-companiesCategories.push({"size": Object.keys(mediumSmallIndexes).length, "name": "MEDIUM SMALL", "companiesIndexes": mediumSmallIndexes});
-companiesCategories.push({"size": Object.keys(mediumLargeIndexes).length, "name": "MEDIUM LARGE", "companiesIndexes": mediumLargeIndexes});
-companiesCategories.push({"size": Object.keys(largeIndexes).length, "name": "LARGE", "companiesIndexes": largeIndexes});
-companiesCategories.push({"size": Object.keys(veryLargeIndexes).length, "name": "VERY LARGE", "companiesIndexes": veryLargeIndexes});
+	//create objects for the companies categories
+	//const verySmallIndexes = toObject(array_Total, a_threshhold,b_threshhold-1);
+	const verySmallIndexes = toObject(array_Total, a_threshhold,b_threshhold-1);
+	const smallIndexes = toObject(array_Total, b_threshhold,c_threshhold-1);
+	const mediumSmallIndexes = toObject(array_Total, c_threshhold,d_threshhold-1);
+	const mediumLargeIndexes = toObject(array_Total, d_threshhold,e_threshhold-1);
+	const largeIndexes = toObject(array_Total, e_threshhold,500);
+	const veryLargeIndexes = toObject(array_Total, 501,max+1);
 
 
-//retrieve company name from the mapped entries (data)
-function getCompanyName(companyKey, arr){
-
-	//filter data for the company names
-	//var compNames=Object.keys(filtered).map(i=> filtered[i]);
-	Object.values(companyKey).map(i=> 
-		{Object.entries(dataByCompanies).forEach(([key, value]) => {
-			if (i == key&& !arr.includes(value[0].company)){
- 				arr.push(value[0].company);
- 			}			
-
-    	})}
-	); //end Object.values(companyKey).map()
-
-} //end getCompanyName()
-
-function getListOfCompanyNames(companyKeys, companyArr){
-	for (const companyKey of companyKeys) {
-			getCompanyName(Object.values(companyKeys), companyArr);
-	};
-
-} //end function getListOfCompanyNames
-
-	
+	companiesCategories.push({"size": Object.keys(verySmallIndexes).length, "name": "VERY SMALL", "companiesIndexes": verySmallIndexes});
+	companiesCategories.push({"size": Object.keys(smallIndexes).length, "name": "SMALL", "companiesIndexes": smallIndexes});
+	companiesCategories.push({"size": Object.keys(mediumSmallIndexes).length, "name": "MEDIUM SMALL", "companiesIndexes": mediumSmallIndexes});
+	companiesCategories.push({"size": Object.keys(mediumLargeIndexes).length, "name": "MEDIUM LARGE", "companiesIndexes": mediumLargeIndexes});
+	companiesCategories.push({"size": Object.keys(largeIndexes).length, "name": "LARGE", "companiesIndexes": largeIndexes});
+	companiesCategories.push({"size": Object.keys(veryLargeIndexes).length, "name": "VERY LARGE", "companiesIndexes": veryLargeIndexes});
 
 
+	//retrieve company name from the mapped entries (data)
+	function getCompanyName(companyKey, arr){
 
-///////////////////////////////////////////////
-//////////////////*DISEASES*//////////////////
-///////////////////////////////////////////////
+		//filter data for the company names
+		//var compNames=Object.keys(filtered).map(i=> filtered[i]);
+		Object.values(companyKey).map(i=> 
+			{Object.entries(dataByCompanies).forEach(([key, value]) => {
+				if (i == key&& !arr.includes(value[0].company)){
+	 				arr.push(value[0].company);
+	 			}			
 
-function extractDiseases(arr, dataSource)
-	{ Object.entries(dataSource).forEach(([key, value]) => {
-		if (dataSource==data){
-		var extractedDiseases = value.map(el => el.disease_class);
-		for(var i = 0; i < extractedDiseases.length; i++){
-				arr.push(extractedDiseases[i]);
-			}//end for
-		} else {extractedDiseases=value.disease_class;
-			arr.push(extractedDiseases);
-		} //end else
-		}) //end forEach
-	}; //end extractDiseases function 
+	    	})}
+		); //end Object.values(companyKey).map()
 
-extractDiseases(allDiseasesArray, data);
+	} //end getCompanyName()
+
+	function getListOfCompanyNames(companyKeys, companyArr){
+		for (const companyKey of companyKeys) {
+				getCompanyName(Object.values(companyKeys), companyArr);
+		};
+
+	} //end function getListOfCompanyNames
+
+
+	///////////////////////////////////////////////
+	//////////////////*DISEASES*//////////////////
+	///////////////////////////////////////////////
+
+	function extractDiseases(arr, dataSource)
+		{ Object.entries(dataSource).forEach(([key, value]) => {
+			if (dataSource==data){
+			var extractedDiseases = value.map(el => el.disease_class);
+			for(var i = 0; i < extractedDiseases.length; i++){
+					arr.push(extractedDiseases[i]);
+				}//end for
+			} else {extractedDiseases=value.disease_class;
+				arr.push(extractedDiseases);
+			} //end else
+			}) //end forEach
+		}; //end extractDiseases function 
+
+	extractDiseases(allDiseasesArray, data);
 
 
 
-var distinctDiseasesClasses = [...new Set(allDiseasesArray)];
-distinctDiseasesClasses = distinctDiseasesClasses.sort();
-
-
+	var distinctDiseasesClasses = [...new Set(allDiseasesArray)];
+	distinctDiseasesClasses = distinctDiseasesClasses.sort();
 
 
 
@@ -195,9 +190,8 @@ distinctDiseasesClasses = distinctDiseasesClasses.sort();
 
 	var dKeys = ['C10 Nervous System Diseases', 'C14 Cardiovascular Diseases', 'C23 Pathological Conditions, Signs and Symptoms'];
 
-
+	//creates a data collection selectedData from diseaseKey: key corresponds to the company, value is company, disease_class (one of the diseaseKeys e.g.desease class), counts
 	function createDeseaseData(deseaseKeys){
-			//creates a data collection selectedData from diseaseKey: key corresponds to the company, value is company, disease_class (one of the diseaseKeys e.g.desease class), counts
     	deseaseKeys.forEach((deseaseKey) => {
 	    	$.each(Object.values(filtered), function(key, value){	
 	    		value.forEach(myFunction); 
@@ -235,7 +229,7 @@ distinctDiseasesClasses = distinctDiseasesClasses.sort();
 
 	createDeseaseData(dKeys);
 
-//to save the data in txt format
+	//to save the data in txt format
 	var dataToStr= 'group,variable,mw,clogp,psa,hba,hbd' + '\n';
     $.each(Object.values(selectedData), function(key, value){
 
@@ -347,317 +341,317 @@ distinctDiseasesClasses = distinctDiseasesClasses.sort();
 		//show companies counts to the user
 		var companiesIndexes= new Object();
 
-			for (var i = 0; i < companiesCategories.length; ++i) {
-				var companyNumbers = "<div></div>";
-				var companyNumbersButton = "<button></button>";
-				$(".stacked-companies > div:last-of-type").after($(companyNumbers));
-	    		$(".stacked-companies > div:last-of-type").addClass("companies-counts");
-	    		$(".stacked-companies > div:last-of-type").addClass("row");
-	    		$(".companies-counts:last-of-type").append($(companyNumbers));
-	    		$(".companies-counts:last-of-type").append($(companyNumbersButton));
+		for (var i = 0; i < companiesCategories.length; ++i) {
+			var companyNumbers = "<div></div>";
+			var companyNumbersButton = "<button></button>";
+			$(".stacked-companies > div:last-of-type").after($(companyNumbers));
+    		$(".stacked-companies > div:last-of-type").addClass("companies-counts");
+    		$(".stacked-companies > div:last-of-type").addClass("row");
+    		$(".companies-counts:last-of-type").append($(companyNumbers));
+    		$(".companies-counts:last-of-type").append($(companyNumbersButton));
 
-			}
-
-
-			$.each(companiesCategories,function(index,value){
-
-				//const compCountsFirstEl = $(".companies-counts > div");
-				const compCountsLastEl = $(".companies-counts > button");
-
-					//$(compCountsFirstEl[index]).text(companiesCategories[index].size);
-					$(compCountsLastEl[index]).text(`${companiesCategories[index].name} (${companiesCategories[index].size})`);
+		}
 
 
-					$(compCountsLastEl[index]).attr("id", companiesCategories[index].name).addClass("btn btn-sm btn-block btn-secondary mb-1").attr("type", "button");
+		$.each(companiesCategories,function(index,value){
+
+			//const compCountsFirstEl = $(".companies-counts > div");
+			const compCountsLastEl = $(".companies-counts > button");
+
+				//$(compCountsFirstEl[index]).text(companiesCategories[index].size);
+				$(compCountsLastEl[index]).text(`${companiesCategories[index].name} (${companiesCategories[index].size})`);
+
+
+				$(compCountsLastEl[index]).attr("id", companiesCategories[index].name).addClass("btn btn-sm btn-block btn-secondary mb-1").attr("type", "button");
+		});
+
+
+		//show the list of companies
+		function populateCompaniesList(){
+			$.each(cSelectedCompanies,function(index,value){
+				//create a div
+				var div_check_box = "<div></div>";
+				//create one row per company
+				$("#companies_form").append($(div_check_box));
+
+				$("#companies_form>div").addClass("form-check");
+
+				//create a checkbox
+				var checkbox="<input type='checkbox' id="+value+" value="+index+" name="+value+"><label for="+value+">"+value+"</label>";
+				//append the div
+				$(".form-check").eq(index).append($(checkbox));
+				$("input").addClass("form-check-input");
+				$("label").addClass("form-check-label small");
+
 			});
-
-
-			//show the list of companies
-			function populateCompaniesList(){
-				$.each(cSelectedCompanies,function(index,value){
-					//create a div
-					var div_check_box = "<div></div>";
-					//create one row per company
-					$("#companies_form").append($(div_check_box));
-
-					$("#companies_form>div").addClass("form-check");
-
-					//create a checkbox
-					var checkbox="<input type='checkbox' id="+value+" value="+index+" name="+value+"><label for="+value+">"+value+"</label>";
-					//append the div
-					$(".form-check").eq(index).append($(checkbox));
-					$("input").addClass("form-check-input");
-					$("label").addClass("form-check-label small");
-
-				});
-				//create a button
-				createButton("#companies_form", "companies-confirm", "CONFIRM", "#companies_form > button");
-			} //end populateCompaniesList function
+			//create a button
+			createButton("#companies_form", "companies-confirm", "CONFIRM", "#companies_form > button");
+		} //end populateCompaniesList function
 
 
 
 
-			//Disease classes
+		//Disease classes
 
-			//show disease counts to the user
-			for (var i = 0; i < distinctDiseasesClasses.length; ++i) {
-				var diseaseNumbers = "<div></div>";
-				$(".stacked-diseases > div:last-of-type").after($(diseaseNumbers));
-	    		$(".stacked-diseases > div:last-of-type").addClass("disease-counts");
-	    		$(".stacked-diseases > div:last-of-type").addClass("row");
-	    		$(".disease-counts:last-of-type").append($(diseaseNumbers));
-	    		$(".disease-counts:last-of-type").append($(diseaseNumbers));
+		//show disease counts to the user
+		for (var i = 0; i < distinctDiseasesClasses.length; ++i) {
+			var diseaseNumbers = "<div></div>";
+			$(".stacked-diseases > div:last-of-type").after($(diseaseNumbers));
+    		$(".stacked-diseases > div:last-of-type").addClass("disease-counts");
+    		$(".stacked-diseases > div:last-of-type").addClass("row");
+    		$(".disease-counts:last-of-type").append($(diseaseNumbers));
+    		$(".disease-counts:last-of-type").append($(diseaseNumbers));
 
-			};
+		};
 
 
-			function populateDiseaseClasses(){
-			//show the list of companies
-				$.each(distinctDiseasesClasses,function(index,value){
-
-					//create a checkbox
-					var checkbox="<input type='checkbox' id="+value+" value="+value+" name="+value+"><label for="+value+">"+value+"</label>";
-					//append the div
-					$(".disease-class").eq(index).append($(checkbox));
-					$("input").addClass("form-check-input");
-					$("label").addClass("form-check-label small");
-
-					});
-				
-			} //end populateDiseaseClasses
-
-			function createDiseaseChoices(){
-
+		function populateDiseaseClasses(){
+		//show the list of companies
 			$.each(distinctDiseasesClasses,function(index,value){
 
-					//create a div
-					var div_check_box = "<div></div>";
-					//create one row per company
-					$("#disease_classes_form").append($(div_check_box));
-					$("#disease_classes_form>div").addClass("form-check");
-					$("#disease_classes_form>div").addClass("disease-class");
-			});
-				//create a button
-				createButton("#disease_classes_form", "disease-confirm", "CONFIRM", "#disease_classes_form > button");
+				//create a checkbox
+				var checkbox="<input type='checkbox' id="+value+" value="+value+" name="+value+"><label for="+value+">"+value+"</label>";
+				//append the div
+				$(".disease-class").eq(index).append($(checkbox));
+				$("input").addClass("form-check-input");
+				$("label").addClass("form-check-label small");
 
-			}//end createDiseaseChoices
-
-			createDiseaseChoices();
-			
-			populateDiseaseClasses();
-
-
-			//event listeners and logic related to them
-			//adds event listener
-			$("#companies_form").click(function(){
-				//save user selection of companies in the companiesChoice array
-				var companiesChoice = [];
-	        	$.each($("input[class='form-check-input']:checked"), function(){
-	            companiesChoice.push($(this).val());
-	        });
-	        // Loop through each cKey to get an array of companies keys
-	       	companiesKeysToRender = companiesChoice.map(i => cKeys[i]);
-			}); //end event listener for checkboxes
-
-			//adds event listener
-			$(document).on("click", "#companies-confirm", function(){
-
-				onClickCompaniesConfirm(companiesIndexes);
-
-				//delete the buttons "BY DISEASES" and " BY COMPANIES" as well as all descriptor buttons
-				removeButtons("#by_diseases");
-				removeButtons("#by_companies");
-				removeButtons(".descriptor_buttons_d>button");
-				removeButtons(".descriptor_buttons_c>button");
-
-
-			});//end event listener for button
-
-			//creates a collection of user selected companies, call a dot matrix chart, 
-			//empties a disease classes form, 
-			//creates and shows a new list of disease classes that correspond to the disease classes targeted by the companies that the user has selected
-			function onClickCompaniesConfirm(indexesCollection){
-				uSelectedKeys=Object.keys(indexesCollection).filter(key => { return ~companiesKeysToRender.indexOf(key) });
-				createDotMatrix();
-				
-				//Remove whatever chart with the same id/class was present before
-				$("#disease_classes_form").empty();
-				createDiseaseChoices();
-			
-				populateDiseaseClasses();
-			}// end onClickCompaniesConfirm function
-
-			var unique = [];
-
-			//adds event listener
-			$("#disease_classes_form").click(function(){
-				var deseasesChoice = [];
-	        	$.each($(".disease-class>input[class='form-check-input']:checked"), function(){
-	        		var label = $(this).next();
-	            	deseasesChoice.push(label.text());
-	        	});
-	        	unique = [...new Set(deseasesChoice)];
-
-
-			}); //end event listener for checkboxes
-
-			//adds event listener
-			$(document).on("click", "#disease-confirm", function(){
-				//check that the companies have been selected before calling the next visualizations with the buttons
-				if(companiesList.length>0){
-					createDeseaseData(unique);
-	    			createRadarChart();
-
-	    			//create the buttons if they don't already exist, remove all of the descriptor buttons
-	    			if($('#by_diseases').length > 0){
-	    			} else{
-	    				createButton(".choice_buttons", "by_diseases", "BY DISEASE CLASSES", ".choice_buttons > button:first-of-type");
-					}
-	    			if($('#by_companies').length > 0){
-	    			} else{
-	    				createButton(".choice_buttons", "by_companies", "BY COMPANIES", ".choice_buttons > button:last-of-type");
-					}
-					if($('.descriptor_buttons_d>button').length > 0){
-	    				$('.descriptor_buttons_d>button').remove();
-	    			} else{
-	    			}
-
-				}	
-
-			});//end event listener for button
-
-			//creates a button element and appends to the DOM
-			function createButton(parentId, buttonId, textValue, position){
-				var button = "<button></button>";	
-				var buttonIdStr='#'+buttonId;
-				$(parentId).append(button);
-				$(position).attr("id", buttonId);
-				$(buttonIdStr).text(textValue).addClass("btn btn-info mt-2").attr("type", "button");
-
-			} //end createButton function
-
-			//removes a button if it exists
-			function removeButtons(buttonIdentifier){
-				
-				if($(buttonIdentifier).length > 0){
-					$(buttonIdentifier).remove();
-				} else{
-				}
-
-			} //end removeButtons function
-
-
-			//creates a list of companies, adds event listener to each of the company (every company has a checkbox to listen to)
-			function onClickCompanyClasses(companyClass, indexesCollection){
-				var companyClassEl = $(companyClass);
-				companyClassEl.onclick = showCompanyClasses(indexesCollection);
-				function showCompanyClasses(iCollection){
-					cKeys = Object.keys(iCollection);
-					getListOfCompanyNames(cKeys, cSelectedCompanies);
-					populateCompaniesList();
-				}
-				cSelectedCompanies=new Array();
-			} //end onClickCompanyClasses function
-
-			$(document).on("click", ".companies-counts>button", function(){
-				$("#companies_form").empty();
-				var buttonId = this.id;
-				var companyCategoryData = companiesCategories.filter(function(key){
-					return key.name == buttonId;
 				});
-				companiesIndexes = companyCategoryData[0].companiesIndexes;
-				onClickCompanyClasses(buttonId, companyCategoryData[0].companiesIndexes);
-			});///end event listener for button
+			
+		} //end populateDiseaseClasses
+
+		function createDiseaseChoices(){
+
+		$.each(distinctDiseasesClasses,function(index,value){
+
+				//create a div
+				var div_check_box = "<div></div>";
+				//create one row per company
+				$("#disease_classes_form").append($(div_check_box));
+				$("#disease_classes_form>div").addClass("form-check");
+				$("#disease_classes_form>div").addClass("disease-class");
+		});
+			//create a button
+			createButton("#disease_classes_form", "disease-confirm", "CONFIRM", "#disease_classes_form > button");
+
+		}//end createDiseaseChoices
+
+		createDiseaseChoices();
+		
+		populateDiseaseClasses();
 
 
-			//adds event listener
-			$(document).on("click", "#by_diseases", function(){
-				
-				if ($('.descriptor_buttons_d>button').length>0){
-				} else{
-					createDescriptorButtonsD();
+		//event listeners and logic related to them
+		//adds event listener
+		$("#companies_form").click(function(){
+			//save user selection of companies in the companiesChoice array
+			var companiesChoice = [];
+        	$.each($("input[class='form-check-input']:checked"), function(){
+            companiesChoice.push($(this).val());
+        });
+        // Loop through each cKey to get an array of companies keys
+       	companiesKeysToRender = companiesChoice.map(i => cKeys[i]);
+		}); //end event listener for checkboxes
+
+		//adds event listener
+		$(document).on("click", "#companies-confirm", function(){
+
+			onClickCompaniesConfirm(companiesIndexes);
+
+			//delete the buttons "BY DISEASES" and " BY COMPANIES" as well as all descriptor buttons
+			removeButtons("#by_diseases");
+			removeButtons("#by_companies");
+			removeButtons(".descriptor_buttons_d>button");
+			removeButtons(".descriptor_buttons_c>button");
+
+
+		});//end event listener for button
+
+		//creates a collection of user selected companies, call a dot matrix chart, 
+		//empties a disease classes form, 
+		//creates and shows a new list of disease classes that correspond to the disease classes targeted by the companies that the user has selected
+		function onClickCompaniesConfirm(indexesCollection){
+			uSelectedKeys=Object.keys(indexesCollection).filter(key => { return ~companiesKeysToRender.indexOf(key) });
+			createDotMatrix();
+			
+			//Remove whatever chart with the same id/class was present before
+			$("#disease_classes_form").empty();
+			createDiseaseChoices();
+		
+			populateDiseaseClasses();
+		}// end onClickCompaniesConfirm function
+
+		var unique = [];
+
+		//adds event listener
+		$("#disease_classes_form").click(function(){
+			var deseasesChoice = [];
+        	$.each($(".disease-class>input[class='form-check-input']:checked"), function(){
+        		var label = $(this).next();
+            	deseasesChoice.push(label.text());
+        	});
+        	unique = [...new Set(deseasesChoice)];
+
+
+		}); //end event listener for checkboxes
+
+		//adds event listener
+		$(document).on("click", "#disease-confirm", function(){
+			//check that the companies have been selected before calling the next visualizations with the buttons
+			if(companiesList.length>0){
+				createDeseaseData(unique);
+    			createRadarChart();
+
+    			//create the buttons if they don't already exist, remove all of the descriptor buttons
+    			if($('#by_diseases').length > 0){
+    			} else{
+    				createButton(".choice_buttons", "by_diseases", "BY DISEASE CLASSES", ".choice_buttons > button:first-of-type");
 				}
-				if ($('.descriptor_buttons_c>button').length>0){
-					removeButtons(".descriptor_buttons_c>button");
-				} else{
+    			if($('#by_companies').length > 0){
+    			} else{
+    				createButton(".choice_buttons", "by_companies", "BY COMPANIES", ".choice_buttons > button:last-of-type");
 				}
+				if($('.descriptor_buttons_d>button').length > 0){
+    				$('.descriptor_buttons_d>button').remove();
+    			} else{
+    			}
+
+			}	
+
+		});//end event listener for button
+
+		//creates a button element and appends to the DOM
+		function createButton(parentId, buttonId, textValue, position){
+			var button = "<button></button>";	
+			var buttonIdStr='#'+buttonId;
+			$(parentId).append(button);
+			$(position).attr("id", buttonId);
+			$(buttonIdStr).text(textValue).addClass("btn btn-info mt-2").attr("type", "button");
+
+		} //end createButton function
+
+		//removes a button if it exists
+		function removeButtons(buttonIdentifier){
+			
+			if($(buttonIdentifier).length > 0){
+				$(buttonIdentifier).remove();
+			} else{
+			}
+
+		} //end removeButtons function
 
 
-			});///end event listener for button
+		//creates a list of companies, adds event listener to each of the company (every company has a checkbox to listen to)
+		function onClickCompanyClasses(companyClass, indexesCollection){
+			var companyClassEl = $(companyClass);
+			companyClassEl.onclick = showCompanyClasses(indexesCollection);
+			function showCompanyClasses(iCollection){
+				cKeys = Object.keys(iCollection);
+				getListOfCompanyNames(cKeys, cSelectedCompanies);
+				populateCompaniesList();
+			}
+			cSelectedCompanies=new Array();
+		} //end onClickCompanyClasses function
 
-			$(document).on("click", "#by_companies", function(){
-				
-				if ($('.descriptor_buttons_d>button').length>0){
-					removeButtons(".descriptor_buttons_d>button");
-				} else{
-				}
-				if ($('.descriptor_buttons_c>button').length>0){
-				} else{
-					createDescriptorButtonsC();
-				}
-
-			});///end event listener for button
-
-			//creates buttons for the choice "By diseases"
-			function createDescriptorButtonsD(){
-				createButton(".descriptor_buttons_d", 'mw', "MW", ".descriptor_buttons_d>button:nth-of-type(1)");
-				createButton(".descriptor_buttons_d", 'clogp', "CLOGP", ".descriptor_buttons_d>button:nth-of-type(2)");
-				createButton(".descriptor_buttons_d", 'arom', "AROM", ".descriptor_buttons_d>button:nth-of-type(3)");
-				createButton(".descriptor_buttons_d", 'hba', "HBA", ".descriptor_buttons_d>button:nth-of-type(4)");
-				createButton(".descriptor_buttons_d", 'hbd', "HBD", ".descriptor_buttons_d>button:nth-of-type(5)");
-				createButton(".descriptor_buttons_d", 'rtb', "RTB", ".descriptor_buttons_d>button:nth-of-type(6)");
-				createButton(".descriptor_buttons_d", 'psa', "PSA", ".descriptor_buttons_d>button:nth-of-type(7)");
-				createButton(".descriptor_buttons_d", 'apka', "APKA", ".descriptor_buttons_d>button:nth-of-type(8)");
-				createButton(".descriptor_buttons_d", 'bpka', "BPKA", ".descriptor_buttons_d>button:nth-of-type(9)");
-			} //end createDescriptorButtonsD function
-
-			//creates buttons for the choice "By companies"
-			function createDescriptorButtonsC(){
-				createButton(".descriptor_buttons_c", 'mw', "MW", ".descriptor_buttons_c>button:nth-of-type(1)");
-				createButton(".descriptor_buttons_c", 'clogp', "CLOGP", ".descriptor_buttons_c>button:nth-of-type(2)");
-				createButton(".descriptor_buttons_c", 'arom', "AROM", ".descriptor_buttons_c>button:nth-of-type(3)");
-				createButton(".descriptor_buttons_c", 'hba', "HBA", ".descriptor_buttons_c>button:nth-of-type(4)");
-				createButton(".descriptor_buttons_c", 'hbd', "HBD", ".descriptor_buttons_c>button:nth-of-type(5)");
-				createButton(".descriptor_buttons_c", 'rtb', "RTB", ".descriptor_buttons_c>button:nth-of-type(6)");
-				createButton(".descriptor_buttons_c", 'psa', "PSA", ".descriptor_buttons_c>button:nth-of-type(7)");
-				createButton(".descriptor_buttons_c", 'apka', "APKA", ".descriptor_buttons_c>button:nth-of-type(8)");
-				createButton(".descriptor_buttons_c", 'bpka', "BPKA", ".descriptor_buttons_c>button:nth-of-type(9)");
-			} //end createDescriptorButtonsC function
+		$(document).on("click", ".companies-counts>button", function(){
+			$("#companies_form").empty();
+			var buttonId = this.id;
+			var companyCategoryData = companiesCategories.filter(function(key){
+				return key.name == buttonId;
+			});
+			companiesIndexes = companyCategoryData[0].companiesIndexes;
+			onClickCompanyClasses(buttonId, companyCategoryData[0].companiesIndexes);
+		});///end event listener for button
 
 
-			//adds event listener and calls respective visualization
-			function addEventListener(elementToListenTo, descriptorId, chartName){
-
-				$(document).on("click", elementToListenTo, function(){
-					chartName("#visualizationSpace", unique, companiesList, descriptorId);
-				});///end event listener for button
+		//adds event listener
+		$(document).on("click", "#by_diseases", function(){
+			
+			if ($('.descriptor_buttons_d>button').length>0){
+			} else{
+				createDescriptorButtonsD();
+			}
+			if ($('.descriptor_buttons_c>button').length>0){
+				removeButtons(".descriptor_buttons_c>button");
+			} else{
 			}
 
 
-			//buttons for triggering heatmap chart
+		});///end event listener for button
 
-			addEventListener(".descriptor_buttons_d>#mw", "mw", heatmapChart);
-			addEventListener(".descriptor_buttons_d>#clogp", "clogp", heatmapChart);
-			addEventListener(".descriptor_buttons_d>#arom", "arom", heatmapChart);
-			addEventListener(".descriptor_buttons_d>#hba", "hba", heatmapChart);
-			addEventListener(".descriptor_buttons_d>#hbd", "hbd", heatmapChart);
-			addEventListener(".descriptor_buttons_d>#rtb", "rtb", heatmapChart);
-			addEventListener(".descriptor_buttons_d>#psa", "psa", heatmapChart);
-			addEventListener(".descriptor_buttons_d>#apka", "apka", heatmapChart);
-			addEventListener(".descriptor_buttons_d>#bpka", "bpka", heatmapChart);
+		$(document).on("click", "#by_companies", function(){
+			
+			if ($('.descriptor_buttons_d>button').length>0){
+				removeButtons(".descriptor_buttons_d>button");
+			} else{
+			}
+			if ($('.descriptor_buttons_c>button').length>0){
+			} else{
+				createDescriptorButtonsC();
+			}
+
+		});///end event listener for button
+
+		//creates buttons for the choice "By diseases"
+		function createDescriptorButtonsD(){
+			createButton(".descriptor_buttons_d", 'mw', "MW", ".descriptor_buttons_d>button:nth-of-type(1)");
+			createButton(".descriptor_buttons_d", 'clogp', "CLOGP", ".descriptor_buttons_d>button:nth-of-type(2)");
+			createButton(".descriptor_buttons_d", 'arom', "AROM", ".descriptor_buttons_d>button:nth-of-type(3)");
+			createButton(".descriptor_buttons_d", 'hba', "HBA", ".descriptor_buttons_d>button:nth-of-type(4)");
+			createButton(".descriptor_buttons_d", 'hbd', "HBD", ".descriptor_buttons_d>button:nth-of-type(5)");
+			createButton(".descriptor_buttons_d", 'rtb', "RTB", ".descriptor_buttons_d>button:nth-of-type(6)");
+			createButton(".descriptor_buttons_d", 'psa', "PSA", ".descriptor_buttons_d>button:nth-of-type(7)");
+			createButton(".descriptor_buttons_d", 'apka', "APKA", ".descriptor_buttons_d>button:nth-of-type(8)");
+			createButton(".descriptor_buttons_d", 'bpka', "BPKA", ".descriptor_buttons_d>button:nth-of-type(9)");
+		} //end createDescriptorButtonsD function
+
+		//creates buttons for the choice "By companies"
+		function createDescriptorButtonsC(){
+			createButton(".descriptor_buttons_c", 'mw', "MW", ".descriptor_buttons_c>button:nth-of-type(1)");
+			createButton(".descriptor_buttons_c", 'clogp', "CLOGP", ".descriptor_buttons_c>button:nth-of-type(2)");
+			createButton(".descriptor_buttons_c", 'arom', "AROM", ".descriptor_buttons_c>button:nth-of-type(3)");
+			createButton(".descriptor_buttons_c", 'hba', "HBA", ".descriptor_buttons_c>button:nth-of-type(4)");
+			createButton(".descriptor_buttons_c", 'hbd', "HBD", ".descriptor_buttons_c>button:nth-of-type(5)");
+			createButton(".descriptor_buttons_c", 'rtb', "RTB", ".descriptor_buttons_c>button:nth-of-type(6)");
+			createButton(".descriptor_buttons_c", 'psa', "PSA", ".descriptor_buttons_c>button:nth-of-type(7)");
+			createButton(".descriptor_buttons_c", 'apka', "APKA", ".descriptor_buttons_c>button:nth-of-type(8)");
+			createButton(".descriptor_buttons_c", 'bpka', "BPKA", ".descriptor_buttons_c>button:nth-of-type(9)");
+		} //end createDescriptorButtonsC function
 
 
-			//buttons for triggering box-whisker chart
+		//adds event listener and calls respective visualization
+		function addEventListener(elementToListenTo, descriptorId, chartName){
 
-			addEventListener(".descriptor_buttons_c>#mw", "mw", boxWhiskerChart);
-			addEventListener(".descriptor_buttons_c>#clogp", "clogp", boxWhiskerChart);
-			addEventListener(".descriptor_buttons_c>#arom", "arom", boxWhiskerChart);
-			addEventListener(".descriptor_buttons_c>#hba", "hba", boxWhiskerChart);
-			addEventListener(".descriptor_buttons_c>#hbd", "hbd", boxWhiskerChart);
-			addEventListener(".descriptor_buttons_c>#rtb", "rtb", boxWhiskerChart);
-			addEventListener(".descriptor_buttons_c>#psa", "psa", boxWhiskerChart);
-			addEventListener(".descriptor_buttons_c>#apka", "apka", boxWhiskerChart);
-			addEventListener(".descriptor_buttons_c>#bpka", "bpka", boxWhiskerChart);
+			$(document).on("click", elementToListenTo, function(){
+				chartName("#visualizationSpace", unique, companiesList, descriptorId);
+			});///end event listener for button
+		}
+
+
+		//buttons for triggering heatmap chart
+
+		addEventListener(".descriptor_buttons_d>#mw", "mw", heatmapChart);
+		addEventListener(".descriptor_buttons_d>#clogp", "clogp", heatmapChart);
+		addEventListener(".descriptor_buttons_d>#arom", "arom", heatmapChart);
+		addEventListener(".descriptor_buttons_d>#hba", "hba", heatmapChart);
+		addEventListener(".descriptor_buttons_d>#hbd", "hbd", heatmapChart);
+		addEventListener(".descriptor_buttons_d>#rtb", "rtb", heatmapChart);
+		addEventListener(".descriptor_buttons_d>#psa", "psa", heatmapChart);
+		addEventListener(".descriptor_buttons_d>#apka", "apka", heatmapChart);
+		addEventListener(".descriptor_buttons_d>#bpka", "bpka", heatmapChart);
+
+
+		//buttons for triggering box-whisker chart
+
+		addEventListener(".descriptor_buttons_c>#mw", "mw", boxWhiskerChart);
+		addEventListener(".descriptor_buttons_c>#clogp", "clogp", boxWhiskerChart);
+		addEventListener(".descriptor_buttons_c>#arom", "arom", boxWhiskerChart);
+		addEventListener(".descriptor_buttons_c>#hba", "hba", boxWhiskerChart);
+		addEventListener(".descriptor_buttons_c>#hbd", "hbd", boxWhiskerChart);
+		addEventListener(".descriptor_buttons_c>#rtb", "rtb", boxWhiskerChart);
+		addEventListener(".descriptor_buttons_c>#psa", "psa", boxWhiskerChart);
+		addEventListener(".descriptor_buttons_c>#apka", "apka", boxWhiskerChart);
+		addEventListener(".descriptor_buttons_c>#bpka", "bpka", boxWhiskerChart);
 
 
 

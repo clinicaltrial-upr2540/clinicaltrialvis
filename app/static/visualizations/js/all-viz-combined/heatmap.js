@@ -118,6 +118,10 @@ d3.csv("/static/visualizations/datafiles/all_cdc_descriptors.csv", function(erro
   //remove duplicates for Y axis
   var compoundsNoDupl = removeDuplicates(allCompounds);
 
+  //add graceful rendering of the compounds, if the number exceeds 30
+  var numberOfCompounds = compoundsNoDupl.length;
+  var numberToReduceBy = Math.ceil(compoundsNoDupl.length/30);
+
 
   //creates an array of the values that are truncated, given orginal list, an array to push value into and a string to add when truncating 
   function truncateNames(arr, originalList, strAdded){
@@ -181,6 +185,7 @@ d3.csv("/static/visualizations/datafiles/all_cdc_descriptors.csv", function(erro
 
   svg.selectAll(".yScale > g > text")
   .style("text-anchor", "right")
+  .style("fill", function(d,i) { if ((numberOfCompounds>30) && (i%numberToReduceBy)){return "none"} else {return "black"}})
   .attr("x",0) 
   .attr("y", 0);
 
@@ -266,7 +271,7 @@ var tooltipDescriptor = "<br>"+ descriptor.toUpperCase() + ": "
           .style("font-size", "14px")
           .style("fill", "grey")
           .style("max-width", 400)
-          .text(descriptor.toUpperCase());
+          .text(descriptor.toUpperCase() + ", Total Compounds "+ numberOfCompounds);
 
      }); //end d3.csv
 

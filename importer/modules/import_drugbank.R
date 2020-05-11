@@ -14,27 +14,28 @@ if (length(args)<6) {
 }
 
 #the following section installs and loads all required libraries including the out of the box dbparser
+if (!require('devtools')) install.packages('devtools',repos = "http://cran.us.r-project.org"); library('devtools')
 if (!require('XML')) install.packages('XML',repos = "http://cran.us.r-project.org"); library('XML')
 if (!require('RPostgreSQL')) install.packages('RPostgreSQL',repos = "http://cran.us.r-project.org"); library('RPostgreSQL')
 if (!require('rlang')) install.packages('rlang',repos = "http://cran.us.r-project.org"); library('rlang')
 if (!require('odbc')) install.packages('odbc',repos = "http://cran.us.r-project.org"); library('odbc')
-if (!require('RMariaDB')) install.packages('RMariaDB',repos = "http://cran.us.r-project.org"); library('RMariaDB')
-if (!require('dbparser')) install.packages('dbparser',dependencies=TRUE,repos = "http://cran.us.r-project.org"); library(dbparser)
+if (!require('dbparser')) install_version("dbparser", version = "1.1.0", repos = "http://cran.us.r-project.org"); library(dbparser)
 
 print('script started')
 
 # Read the entire xml database and store it into memory
+print('loading data file')
 read_drugbank_xml_db(args[6])
 
-
 # the following section, connects to target database and persists the entire database
+print('connecting to database')
 pg = dbDriver("PostgreSQL")
 
 # Please provide your database credential 
 con = dbConnect(pg, user=args[4], password=args[5], host=args[1], port=args[2], dbname=args[3])
 
-
-drug_all(save_table = TRUE, database_connection = con,  override = TRUE)
+print('starting import')
+drug_all(save_table = TRUE, database_connection = con)
 DBI::dbListTables(con)
 DBI::dbDisconnect(con)
 
