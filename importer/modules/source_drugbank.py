@@ -19,6 +19,7 @@ def validate_downloaded_file(CURRENT_PATH):
         "/tmp/",
         "/Downloads/",
         os.path.expanduser("~/Downloads/"),
+        os.path.expanduser("~/"),
         f"{CURRENT_PATH}/data/",
         f"{CURRENT_PATH}/../data/"
     ]
