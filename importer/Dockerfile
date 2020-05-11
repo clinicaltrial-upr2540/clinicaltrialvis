@@ -19,9 +19,10 @@ WORKDIR /import
 RUN echo "# deb http://snapshot.debian.org/archive/debian/20200422T000000Z bullseye main" > /etc/apt/sources.list \
     && echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list \
     && apt update \
-    && apt -y install python3 python3-pip libcurl4-openssl-dev libssl-dev libgit2-dev unixodbc-dev libxml2-dev libpq-dev libmariadbclient-dev \
+    && apt -y install python3 python3-pip libcurl4-openssl-dev libssl-dev libgit2-dev unixodbc-dev libxml2-dev libpq-dev libmariadbclient-dev postgresql-client \
     && pip3 install --no-cache-dir -r requirements.txt \
-    && ./modules/install_dependencies.R
+    && ./modules/install_dependencies.R \
+    && apt clean
 
 ENTRYPOINT [ "python3", "-u" ]
 CMD [ "database_setup.py" ]
