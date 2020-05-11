@@ -92,26 +92,6 @@ def main(config, engine, CURRENT_PATH, FORCE):
     else:
         uberprint("SKIPPING IMPORT OF PUBCHEM")
 
-    # MeSH IMPORT PROCESS
-    if source_mesh.validate_data(engine):
-        data_sources["mesh"]["imported"] = True
-    if not data_sources["mesh"]["imported"] or FORCE:
-        # Download MeSH data
-        source_mesh.download(CURRENT_PATH)
-
-        mesh_data = source_mesh.validate_downloaded_file(CURRENT_PATH)
-
-        # Import MeSH data
-        if mesh_data:
-            source_mesh.import_to_db(config, engine, CURRENT_PATH)
-        else:
-            print("Unable to find MeSH data file.")
-            uberprint("SKIPPING IMPORT OF MeSH")
-
-        source_mesh.cleanup(CURRENT_PATH)
-    else:
-        uberprint("SKIPPING IMPORT OF MeSH")
-
     # ChemBL IMPORT PROCESS
     if source_chembl.validate_data(engine):
         data_sources["chembl_26"]["imported"] = True
@@ -131,6 +111,26 @@ def main(config, engine, CURRENT_PATH, FORCE):
         source_chembl.cleanup(CURRENT_PATH)
     else:
         uberprint("SKIPPING IMPORT OF ChemBL")
+
+    # MeSH IMPORT PROCESS
+    if source_mesh.validate_data(engine):
+        data_sources["mesh"]["imported"] = True
+    if not data_sources["mesh"]["imported"] or FORCE:
+        # Download MeSH data
+        source_mesh.download(CURRENT_PATH)
+
+        mesh_data = source_mesh.validate_downloaded_file(CURRENT_PATH)
+
+        # Import MeSH data
+        if mesh_data:
+            source_mesh.import_to_db(config, engine, CURRENT_PATH)
+        else:
+            print("Unable to find MeSH data file.")
+            uberprint("SKIPPING IMPORT OF MeSH")
+
+        source_mesh.cleanup(CURRENT_PATH)
+    else:
+        uberprint("SKIPPING IMPORT OF MeSH")
 
     # DrugCentral IMPORT PROCESS
     if source_drugcentral.validate_data(engine):
