@@ -211,10 +211,22 @@ function requestExport(jsonToPost) {
     dataRequest.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             try {
+                // Generate timestamp for filename
+                var date = new Date();
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var seconds = date.getSeconds();
+
+                hours = (hours < 10 ? "0" : "") + hours;
+                minutes = (minutes < 10 ? "0" : "") + minutes;
+                seconds = (seconds < 10 ? "0" : "") + seconds;
+
+                datestring = `${date.getFullYear()}.${date.getMonth()+1}.${date.getDate()}-${hours}.${minutes}.${seconds}`
+
                 // Try to find out the filename from the content disposition `filename` value
                 var disposition = this.getResponseHeader('Content-Disposition');
                 var matches = /"([^"]*)"/.exec(disposition);
-                var filename = (matches != null && matches[1] ? matches[1] : 'export.zip');
+                var filename = (matches != null && matches[1] ? matches[1] : `export-${datestring}.zip`);
 
                 // The actual download
                 var blob = new Blob([this.response], { type: 'application/octet-stream' });
