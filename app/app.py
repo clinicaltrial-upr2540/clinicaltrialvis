@@ -268,7 +268,7 @@ def data_explore_post(payload):
             response.headers['Content-Type'] = "application/octet-stream"
             response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
 
-            return (response)
+            return(response)
 
         # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets
         else:
@@ -445,7 +445,7 @@ def get_explore_response_as_csv(sql_string, payload):
 # Convert a single datum to a clean format for the CSV
 def clean_csv_value(value):
     if value is None or value == "null":
-        return ("")
+        return("")
     elif isinstance(value, str):
         return('"' + value.replace('"', '""') + '"')
     else:
