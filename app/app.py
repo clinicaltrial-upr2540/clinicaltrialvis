@@ -20,7 +20,6 @@ APP_PATH = str(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(APP_PATH)
 
 from explore_compounds import get_plot_png_test, get_plot_png, get_descriptor_payload, get_similar_dict, get_ba_dict
-
 import visualization_setup
 
 app = Flask(__name__)
@@ -440,7 +439,7 @@ def get_explore_response_as_csv(sql_string, payload):
     # Prepend column headings
     result = ','.join(view_column_names) + '\n' + result
 
-    return (result)
+    return(result)
 
 
 # Convert a single datum to a clean format for the CSV
@@ -448,17 +447,17 @@ def clean_csv_value(value):
     if value is None or value == "null":
         return ("")
     elif isinstance(value, str):
-        return ('"' + value.replace('"', '""') + '"')
+        return('"' + value.replace('"', '""') + '"')
     else:
-        return (str(value))
+        return(str(value))
 
 
 # Convert a single datum to a clean format for a JSON API response
 def clean_json_value(value):
     if value is None or value == "null":
-        return ("")
+        return("")
     else:
-        return (value)
+        return(value)
 
 
 # Get the list of views included in an API request
