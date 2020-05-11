@@ -13,10 +13,11 @@ function radarChart(id, data, options) {
 
 	//configurations
 	var cfg = {
-	 w: 230,				//Width of the circle
-	 h: 230,
-	 svg_height:400,				//Height of the circle
-	 margin: {top: 5, right: 5, bottom: 5, left: 5}, //The margins around the circle
+	 w: 300,				//Width of the circle
+	 h: 300,
+	 svg_height:500,				//Height of the circle
+	 margin: {top: 140, right: 5, bottom: 100, left: 5}, //The margins around the circle
+	 padding: {top: 5, right: 5, bottom: 5, left: 5}, //The paddings around the circle
 	 levels: 5,				//How many levels or inner circles should there be drawn
 	 maxValue: 0, 				//What is the value that the biggest circle will represent
 	 labelFactor: 1.25, 			//How much farther than the radius of the outer circle should the labels be placed
@@ -60,6 +61,27 @@ function radarChart(id, data, options) {
 
 	let distinctDiseaseClasses = [...new Set(diseaseArray)];
 	distinctDiseaseClasses = distinctDiseaseClasses.sort();
+
+	//array to manipulate the original array and populate disease classes where there is no information with counts=0
+	//so that this renders correctly on the chart
+	var newData =  new Array;
+	newData = JSON.parse(JSON.stringify(data)); 
+
+	Object.entries(data).forEach(([key, value]) => {
+			var extractedDiseases = value.map(el => el.disease_class);
+			var arrToReplace = new Array();
+			arrToReplace = JSON.parse(JSON.stringify(value));
+				for (var j = 0; j < distinctDiseaseClasses.length; j++) {
+					for(var i = 0; i < extractedDiseases.length; i++){
+						if(!extractedDiseases.includes(distinctDiseaseClasses[j])){
+							var newEl= new Object();
+							newEl = { company: value[i].company, disease_class : distinctDiseaseClasses[j], counts: 0 };
+							arrToReplace = value.splice(j, 0, newEl);
+							break;
+						} //end if
+					}//end for					
+				}//end for
+	}) //end forEach
 
 
 	//if the configuration value of maxValue is smaller than the calculated value, based on the max number of drugs to be visualized,
@@ -144,8 +166,8 @@ function radarChart(id, data, options) {
 	axis.append("line")
 		.attr("x1", 0)
 		.attr("y1", 0)
-		.attr("x2", function(d, i){ return rScale(maxValue*1.1) * Math.cos(angleSlice*i); })
-		.attr("y2", function(d, i){ return rScale(maxValue*1.1) * Math.sin(angleSlice*i); })
+		.attr("x2", function(d, i){ return rScale(maxValue*1.1) * Math.cos(angleSlice*i - Math.PI/2); })
+		.attr("y2", function(d, i){ return rScale(maxValue*1.1) * Math.sin(angleSlice*i - Math.PI/2); })
 		.attr("class", "line")
 		.style("stroke", "white")
 		.style("stroke-width", "2px");
@@ -246,7 +268,7 @@ function radarChart(id, data, options) {
 			tooltip
 				.attr('x', newX)
 				.attr('y', newY)
-				.text(d.company + ": " + Format(d.counts))
+				.text(d.company.substring(0, d.company.indexOf(" ")) + ": " + Format(d.counts))
 				.transition().duration(200)
 				.style('opacity', 1);
 		})
