@@ -141,20 +141,6 @@ function dotMatrixChart(id,dataset,options){
         .style("fill", "hsl(268, 62%, 39%)")
         .style("font-weight", "bold")
         .style("text-anchor", "end");
-        
-        /*
-        alternative settings
-        -dotRadius*1.9*maxNoOfLinesInCompany
-        initial setings
-
-        attr("y", dotRadius*2.5)
-        .attr("x", width-margin.right)
-        .attr("dy", ".35em")
-        .style("font-size", dotRadius*3 + "px")
-        .attr("transform", "rotate(0)")
-        .style("text-anchor", "end");
-
-        */
 
     //populate x axis
         svg

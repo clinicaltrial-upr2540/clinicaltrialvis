@@ -6,18 +6,12 @@ var margin = {top: 100, right: 100, bottom: 100, left: 100},
 	width = Math.min(900, window.innerWidth - 10) - margin.left - margin.right,
 	height = Math.min(600, window.innerHeight - margin.top - margin.bottom - 20);
 					
-//set colors scale 
-//5 colors from colorbrewer as an alternative to current d3 ordinal scale of 10 colors
-/*var color = d3.scaleOrdinal()
-	.range(['#06D6A0','#118AB2','#E76F51', '#FFD166', '#073B4C']);
-*/
 //options for radar chart - weight, height, margin, radius as maxValue, number of circles as levels
 //rounded corners as roundStrokes, colorscale as color, number format as format, legend, units 
 var radarChartOptions = {
 	w: width,
 	h: height,
-	svg_height: 600,
-	margin: margin,
+	svg_height: 500,
 	maxValue: 6,
 	levels: 6,
 	roundStrokes: true,
