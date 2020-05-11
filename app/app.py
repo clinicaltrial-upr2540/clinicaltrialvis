@@ -275,7 +275,7 @@ def data_explore_post(payload):
             csv_data_dict = {}
             memory_file = BytesIO()
             now = datetime.datetime.now()
-            dt_string = now.strftime("%d_%m_%Y %H:%M")
+            dt_string = now.strftime("%Y.%m.%d-%H.%M.%S")
 
             for view in payload["data_list"]:
                 where_snippet = get_where_snippet(payload)
@@ -289,11 +289,11 @@ def data_explore_post(payload):
             # Add all views to an in-memory zip file and return
             with zipfile.ZipFile(memory_file, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
                 for viewname, csvdata in csv_data_dict.items():
-                    file_name = str(viewname) + '_' + dt_string + '.csv'
+                    file_name = str(viewname) + '-' + dt_string + '.csv'
                     zf.writestr(file_name, csvdata)
             memory_file.seek(0)
 
-            zip_name = 'export' + '_' + dt_string + '.zip'
+            zip_name = f"export-{dt_string}.zip"
             return send_file(memory_file, attachment_filename=zip_name, as_attachment=True)
 
 
