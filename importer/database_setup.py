@@ -46,6 +46,12 @@ data_sources = {
 
 
 def main(config, engine, CURRENT_PATH, FORCE):
+    # Create the data directory if it doesn't already exist
+    try:
+        os.mkdir(f"{CURRENT_PATH}/data")
+    except FileExistsError:
+        pass
+
     # DrugBank IMPORT PROCESS
     if not source_drugbank.validate_data(engine) or FORCE:
         drugbank_data = source_drugbank.validate_downloaded_file(CURRENT_PATH)
@@ -147,6 +153,7 @@ def main(config, engine, CURRENT_PATH, FORCE):
         uberprint("SKIPPING IMPORT OF DrugCentral")
 
 
+# If called as a script, set up database connection and execute main()
 if __name__ == "__main__":
     # Get script directory
     CURRENT_PATH = str(os.path.dirname(os.path.realpath(__file__)))
