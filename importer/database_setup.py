@@ -5,6 +5,7 @@ import sys
 import sqlalchemy
 
 from configparser import ConfigParser
+from sqlalchemy.exc import ProgrammingError
 
 # Set up path for local imports
 sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
@@ -167,6 +168,19 @@ if __name__ == "__main__":
         config["drugdata"]["port"] = os.environ.get("DB_PORT")
     if "DB_NAME" in os.environ:
         config["drugdata"]["database"] = os.environ.get("DB_NAME")
+
+    # Initial connection to create database
+    DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}"
+    engine = sqlalchemy.create_engine(DATABASE_URL)
+    try:
+        conn = engine.connect()
+        conn.connection.connection.set_isolation_level(0)
+        conn.execute(f"CREATE DATABASE {config['drugdata']['database']};")
+        conn.connection.connection.set_isolation_level(1)
+        conn.close()
+    except ProgrammingError:
+        print("Database already exists.")
+        conn.close()
 
     # Connect to database
     DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
