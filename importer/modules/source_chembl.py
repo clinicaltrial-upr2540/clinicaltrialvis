@@ -153,14 +153,10 @@ def import_to_db(config, engine, PATH):
 
     # Do some database setup
     with engine.connect() as conn:
-        try:
-            conn.execute("CREATE ROLE \"user\" superuser;")
-        except ProgrammingError:
-            pass
         conn.execute("DROP SCHEMA IF EXISTS chembl_26 CASCADE;")
 
     # Build command to import chmbl data
-    command = f"/usr/local/bin/pg_restore " \
+    command = f"{find_binary('pg_restore')} --no-privileges --no-owner " \
         f"-h {config['drugdata']['host']} " \
         f"-d {config['drugdata']['database']} " \
         f"-p {config['drugdata']['port']} " \
