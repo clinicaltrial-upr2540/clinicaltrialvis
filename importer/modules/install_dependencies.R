@@ -7,7 +7,7 @@ if (!require('rlang')) install.packages('rlang',repos = "http://cran.us.r-projec
 if (!require('odbc')) install.packages('odbc',repos = "http://cran.us.r-project.org"); library('odbc')
 if (!require('RMariaDB')) install.packages('RMariaDB',repos = "http://cran.us.r-project.org"); library('RMariaDB')
 # if (!require('dbparser')) install.packages('dbparser',repos = "http://cran.us.r-project.org"); library('dbparser')
-if (!require('dbparser')) install_version("dbparser", version = "1.1.0", repos = "http://cran.us.r-project.org"); library('dbparser')
+install_version("dbparser", version = "1.1.0", repos = "http://cran.us.r-project.org")
 
 packageVersion('XML')
 packageVersion('RPostgreSQL')

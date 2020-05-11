@@ -14,12 +14,12 @@ if (length(args)<6) {
 }
 
 #the following section installs and loads all required libraries including the out of the box dbparser
+if (!require('devtools')) install.packages('devtools',repos = "http://cran.us.r-project.org"); library('devtools')
 if (!require('XML')) install.packages('XML',repos = "http://cran.us.r-project.org"); library('XML')
 if (!require('RPostgreSQL')) install.packages('RPostgreSQL',repos = "http://cran.us.r-project.org"); library('RPostgreSQL')
-if (!require('DBI')) install.packages('DBI',repos = "http://cran.us.r-project.org"); library('DBI')
 if (!require('rlang')) install.packages('rlang',repos = "http://cran.us.r-project.org"); library('rlang')
 if (!require('odbc')) install.packages('odbc',repos = "http://cran.us.r-project.org"); library('odbc')
-if (!require('dbparser')) install.packages('dbparser',dependencies=TRUE,repos = "http://cran.us.r-project.org"); library('dbparser')
+if (!require('dbparser')) install_version("dbparser", version = "1.1.0", repos = "http://cran.us.r-project.org"); library(dbparser)
 
 print('script started')
 
