@@ -1,8 +1,11 @@
 #!/usr/bin/env python3 -u
 
+import os
+import sqlalchemy
+
 from zipfile import ZipFile
 from subprocess import Popen
-from os import path
+from configparser import ConfigParser
 from source_common import *
 
 
@@ -15,14 +18,14 @@ def validate_downloaded_file(CURRENT_PATH):
     PATH_LIST = [
         "/tmp/",
         "/Downloads/",
-        "~/Downloads/",
+        os.path.expanduser("~/Downloads/"),
         f"{CURRENT_PATH}/data/",
         f"{CURRENT_PATH}/../data/"
     ]
 
     # Loop through possible locations to unzip file if found
     for item in PATH_LIST:
-        if path.exists(f"{item}{FILENAME}.zip"):
+        if os.path.exists(f"{item}{FILENAME}.zip"):
             # Unzip the thing
             with ZipFile(f"{item}{FILENAME}.zip", 'r') as zipObj:
                 zipObj.extractall(f"{CURRENT_PATH}/data")
@@ -30,8 +33,8 @@ def validate_downloaded_file(CURRENT_PATH):
 
     # Loop through dirs again to find the actual XML
     for item in PATH_LIST:
-        if path.exists(f"{item}{FILENAME}"):
-            result = f"{item}{FILENAME}"
+        if os.path.exists(f"{item}full database.xml"):
+            result = f"{item}full database.xml"
             break
 
     return result
@@ -142,6 +145,8 @@ def import_to_db(config, engine, PATH):
     # Drop any old versions of the schema
     with engine.connect() as conn:
         conn.execute("drop schema if exists drug_bank cascade;")
+        conn.execute("drop schema if exists public cascade;")
+        conn.execute("create schema public;")
 
     # Build command to import drugbank data
     command = f"{PATH}/modules/import_drugbank.R " \
@@ -150,7 +155,7 @@ def import_to_db(config, engine, PATH):
         f"{config['drugdata']['database']} " \
         f"{config['drugdata']['user']} " \
         f"{config['drugdata']['password']} " \
-        f"{PATH}/data/drugbank_all_full_database.xml"
+        f"{PATH}/data/\"full database.xml\""
 
     # Run the import
     p = Popen(command, shell=True)
@@ -164,9 +169,27 @@ def import_to_db(config, engine, PATH):
     uberprint("IMPORT OF DrugBank COMPLETE")
 
 
-def cleanup():
-    print("Skipping cleanup step for DrugBank.")
+# Delete decompressed DrugBank file
+def cleanup(PATH):
+    print("Cleaning up DrugBank files.")
+    try:
+        os.remove(f"{PATH}/data/full database.xml")
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":
-    import_to_db(False)
+    # Get script directory
+    CURRENT_PATH = str(os.path.dirname(os.path.realpath(__file__))) + "/.."
+
+    # Import database configuration
+    config = ConfigParser()
+    config.read(f"{CURRENT_PATH}/database.conf")
+
+    # Connect to database
+    DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
+    engine = sqlalchemy.create_engine(DATABASE_URL)
+
+    validate_downloaded_file(CURRENT_PATH)
+    import_to_db(config, engine, CURRENT_PATH)
+    cleanup(CURRENT_PATH)
