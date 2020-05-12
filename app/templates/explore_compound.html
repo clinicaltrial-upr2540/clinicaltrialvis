@@ -23,36 +23,45 @@
                             <p>{{ message }}</p>
                             {% endif %}
 
+                            {% if no_compound=="True" %}
+                            <div class="alert alert-danger mt-3" role="alert">
+                                No compound <strong>{{ compound_name }}</strong> was found.
+                            </div>
+                            {% endif %}
 
                             {% if (descriptor_dict is defined) and (descriptor_dict is not none) %}
 
-                                <div class="card">
-                                    <!-- Card header -->
-                                    <div class="card-body">
-                                        <h3 class="mb-0">Compound descriptor values</h3>
+                            <div class="alert alert-danger mt-3" role="alert">
+                                No compound <strong>{{ compound_name }}</strong> was found.
+                            </div>
 
-                                        <div class="table-responsive py-4">
-                                            <table class="table table-flush" id="datatable-basic">
-                                                <thead class="thead-light">
-                                                <tr>
-                                                    {% for col_name_list in descriptor_dict %}
-                                                        <th>{{ col_name_list }}</th>
-                                                    {% endfor %}
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    {% for row in descriptor_dict %}
+                            <div class="card">
+                                <!-- Card header -->
+                                <div class="card-body">
+                                    <h3 class="mb-0">Compound descriptor values</h3>
 
-                                                        <td>{{ descriptor_dict[row] }}</td>
+                                    <div class="table-responsive py-4">
+                                        <table class="table table-flush" id="datatable-basic">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                {% for col_name_list in descriptor_dict %}
+                                                    <th>{{ col_name_list }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                {% for row in descriptor_dict %}
 
-                                                    {% endfor %}
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                    <td>{{ descriptor_dict[row] }}</td>
+
+                                                {% endfor %}
+                                            </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
+                            </div>
                             {% else %}
                             {% endif %}
 

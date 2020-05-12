@@ -123,31 +123,38 @@ def render_compound_explorer():
         descriptor_payload = get_descriptor_payload(compound_name)
         descriptor_data = data_explore_post(descriptor_payload)
         descriptor_dict = get_descriptor_dict(descriptor_data)
-        descriptor_dict['molecular_weight'] = round(float(descriptor_dict['molecular_weight']), 3)
+        if descriptor_dict is None:
+            return render_template('explore_compound.html',
+                                   no_compound="True",
+                                   compound_name=compound_name,
+                                   page_title="Explore A Compound"
+                                   )
+        else:
+            descriptor_dict['molecular_weight'] = round(float(descriptor_dict['molecular_weight']), 3)
 
-        ba_dict = get_ba_dict(engine, compound_name)
+            ba_dict = get_ba_dict(engine, compound_name)
 
-        similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)
+            similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)
 
-        if (descriptor_dict == {}):
-            descriptor_dict = None
+            if (descriptor_dict == {}):
+                descriptor_dict = None
 
-        if len(ba_dict) < 1:
-            ba_dict = None
-            message += "Bioavailability information not available. "
+            if len(ba_dict) < 1:
+                ba_dict = None
+                message += "Bioavailability information not available. "
 
-        if (similar_dict.get('molecular_weight') == []):
-            similar_dict = None
-            message += "Similar compound information not available. "
+            if (similar_dict.get('molecular_weight') == []):
+                similar_dict = None
+                message += "Similar compound information not available. "
 
-        return render_template('explore_compound.html',
-                               compound_name=compound_name,
-                               message=message,
-                               descriptor_dict=descriptor_dict,
-                               ba_dict=ba_dict,
-                               similar_dict=similar_dict,
-                               page_title="Explore A Compound"
-                               )
+            return render_template('explore_compound.html',
+                                   compound_name=compound_name,
+                                   message=message,
+                                   descriptor_dict=descriptor_dict,
+                                   ba_dict=ba_dict,
+                                   similar_dict=similar_dict,
+                                   page_title="Explore A Compound"
+                                   )
     else:
         return render_template('explore_compound.html', page_title="Explore A Compound")
 
@@ -157,6 +164,7 @@ def render_compound_explorer():
 ############################################
 
 # API endpoint to get a 9 descriptor plot for a compound
+# Returns a PNG image to be em
 @app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"])
 def compound_descriptors(compound_name):
     return get_plot_png(compound_name, engine)
@@ -232,7 +240,7 @@ def get_descriptor_dict(descriptor_data):
 
         return dict(zip(column_names, data))
     else:
-        return {}
+        return None
 
 
 def data_explore_post(payload):
