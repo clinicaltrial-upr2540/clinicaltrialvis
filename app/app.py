@@ -258,25 +258,41 @@ def data_explore_post(payload):
         return json.dumps(results, indent=4)
 
     elif payload.get("export") == "true":
-        # Loop through views to run multiple retrievals of the data using the same FROM, WHERE and LIMIT snippets
         csv_data_dict = {}
         memory_file = BytesIO()
         now = datetime.datetime.now()
         dt_string = now.strftime("%Y.%m.%d-%H.%M.%S")
 
-        for view in payload["data_list"]:
+        # IF this is a single file download, the data is exactly the same as render, just need to turn it into a CSV
+        if payload.get("single_file") == "true":
+            view_list = []
+
             where_snippet = get_where_snippet(payload)
             from_snippet = get_from_snippet(payload)
-            select_snippet = get_single_view_select_snippet(view)
+            select_snippet = get_select_snippet(payload, True)
             limit_snippet = get_limit_snippet(payload)
 
             sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
-            csv_data_dict[view["view_name"]] = get_explore_response_as_csv(sql_string, payload)
+
+            for view in payload["data_list"]:
+                view_list.append(view["view_name"])
+
+            csv_data_dict[f"join_{'_'.join(view_list)}"] = get_explore_response_as_csv(sql_string, payload)
+        # Loop through views to run multiple retrievals of the data using the same FROM, WHERE and LIMIT snippets
+        else:
+            for view in payload["data_list"]:
+                where_snippet = get_where_snippet(payload)
+                from_snippet = get_from_snippet(payload)
+                select_snippet = get_single_view_select_snippet(view)
+                limit_snippet = get_limit_snippet(payload)
+
+                sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
+                csv_data_dict[view["view_name"]] = get_explore_response_as_csv(sql_string, payload)
 
         # Add all views to an in-memory zip file and return
         with zipfile.ZipFile(memory_file, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
             for viewname, csvdata in csv_data_dict.items():
-                file_name = str(viewname) + '-' + dt_string + '.csv'
+                file_name = f"{viewname}-{dt_string}.csv"
                 zf.writestr(file_name, csvdata)
         memory_file.seek(0)
 
