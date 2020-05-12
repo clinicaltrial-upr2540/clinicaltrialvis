@@ -162,11 +162,10 @@ def render_compound_explorer():
 ############################################
 
 # API endpoint to get a 9 descriptor plot for a compound
-# Returns a PNG image to be em
+# Returns a PNG image to be embedded
 @app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"])
 def compound_descriptors(compound_name):
     return get_plot_png(compound_name, engine)
-    # return f"compound name is {compound_name}"
 
 
 # API endpoint to list available views in the curated dataset
