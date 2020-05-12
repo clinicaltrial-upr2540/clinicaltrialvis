@@ -13,7 +13,6 @@ from sqlalchemy.sql import text
 from configparser import ConfigParser
 from io import BytesIO
 
-
 ############################################
 # Import local modules
 ############################################
@@ -115,6 +114,7 @@ def render_explorer():
 def render_compound_explorer():
     if request.method == "POST":
         compound_name = request.form.get("compound_name", '')
+        compound_name = compound_name.capitalize()
         if compound_name == '':
             compound_name = None
 
@@ -123,6 +123,7 @@ def render_compound_explorer():
         descriptor_payload = get_descriptor_payload(compound_name)
         descriptor_data = data_explore_post(descriptor_payload)
         descriptor_dict = get_descriptor_dict(descriptor_data)
+        descriptor_dict['molecular_weight'] = round(float(descriptor_dict['molecular_weight']), 3)
 
         ba_dict = get_ba_dict(engine, compound_name)
 
@@ -144,11 +145,11 @@ def render_compound_explorer():
                                message=message,
                                descriptor_dict=descriptor_dict,
                                ba_dict=ba_dict,
-                               similar_dict=similar_dict
+                               similar_dict=similar_dict,
+                               page_title="Explore A Compound"
                                )
     else:
-        message = "This is a GET request"
-        return render_template('explore_compound.html', message=message, page_title="Explore A Compound")
+        return render_template('explore_compound.html', page_title="Explore A Compound")
 
 
 ############################################
@@ -158,7 +159,6 @@ def render_compound_explorer():
 # API endpoint to get a 9 descriptor plot for a compound
 @app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"])
 def compound_descriptors(compound_name):
-
     return get_plot_png(compound_name, engine)
     # return f"compound name is {compound_name}"
 
@@ -236,60 +236,65 @@ def get_descriptor_dict(descriptor_data):
 
 
 def data_explore_post(payload):
-        if validate_explore_request(payload) is False:
-            return
+    if validate_explore_request(payload) is False:
+        return
 
-        # If "export" is false, return a JSON object to build a preview table
-        if payload.get("export") == "false":
+    # If "export" is false, return a JSON object to build a preview table
+    if payload.get("export") == "false":
+        where_snippet = get_where_snippet(payload)
+        from_snippet = get_from_snippet(payload)
+        select_snippet = get_select_snippet(payload, False)
+        limit_snippet = get_limit_snippet(payload)
+
+        sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
+        results = get_explore_response(sql_string, payload)
+
+        results["sql"] = sql_string
+        return json.dumps(results, indent=4)
+
+    elif payload.get("export") == "true":
+        # IF this is a single file download, the data is exactly the same as render, just need to turn it into a CSV
+        if payload.get("single_file") == "true":
             where_snippet = get_where_snippet(payload)
             from_snippet = get_from_snippet(payload)
-            select_snippet = get_select_snippet(payload, False)
+            select_snippet = get_select_snippet(payload, True)
             limit_snippet = get_limit_snippet(payload)
 
             sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
-            results = get_explore_response(sql_string, payload)
+            results = get_explore_response_as_csv(sql_string, payload)
 
-            results["sql"] = sql_string
-            return json.dumps(results, indent=4)
+            # Create a response object and set headers so it will download as file
+            response = make_response(results)
+            response.headers['Content-Type'] = "application/octet-stream"
+            response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
 
-        elif payload.get("export") == "true":
-            # IF this is a single file download, the data is exactly the same as render, just need to turn it into a CSV
-            if payload.get("single_file") == "true":
+            return(response)
+
+        # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets
+        else:
+            csv_data_dict = {}
+            memory_file = BytesIO()
+            now = datetime.datetime.now()
+            dt_string = now.strftime("%Y.%m.%d-%H.%M.%S")
+
+            for view in payload["data_list"]:
                 where_snippet = get_where_snippet(payload)
                 from_snippet = get_from_snippet(payload)
-                select_snippet = get_select_snippet(payload, True)
+                select_snippet = get_single_view_select_snippet(view)
                 limit_snippet = get_limit_snippet(payload)
 
                 sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
-                results = get_explore_response_as_csv(sql_string, payload)
+                csv_data_dict[view["view_name"]] = get_explore_response_as_csv(sql_string, payload)
 
-                # Create a response object and set headers so it will download as file
-                response = make_response(results)
-                response.headers['Content-Type'] = "application/octet-stream"
-                response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
+            # Add all views to an in-memory zip file and return
+            with zipfile.ZipFile(memory_file, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
+                for viewname, csvdata in csv_data_dict.items():
+                    file_name = str(viewname) + '-' + dt_string + '.csv'
+                    zf.writestr(file_name, csvdata)
+            memory_file.seek(0)
 
-                return(response)
-
-            # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets
-            else:
-                csv_data_dict = {}
-                memory_file = BytesIO()
-
-                for view in payload["data_list"]:
-                    where_snippet = get_where_snippet(payload)
-                    from_snippet = get_from_snippet(payload)
-                    select_snippet = get_single_view_select_snippet(view)
-                    limit_snippet = get_limit_snippet(payload)
-
-                    sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
-                    csv_data_dict[view["view_name"]] = get_explore_response_as_csv(sql_string, payload)
-
-                # Add all views to an in-memory zip file and return
-                with zipfile.ZipFile(memory_file, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
-                    for viewname, csvdata in csv_data_dict.items():
-                        zf.writestr(f"{viewname}.csv", csvdata)
-                memory_file.seek(0)
-                return send_file(memory_file, attachment_filename='export.zip', as_attachment=True)
+            zip_name = f"export-{dt_string}.zip"
+            return send_file(memory_file, attachment_filename=zip_name, as_attachment=True)
 
 
 # Check if there is a valid APi request
