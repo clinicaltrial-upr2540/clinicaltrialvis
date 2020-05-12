@@ -131,7 +131,10 @@ def render_compound_explorer():
         else:
             warning_list = []
 
-            descriptor_dict['molecular_weight'] = round(float(descriptor_dict['molecular_weight']), 3)
+            try:
+                descriptor_dict['molecular_weight'] = round(float(descriptor_dict['molecular_weight']), 3)
+            except ValueError:
+                pass
             ba_dict = get_ba_dict(engine, compound_name)
             similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)
 
