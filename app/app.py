@@ -114,40 +114,45 @@ def render_explorer():
 def render_compound_explorer():
     if request.method == "POST":
         compound_name = request.form.get("compound_name", '')
-        compound_name = compound_name.capitalize()
         if compound_name == '':
             compound_name = None
 
-        message = f"Information about {compound_name}."
-
+        # Build the response using the API functions
         descriptor_payload = get_descriptor_payload(compound_name)
         descriptor_data = data_explore_post(descriptor_payload)
         descriptor_dict = get_descriptor_dict(descriptor_data)
-        descriptor_dict['molecular_weight'] = round(float(descriptor_dict['molecular_weight']), 3)
+        if descriptor_dict is None:
+            return render_template('explore_compound.html',
+                                   no_compound="True",
+                                   compound_name=compound_name,
+                                   page_title="Explore A Compound"
+                                   )
+        else:
+            warning_list = []
 
-        ba_dict = get_ba_dict(engine, compound_name)
+            try:
+                descriptor_dict['molecular_weight'] = round(float(descriptor_dict['molecular_weight']), 3)
+            except ValueError:
+                pass
+            ba_dict = get_ba_dict(engine, compound_name)
+            similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)
 
-        similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)
+            if len(ba_dict) < 1:
+                ba_dict = None
+                warning_list.append("Bioavailability information not available.")
 
-        if (descriptor_dict == {}):
-            descriptor_dict = None
+            if (similar_dict.get('molecular_weight') == []):
+                similar_dict = None
+                warning_list.append("Similar compound information not available.")
 
-        if len(ba_dict) < 1:
-            ba_dict = None
-            message += "Bioavailability information not available. "
-
-        if (similar_dict.get('molecular_weight') == []):
-            similar_dict = None
-            message += "Similar compound information not available. "
-
-        return render_template('explore_compound.html',
-                               compound_name=compound_name,
-                               message=message,
-                               descriptor_dict=descriptor_dict,
-                               ba_dict=ba_dict,
-                               similar_dict=similar_dict,
-                               page_title="Explore A Compound"
-                               )
+            return render_template('explore_compound.html',
+                                   compound_name=descriptor_dict["compound_name"],
+                                   warning_list=warning_list,
+                                   descriptor_dict=descriptor_dict,
+                                   ba_dict=ba_dict,
+                                   similar_dict=similar_dict,
+                                   page_title="Explore A Compound"
+                                   )
     else:
         return render_template('explore_compound.html', page_title="Explore A Compound")
 
@@ -157,10 +162,10 @@ def render_compound_explorer():
 ############################################
 
 # API endpoint to get a 9 descriptor plot for a compound
+# Returns a PNG image to be embedded
 @app.route("/compound/explore/<compound_name>/descriptors/png", methods=["GET"])
 def compound_descriptors(compound_name):
     return get_plot_png(compound_name, engine)
-    # return f"compound name is {compound_name}"
 
 
 # API endpoint to list available views in the curated dataset
@@ -232,7 +237,7 @@ def get_descriptor_dict(descriptor_data):
 
         return dict(zip(column_names, data))
     else:
-        return {}
+        return None
 
 
 def data_explore_post(payload):
@@ -373,7 +378,7 @@ def get_where_snippet(payload):
             if operator not in ["matches", ">", "<", "=", "!="]:
                 operator = "="
             if operator == "matches":
-                operator = "LIKE"
+                operator = "ILIKE"
             target = filter_obj.get("target")
 
             if operator == "=" or operator == "!=":
