@@ -145,10 +145,11 @@ def render_compound_explorer():
                                message=message,
                                descriptor_dict=descriptor_dict,
                                ba_dict=ba_dict,
-                               similar_dict=similar_dict
+                               similar_dict=similar_dict,
+                               page_title="Explore A Compound"
                                )
     else:
-        return render_template('explore_compound.html', message=message, page_title="Explore A Compound")
+        return render_template('explore_compound.html', page_title="Explore A Compound")
 
 
 ############################################
