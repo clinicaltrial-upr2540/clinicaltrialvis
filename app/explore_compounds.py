@@ -36,6 +36,7 @@ def get_descriptor_payload(compound_name):
                     "view_name": "compounds",
                     "column_list":
                         [
+                            "compound_name",
                             "molecular_weight",
                             "clogp",
                             "hbd",

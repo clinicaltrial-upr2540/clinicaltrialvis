@@ -118,8 +118,7 @@ def render_compound_explorer():
         if compound_name == '':
             compound_name = None
 
-        message = f"Information about {compound_name}."
-
+        # Build the response using the API functions
         descriptor_payload = get_descriptor_payload(compound_name)
         descriptor_data = data_explore_post(descriptor_payload)
         descriptor_dict = get_descriptor_dict(descriptor_data)
@@ -130,26 +129,23 @@ def render_compound_explorer():
                                    page_title="Explore A Compound"
                                    )
         else:
+            warning_list = []
+
             descriptor_dict['molecular_weight'] = round(float(descriptor_dict['molecular_weight']), 3)
-
             ba_dict = get_ba_dict(engine, compound_name)
-
             similar_dict = get_similar_dict(engine, compound_name, descriptor_dict)
-
-            if (descriptor_dict == {}):
-                descriptor_dict = None
 
             if len(ba_dict) < 1:
                 ba_dict = None
-                message += "Bioavailability information not available. "
+                warning_list.append("Bioavailability information not available.")
 
             if (similar_dict.get('molecular_weight') == []):
                 similar_dict = None
-                message += "Similar compound information not available. "
+                warning_list.append("Similar compound information not available.")
 
             return render_template('explore_compound.html',
-                                   compound_name=compound_name,
-                                   message=message,
+                                   compound_name=descriptor_dict["compound_name"],
+                                   warning_list=warning_list,
                                    descriptor_dict=descriptor_dict,
                                    ba_dict=ba_dict,
                                    similar_dict=similar_dict,
@@ -381,7 +377,7 @@ def get_where_snippet(payload):
             if operator not in ["matches", ">", "<", "=", "!="]:
                 operator = "="
             if operator == "matches":
-                operator = "LIKE"
+                operator = "ILIKE"
             target = filter_obj.get("target")
 
             if operator == "=" or operator == "!=":

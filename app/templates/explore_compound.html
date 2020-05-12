@@ -31,9 +31,15 @@
 
                             {% if (descriptor_dict is defined) and (descriptor_dict is not none) %}
 
-                            <div class="alert alert-danger mt-3" role="alert">
-                                No compound <strong>{{ compound_name }}</strong> was found.
+                            <div class="alert alert-primary mt-3" role="alert">
+                                Showing information for <strong>{{ compound_name }}</strong>.
                             </div>
+
+                            {% for item in warning_list %}
+                            <div class="alert alert-warning mt-3" role="alert">
+                                {{ item }}
+                            </div>
+                            {% endfor %}
 
                             <div class="card">
                                 <!-- Card header -->
