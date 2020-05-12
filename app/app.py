@@ -258,48 +258,30 @@ def data_explore_post(payload):
         return json.dumps(results, indent=4)
 
     elif payload.get("export") == "true":
-        # IF this is a single file download, the data is exactly the same as render, just need to turn it into a CSV
-        if payload.get("single_file") == "true":
+        # Loop through views to run multiple retrievals of the data using the same FROM, WHERE and LIMIT snippets
+        csv_data_dict = {}
+        memory_file = BytesIO()
+        now = datetime.datetime.now()
+        dt_string = now.strftime("%Y.%m.%d-%H.%M.%S")
+
+        for view in payload["data_list"]:
             where_snippet = get_where_snippet(payload)
             from_snippet = get_from_snippet(payload)
-            select_snippet = get_select_snippet(payload, True)
+            select_snippet = get_single_view_select_snippet(view)
             limit_snippet = get_limit_snippet(payload)
 
             sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
-            results = get_explore_response_as_csv(sql_string, payload)
+            csv_data_dict[view["view_name"]] = get_explore_response_as_csv(sql_string, payload)
 
-            # Create a response object and set headers so it will download as file
-            response = make_response(results)
-            response.headers['Content-Type'] = "application/octet-stream"
-            response.headers['Content-Disposition'] = "attachment; filename=\"export.csv\""
+        # Add all views to an in-memory zip file and return
+        with zipfile.ZipFile(memory_file, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
+            for viewname, csvdata in csv_data_dict.items():
+                file_name = str(viewname) + '-' + dt_string + '.csv'
+                zf.writestr(file_name, csvdata)
+        memory_file.seek(0)
 
-            return(response)
-
-        # ELSE we need to run multiple retrievals of the data using the same FROM and WHERE and LIMIT snippets
-        else:
-            csv_data_dict = {}
-            memory_file = BytesIO()
-            now = datetime.datetime.now()
-            dt_string = now.strftime("%Y.%m.%d-%H.%M.%S")
-
-            for view in payload["data_list"]:
-                where_snippet = get_where_snippet(payload)
-                from_snippet = get_from_snippet(payload)
-                select_snippet = get_single_view_select_snippet(view)
-                limit_snippet = get_limit_snippet(payload)
-
-                sql_string = select_snippet + from_snippet + where_snippet + limit_snippet
-                csv_data_dict[view["view_name"]] = get_explore_response_as_csv(sql_string, payload)
-
-            # Add all views to an in-memory zip file and return
-            with zipfile.ZipFile(memory_file, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
-                for viewname, csvdata in csv_data_dict.items():
-                    file_name = str(viewname) + '-' + dt_string + '.csv'
-                    zf.writestr(file_name, csvdata)
-            memory_file.seek(0)
-
-            zip_name = f"export-{dt_string}.zip"
-            return send_file(memory_file, attachment_filename=zip_name, as_attachment=True)
+        zip_name = f"export-{dt_string}.zip"
+        return send_file(memory_file, attachment_filename=zip_name, as_attachment=True)
 
 
 # Check if there is a valid APi request
