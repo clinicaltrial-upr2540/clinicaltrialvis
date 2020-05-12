@@ -114,7 +114,6 @@ def render_explorer():
 def render_compound_explorer():
     if request.method == "POST":
         compound_name = request.form.get("compound_name", '')
-        compound_name = compound_name.capitalize()
         if compound_name == '':
             compound_name = None
 
