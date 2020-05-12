@@ -148,7 +148,6 @@ def render_compound_explorer():
                                similar_dict=similar_dict
                                )
     else:
-        message = "This is a GET request"
         return render_template('explore_compound.html', message=message, page_title="Explore A Compound")
 
 
