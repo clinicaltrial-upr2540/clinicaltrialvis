@@ -10,12 +10,13 @@
 
                             <h1>Please enter a compound name</h1>
 
-                            <p> Try "Adefovir dipivoxil", "Atorvastatin", or "Amikacin" for compounds where DrugBank BA is False.<br/>
-                                Try "Abacavir", "Tramadol", or "Sumatriptan" for compounds where DrugBank BA is True.
+                            <p>
+                            Try "Adefovir dipivoxil", "Atorvastatin", or "Amikacin" for compounds where DrugBank BA is False.<br/>
+                            Try "Abacavir", "Tramadol", or "Sumatriptan" for compounds where DrugBank BA is True.
                             </p>
                             <form action="/explore/compound" method="post">
-                                <input type="text" name="compound_name">
-                                <input type="submit" value="Submit">
+                                <input class="form-control" type="text" name="compound_name" placeholder="Try Amikacin or Sumatriptan...">
+                                <input class="btn btn-primary mt-3" type="submit" value="Submit">
                             </form>
 
 
@@ -78,7 +79,7 @@
                                     <!-- Card header -->
                                     <div class="card-body">
                                         <h3 class="mb-0">Bioavailability</h3>
-                                        <p><strong>Note:</strong> Many compounds that DrugBank indicates have False bioavailability actually have non-zero BA percentages in their absorption free-text fields. See Amikacin as an example. Or go to the <a href="/explore/data">Explore Data</a> page and search for compounds where <code>bioavailability</code> is <code>0</code>, but <code>bioavailability_percent</code> is <code>>0</code>. </p>
+                                        <p><strong>Note:</strong> Many compounds with bioavailability of <code>False</code> in DrugBank actually have non-zero BA percentages in their absorption free-text fields. See Amikacin as an example. Or go to the <a href="/explore/data">Explore Data</a> page and search for compounds where <code>bioavailability</code> is <code>0</code>, but <code>bioavailability_percent</code> is <code>>0</code>. </p>
 
                                         <div class="table-responsive py-4">
                                             <table class="table table-flush" id="datatable-basic">
