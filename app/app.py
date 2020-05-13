@@ -379,8 +379,10 @@ def get_where_snippet(payload):
                 operator = "ILIKE"
             target = filter_obj.get("target")
 
+            # The following filters require an exact match
             if operator == "=" or operator == "!=":
                 this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'{target}\' '
+            # The following filters match substrings with wildcards
             else:
                 this_snip = f' {condition_term} "{view_name}"."{column_name}" {operator} \'%{target}%\' '
 
