@@ -18,6 +18,7 @@ import source_fda
 import source_mesh
 import source_chembl
 import source_drugcentral
+import source_top200
 from source_common import *
 
 data_sources = {
@@ -151,6 +152,21 @@ def main(config, engine, CURRENT_PATH, FORCE):
         source_drugcentral.cleanup(CURRENT_PATH)
     else:
         uberprint("SKIPPING IMPORT OF DrugCentral")
+
+    # Top200 IMPORT PROCESS
+    if source_top200.validate_data(engine):
+        data_sources["top200"]["imported"] = True
+    if not data_sources["top200"]["imported"] or FORCE:
+        top200_data = source_top200.validate_downloaded_file(CURRENT_PATH)
+
+        # Import ChemBL data
+        if top200_data:
+            source_top200.import_to_db(config, engine, CURRENT_PATH)
+        else:
+            print("Unable to find Top200 data file.")
+            uberprint("SKIPPING IMPORT OF Top200")
+    else:
+        uberprint("SKIPPING IMPORT OF Top200")
 
 
 # If called as a script, set up database connection and execute main()
