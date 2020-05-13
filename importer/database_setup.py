@@ -159,7 +159,7 @@ def main(config, engine, CURRENT_PATH, FORCE):
     if not data_sources["top200"]["imported"] or FORCE:
         top200_data = source_top200.validate_downloaded_file(CURRENT_PATH)
 
-        # Import ChemBL data
+        # Import Top200 data
         if top200_data:
             source_top200.import_to_db(config, engine, CURRENT_PATH)
         else:
