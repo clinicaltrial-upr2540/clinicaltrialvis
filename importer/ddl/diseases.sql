@@ -7,6 +7,9 @@
 --      this materialized view can be modified by adding additional characteristics as long as the SMILES will stay as primary key
 -- =============================================
 
+-- Drop the existing non-materialized view
+drop view if exists curated.diseases;
+
 -- Drop materialized view
 drop materialized view if exists curated.disease;
 
@@ -33,9 +36,6 @@ FROM chembl_26.drug_indication
 WHERE smiles.drug_id IS NOT NULL;
 
 alter materialized view curated.disease owner to postgres;
-
--- Drop the existing non-materialized view
-drop view if exists curated.diseases;
 
 -- Generate the non-matieralized view
 create view curated.diseases(drug_id, mesh_id, compound_name, molregno, canonical_smiles, disease) as

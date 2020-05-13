@@ -7,6 +7,9 @@
 --      this materialized view can be modified by adding additional characteristics as long the drug_patents.number will stay as primary key
 -- =============================================
 
+-- Drop the existing non-materialized view
+drop view if exists curated.patents;
+
 -- Drop materialized view
 drop materialized view if exists curated.patent;
 
@@ -28,9 +31,6 @@ SELECT drug_bank_patents.number,
 FROM drug_bank_patents;
 
 alter materialized view curated.patent owner to postgres;
-
--- Drop the existing non-materialized view
-drop view if exists curated.patents;
 
 -- Generate the non-matieralized view
 create view curated.patents(number, country, approved, expires, drug_id) as

@@ -7,6 +7,9 @@
 --      this materialized view can be modified by adding additional characteristics as long the drug_id will stay as primary key
 -- =============================================
 
+-- Drop the existing non-materialized view
+drop view if exists curated.products;
+
 -- Drop materialized view
 drop materialized view if exists curated.product;
 
@@ -65,10 +68,7 @@ FROM drug_bank.drug drug
          LEFT JOIN t200ppbrs2018 t200ppbrs2018 ON t200ppbrs2018.drug_name = drug_products.name
          LEFT JOIN t200smprs2018 t200smprs2018 ON t200smprs2018.drug_name = drug_products.name;
 
-alter materialized view curated.product owner to curation_user;
-
--- Drop the existing non-materialized view
-drop view if exists curated.products;
+alter materialized view curated.product owner to postgres;
 
 -- Generate the non-matieralized view
 create view curated.products(drug_id, product_name, labeller, "ndc-product-code", "dpd-id", "ema-product-code", "ema-ma-number", "started-marketing-on", "ended-marketing-on", "dosage-form", strength, route, "fda-application-number", generic, "over-the-counter", approved, country, source, by_nbr_presc_rank_2016, by_nbr_retail_sales_rank_2018, small_mole_retail_sales_rank_2018, small_mole_revenue_2018, retail_sales_revenue_2018, disease_target) as
@@ -98,4 +98,4 @@ SELECT product.drug_id,
        product.disease_target
 FROM curated.product;
 
-alter table curated.products owner to curation_user;
+alter table curated.products owner to postgres;

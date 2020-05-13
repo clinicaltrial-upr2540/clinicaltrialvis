@@ -8,6 +8,9 @@
 --      Any new fields must be added to both the materialized view and the corresponding nonmaterialized view below
 -- =============================================
 
+-- Drop the existing non-matieralized view
+drop view if exists curated.compounds;
+
 -- Drop materialized view
 drop materialized view if exists curated.compound;
 
@@ -38,11 +41,11 @@ WITH iupac AS (
          FROM drug_bank.drug_calculated_properties drug_calculated_properties
          WHERE drug_calculated_properties.kind ~~ 'Molecular Formula'::text
      ),
-     drug_class AS (
-         SELECT uspclass.drugname,
-                uspclass.uspclassification AS drug_class
-         FROM kegg.uspclass
-     ),
+     -- drug_class AS (
+     --     SELECT uspclass.drugname,
+     --            uspclass.uspclassification AS drug_class
+     --     FROM kegg.uspclass
+     -- ),
      ba AS (
          SELECT drug_calculated_properties.parent_key AS drug_id,
                 drug_calculated_properties.kind,
@@ -135,7 +138,7 @@ SELECT DISTINCT drug.primary_key       AS drug_id,
                 bpka.bpka,
                 apka.apka,
                 drug.name              AS compound_name,
-                drug_class.drug_class,
+                -- drug_class.drug_class,
                 drug.other_keys,
                 drug.type,
                 drug.description,
@@ -171,7 +174,7 @@ FROM drug_bank.drug drug
          LEFT JOIN smiles ON drug.primary_key = smiles.drug_id
          LEFT JOIN mw ON drug.primary_key = mw.drug_id
          LEFT JOIN mf ON drug.primary_key = mf.drug_id
-         LEFT JOIN drug_class ON drug_class.drugname ~~ drug.name
+         -- LEFT JOIN drug_class ON drug_class.drugname ~~ drug.name
          LEFT JOIN ba ON ba.drug_id = drug.primary_key
          LEFT JOIN clogp ON clogp.drug_id = drug.primary_key
          LEFT JOIN psa ON psa.drug_id = drug.primary_key
@@ -185,11 +188,9 @@ FROM drug_bank.drug drug
 
 alter materialized view curated.compound owner to postgres;
 
--- Drop the existing non-matieralized view
-drop view if exists curated.compounds;
-
 -- Generate the non-matieralized view
-create view curated.compounds(drug_id, iupac, smiles, bioavailability, bioavailability_phrase, bioavailability_percent, molecular_weight, molecular_formula, clogp, psa, hba, hbd, rotatable_bonds, aromatic_rings, bpka, apka, compound_name, drug_class, other_keys, type, description, cas_number, unii, average_mass, monoisotopic_mass, state, synthesis_reference, indication, pharmacodynamics, mechanism_of_action, metabolism, absorption, half_life, protein_binding, route_of_elimination, volume_of_distribution, clearance, international_brands, pdb_entries, fda_label, msds, food_interactions, drug_interactions_count, toxicity, atc_code, atc_level_4, therapeutic_code) as
+-- create view curated.compounds(drug_id, iupac, smiles, bioavailability, bioavailability_phrase, bioavailability_percent, molecular_weight, molecular_formula, clogp, psa, hba, hbd, rotatable_bonds, aromatic_rings, bpka, apka, compound_name, drug_class, other_keys, type, description, cas_number, unii, average_mass, monoisotopic_mass, state, synthesis_reference, indication, pharmacodynamics, mechanism_of_action, metabolism, absorption, half_life, protein_binding, route_of_elimination, volume_of_distribution, clearance, international_brands, pdb_entries, fda_label, msds, food_interactions, drug_interactions_count, toxicity, atc_code, atc_level_4, therapeutic_code) as
+create view curated.compounds(drug_id, iupac, smiles, bioavailability, bioavailability_phrase, bioavailability_percent, molecular_weight, molecular_formula, clogp, psa, hba, hbd, rotatable_bonds, aromatic_rings, bpka, apka, compound_name, other_keys, type, description, cas_number, unii, average_mass, monoisotopic_mass, state, synthesis_reference, indication, pharmacodynamics, mechanism_of_action, metabolism, absorption, half_life, protein_binding, route_of_elimination, volume_of_distribution, clearance, international_brands, pdb_entries, fda_label, msds, food_interactions, drug_interactions_count, toxicity, atc_code, atc_level_4, therapeutic_code) as
 SELECT compound.drug_id,
        compound.iupac,
        compound.smiles,
@@ -207,7 +208,7 @@ SELECT compound.drug_id,
        compound.bpka,
        compound.apka,
        compound.compound_name,
-       compound.drug_class,
+       -- compound.drug_class,
        compound.other_keys,
        compound.type,
        compound.description,
