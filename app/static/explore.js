@@ -308,7 +308,11 @@ function buildDataPreviewTable(data, jsonPosted) {
                     filterOperator = jsonPosted["data_list"][view]["filters"][filter]["operator"];
                 }
 
-                document.querySelector(`[data-view="${jsonPosted["data_list"][view]["view_name"]}"][data-column="${jsonPosted["data_list"][view]["filters"][filter]["column_name"]}"]`).value = `${filterOperator}${jsonPosted["data_list"][view]["filters"][filter]["target"]}`;
+                try {
+                    document.querySelector(`[data-view="${jsonPosted["data_list"][view]["view_name"]}"][data-column="${jsonPosted["data_list"][view]["filters"][filter]["column_name"]}"]`).value = `${filterOperator}${jsonPosted["data_list"][view]["filters"][filter]["target"]}`;
+                } catch(err) {
+                    null;
+                }
             }
         }
     }
