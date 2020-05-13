@@ -112,8 +112,8 @@ def render_explorer():
 # Page to look up a compound vs its therapeutic group's descriptors
 @app.route("/explore/compound", methods=["GET", "POST"])
 def render_compound_explorer():
-    if request.method == "POST":
-        compound_name = request.form.get("compound_name", '')
+    if "compound_name" in request.args:
+        compound_name = request.args.get("compound_name")
         if compound_name == '':
             compound_name = None
 
