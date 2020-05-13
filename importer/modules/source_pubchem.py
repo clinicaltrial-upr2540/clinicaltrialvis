@@ -56,17 +56,21 @@ def get_key(json_object, key):
 
 # Function to dynamically throttle requests based on PubChem API status
 def api_delay(headers):
-    throttling_header = dict(headers)["X-Throttling-Control"]
+    if "X-Throttling-Control" in dict(headers):
+        throttling_header = dict(headers)["X-Throttling-Control"]
 
-    if "Black" in throttling_header:
-        print("API status is BLACK, waiting 5 minutes...")
-        time.sleep(300)
-    elif "Red" in throttling_header:
-        print("API status is RED, waiting 30 seconds...")
-        time.sleep(30)
-    elif "Yellow" in throttling_header:
-        print("API status is YELLOW, waiting 10 seconds...")
-        time.sleep(10)
+        if "Black" in throttling_header:
+            print("API status is BLACK, waiting 5 minutes...")
+            time.sleep(300)
+        elif "Red" in throttling_header:
+            print("API status is RED, waiting 30 seconds...")
+            time.sleep(30)
+        elif "Yellow" in throttling_header:
+            print("API status is YELLOW, waiting 10 seconds...")
+            time.sleep(10)
+    else:
+        print("Bad API response, retrying...")
+        time.sleep(1)
 
 
 # Function to import pubchem data

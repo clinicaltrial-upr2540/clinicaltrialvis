@@ -38,7 +38,7 @@ def validate_downloaded_file(CURRENT_PATH):
 
 # Validate any top200 data present in the database
 def validate_data(engine):
-    print("Validating DrugCentral data...")
+    print("Validating Top200 data...")
 
     result = True
 
