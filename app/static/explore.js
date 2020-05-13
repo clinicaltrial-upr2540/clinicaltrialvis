@@ -281,7 +281,15 @@ function buildDataPreviewTable(data, jsonPosted) {
     const tr = document.createElement('tr');
     tr.setAttribute('class', 'table-active');
     for (var key in column_names) {
-        html_buffer = html_buffer.concat(`<td><input class="form-control form-control-sm data-filter" data-view="${column_names[key][0]}" data-column="${column_names[key][1]}" type="text" placeholder="filter"></td>`);
+        // Determine if data field is a number or text
+        var data_type;
+        if(isNaN(sample_data[0][key])) {
+            data_type = "text";
+        } else {
+            data_type = "number";
+        }
+
+        html_buffer = html_buffer.concat(`<td><input class="form-control form-control-sm data-filter" data-datatype="${data_type}" data-view="${column_names[key][0]}" data-column="${column_names[key][1]}" type="text" placeholder="filter"></td>`);
     }
     tr.innerHTML = html_buffer;
     document.querySelector('#data-preview').append(tr);
@@ -347,6 +355,7 @@ function buildDataRequest() {
     // Loop through all the filters, and if they are set, add to the list
     document.querySelectorAll(".data-filter").forEach(function(filterField) {
         if (filterField.value.length > 0) {
+            var filterDatatype = filterField.getAttribute("data-datatype");
             var filterView = filterField.getAttribute("data-view");
             var filterColumn = filterField.getAttribute("data-column");
             var filterValue = filterField.value;
@@ -354,6 +363,11 @@ function buildDataRequest() {
             // First make sure the field is still relevant (the user may have unchecked it since the last refresh)
             // if (fieldDict[filterView].includes(filterColumn)) {
                 var filterType = "matches";
+                if (filterDatatype == "number") {
+                    filterType = "=";
+                } else {
+                    filterType = "matches";
+                }
 
                 // Derive type of filter comparison from first character
                 if (filterValue.charAt(0) == '>') {
