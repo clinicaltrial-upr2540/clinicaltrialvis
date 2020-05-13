@@ -315,7 +315,12 @@ function buildDataPreviewTable(data, jsonPosted) {
         html_buffer = '';
 
         for (var inner_key in sample_data[key]) {
-            html_buffer = html_buffer.concat(`<td class="text-truncate" style="max-width: 150px;" title="${sample_data[key][inner_key]}">${sample_data[key][inner_key]}</td>`)
+            // If the field is "compound_name", hyperlink to the other page
+            if(column_names[inner_key][1] == "compound_name") {
+                html_buffer = html_buffer.concat(`<td class="text-truncate" style="max-width: 150px;" title="${sample_data[key][inner_key]}"><a href="/explore/compound?compound_name=${sample_data[key][inner_key]}" target="_blank">${sample_data[key][inner_key]}</a></td>`);
+            } else {
+                html_buffer = html_buffer.concat(`<td class="text-truncate" style="max-width: 150px;" title="${sample_data[key][inner_key]}">${sample_data[key][inner_key]}</td>`);
+            }
         }
 
         data_tr.innerHTML = html_buffer;
