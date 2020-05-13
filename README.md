@@ -5,16 +5,18 @@ This is the main repository for the Clinical Trial and Pharmaceutical Chemical S
 - A **Python web application** that presents a user-friendly interface for navigating and exporting data from the database. This database will also expose several API endpoints so users can access the data programmatically. Finally, this application includes several sample visualizations to demonstrate applications of the curated dataset.
 - A **machine learning** model that will hope to predict drug candidates that will be bioavailable or perform well in clinical trials.
 
-## Prerequisites
-Before running this application locally, you will need to install the following:
+There are two steps required to getting the application running: **building the database** and **running the application**.
+
+## Building the database
+There are two ways to build a ChemDataExplorer database instance. On Windows or Linux, you can pull a Docker container that includes all the dependencies and will run the scripts for you. On macOS, you will need to install a number of dependencies and run the scripts yourself.
+
+### To set up the database on macOS
 
 - **Python3** - This application requires python3.6 or later. The easiest way to install this on a Mac is via Homebrew.
 - Run the following command to install Python packages: `python3 -m pip install -r requirements.txt`
 - To run import scripts, you will also need a postgres client and R installed.
 
-## Directories
-This repository is structured with the following directories:
+### To set up the database on Linux
 
-- **ansible** - This contains Ansible code for configuring our shared development environment. It is not relevant to users who wish to run the application locally.
-- **app** - This directory contains the Python web application with the user interface for exploring data and viewing visualizations. For information on how to configure and run the application, see the README.md file in the `app` directory.
-- **import_scripts** - Contains the scripts needed to import datasets and build a new database. NOTE: These will be combined to a more automated process. We do not currently recommend end users attempt to import data.
+
+### To set up the database on Windows
