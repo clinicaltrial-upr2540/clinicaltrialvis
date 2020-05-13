@@ -192,7 +192,11 @@ function requestPreviewData(jsonToPost) {
                 buildDataPreviewTable(data, jsonToPost);
             } catch(err) {
                 // If no data comes back, insert error message
-                document.querySelector('#data-preview').innerHTML = `<div class="alert alert-danger" role="alert">An error occurred while retrieving data. Please try again!</div>`;
+                document.querySelector('#data-preview').innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    <p>An error occurred while retrieving data. Please refrsh the page and try again!</p>
+                    <p><pre>${err.message}</pre></p>
+                </div>`;
                 console.log(err.message + " in " + this.responseText);
                 return;
             }
