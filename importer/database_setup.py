@@ -6,6 +6,7 @@ import sqlalchemy
 
 from configparser import ConfigParser
 from sqlalchemy.exc import ProgrammingError
+from subprocess import Popen
 
 # Set up path for local imports
 sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
@@ -167,6 +168,34 @@ def main(config, engine, CURRENT_PATH, FORCE):
             uberprint("SKIPPING IMPORT OF Top200")
     else:
         uberprint("SKIPPING IMPORT OF Top200")
+
+    # Build the materialized views
+    uberprint("BUILDING VIEWS")
+
+    # Create schema if necessary
+    with engine.connect() as conn:
+        conn.execute(f"CREATE SCHEMA IF NOT EXISTS curated;")
+
+    directory = os.fsencode(f"{CURRENT_PATH}/ddl/")
+
+    # Loop through sql files in ddl/ and execute each one
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        if filename.endswith(".sql"):
+            # Build command to import a single view
+            command = f"{find_binary('psql')} -h {config['drugdata']['host']} " \
+                f"-d {config['drugdata']['database']} " \
+                f"-p {config['drugdata']['port']} " \
+                f"-U {config['drugdata']['user']} " \
+                f"-f {CURRENT_PATH}/ddl/{filename}"
+
+            # Run the command
+            p = Popen(command, shell=True, env={
+                'PGPASSWORD': config['drugdata']['password']
+            })
+            p.wait()
+
+    uberprint("BUILDING VIEWS COMPLETE")
 
 
 # If called as a script, set up database connection and execute main()
