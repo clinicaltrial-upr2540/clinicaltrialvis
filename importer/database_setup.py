@@ -12,6 +12,7 @@ from subprocess import Popen
 sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
 sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}/modules")
 
+import visualization_setup
 import source_common
 import source_drugbank
 import source_pubchem
@@ -53,6 +54,12 @@ def main(config, engine, CURRENT_PATH, FORCE):
         os.mkdir(f"{CURRENT_PATH}/data")
     except FileExistsError:
         pass
+
+    # Import visualization data
+    try:
+        visualization_setup.import_visualization_demos(engine)
+    except Exception:
+        print("WARNING: Unable to refresh visualization data.")
 
     # DrugBank IMPORT PROCESS
     if not source_drugbank.validate_data(engine) or FORCE:
