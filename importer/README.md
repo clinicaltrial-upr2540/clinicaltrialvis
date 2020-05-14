@@ -38,7 +38,7 @@ If you are using MacOS, unfortunately there is a bug with Docker Desktop that wi
 
 ChemDataExplorer requires a PostgresSQL database instance in which to store the data. You can install a local instance using Homebrew or a Docker container, but we recommend setting up an instance in the cloud using [Amazon Web Services](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html) or [Heroku](https://devcenter.heroku.com/articles/heroku-postgresql), or working with your organization's IT department.
 
-Once you have a database instance set up and administrator credentials created, rename `database.conf.sample` to `database.conf` and fill in the imformation to connect to the database.
+Once you have a database instance set up and administrator credentials created, rename `database.conf.sample` to `database.conf` and fill in the information to connect to the database.
 
 ### Running the import
 
