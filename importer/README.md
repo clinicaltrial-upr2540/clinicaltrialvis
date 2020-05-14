@@ -24,12 +24,12 @@ If you are using MacOS, unfortunately there is a bug with Docker Desktop that wi
 
 4. Clone this repository and change directory:
 
-`git clone https://github.com/clinicaltrial-upr2540/clinicaltrialvis.git`
+`git clone https://github.com/clinicaltrial-upr2540/clinicaltrialvis.git`\
 `cd clinicaltrialvis/importer`
 
 5. Install Python and R dependencies (this will take a while):
 
-`python3 -m pip install -r requirements.txt`
+`python3 -m pip install -r requirements.txt`\
 `Rscript modules/install_dependencies.R`
 
 ### Set up a Postgres database
@@ -44,4 +44,4 @@ After you've installed all the requirements, you can run the import with the fol
 
 `python3 database_setup.py`
 
-This is a long process—**four to eight hours**. In the event that it fails, it is safe to re-run the script—it will only attempt to import data sources that have no already completed successfully. After it is complete, the script will print a command to start to start the [ChemDataExplorer application](https://hub.docker.com/repository/docker/chemdataexplorer/chemdataexplorer).
+This is a long process—**four to eight hours**. In the event that it fails, it is safe to re-run the script—it will only attempt to import data sources that have not already completed successfully. After it is complete, the script will print a command to start to start the [ChemDataExplorer application](https://hub.docker.com/repository/docker/chemdataexplorer/chemdataexplorer).
