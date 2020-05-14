@@ -12,6 +12,7 @@ from subprocess import Popen
 sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}")
 sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}/modules")
 
+import visualization_setup
 import source_common
 import source_drugbank
 import source_pubchem
@@ -53,6 +54,12 @@ def main(config, engine, CURRENT_PATH, FORCE):
         os.mkdir(f"{CURRENT_PATH}/data")
     except FileExistsError:
         pass
+
+    # Import visualization data
+    try:
+        visualization_setup.import_visualization_demos(engine)
+    except Exception:
+        print("WARNING: Unable to refresh visualization data.")
 
     # DrugBank IMPORT PROCESS
     if not source_drugbank.validate_data(engine) or FORCE:
@@ -196,6 +203,29 @@ def main(config, engine, CURRENT_PATH, FORCE):
             p.wait()
 
     uberprint("BUILDING VIEWS COMPLETE")
+
+    # Create application user
+    APP_USER_PASSWORD = generatePassword(16)
+
+    with engine.connect() as conn:
+        try:
+            conn.execute("CREATE USER app_user;")
+            conn.execute(f"ALTER USER app_user WITH ENCRYPTED PASSWORD '{APP_USER_PASSWORD}';")
+            conn.execute(f"GRANT ro_role TO app_user;")
+
+            print("Created app_user account. Save the following username and password to configure the ChemDataExplorer application:")
+            print("THESE CREDENTIALS ARE ONLY PROVIDED ONCE!")
+            print("")
+            print("    Username: app_user")
+            print(f"    Password: {APP_USER_PASSWORD}")
+            print("")
+            print("Launch the application with the following command:")
+            print(f"    docker run -e DB_USER=app_user -e DB_PASSWORD={APP_USER_PASSWORD} -e DB_HOST={config['drugdata']['host']} -e DB_PORT={config['drugdata']['port']} -e DB_NAME={config['drugdata']['database']} -p 5000:5000 chemdataexplorer/chemdataexplorer:latest")
+        except Exception:
+            print("app_user account already exists.")
+            print("")
+            print("Launch the application with the following command:")
+            print(f"    docker run -e DB_USER=app_user -e DB_PASSWORD=<password> -e DB_HOST={config['drugdata']['host']} -e DB_PORT={config['drugdata']['port']} -e DB_NAME={config['drugdata']['database']} -p 5000:5000 chemdataexplorer/chemdataexplorer:latest")
 
 
 # If called as a script, set up database connection and execute main()

@@ -69,6 +69,9 @@ def import_visualization_demos(engine):
     with engine.connect() as conn:
         print("Refreshing visualization data...")
 
+        # Make sure the application schema exists
+        conn.execute("CREATE SCHEMA IF NOT EXISTS application;")
+
         # Drop and recreate
         conn.execute("set search_path to application;")
         conn.execute("DROP TABLE IF EXISTS visualizations;")
