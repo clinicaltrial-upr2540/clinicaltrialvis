@@ -46,6 +46,11 @@ if "DB_PORT" in os.environ:
 if "DB_NAME" in os.environ:
     config["drugdata"]["database"] = os.environ.get("DB_NAME")
 
+# Save the config file (this allows the docker container to receive creds only once)
+print("Saving database config...")
+with open(f"{APP_PATH}/database.conf", 'w') as configfile:
+    config.write(configfile)
+
 # Set up and establish database engine
 # URL format: postgresql://<username>:<password>@<hostname>:<port>/<database>
 DATABASE_URL = f"postgresql://{config['drugdata']['user']}:{config['drugdata']['password']}@{config['drugdata']['host']}:{config['drugdata']['port']}/{config['drugdata']['database']}"
