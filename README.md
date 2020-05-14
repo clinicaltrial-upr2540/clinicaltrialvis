@@ -10,13 +10,14 @@ There are two steps required to getting the application running: **building the 
 ## Building the database
 There are two ways to build a ChemDataExplorer database instance. On Windows or Linux, you can pull a Docker container that includes all the dependencies and will run the scripts for you. On macOS, you will need to install a number of dependencies and run the scripts yourself.
 
-### To set up the database on macOS
+### To set up the database on Linux or Windows
 
-- **Python3** - This application requires python3.6 or later. The easiest way to install this on a Mac is via Homebrew.
-- Run the following command to install Python packages: `python3 -m pip install -r requirements.txt`
-- To run import scripts, you will also need a postgres client and R installed.
+See detailed instructions [here](https://hub.docker.com/repository/docker/chemdataexplorer/chemdataimporter).
 
-### To set up the database on Linux
+### To set up the database on MacOS
 
+See detailed instructions [here](https://github.com/clinicaltrial-upr2540/clinicaltrialvis/tree/master/importer).
 
-### To set up the database on Windows
+## Running the Application
+
+After the database build is complete, it will print the command to start the application. For more detailed instructions, see the [ChemDataExplorer page on Docker Hub](whttps://hub.docker.com/repository/docker/chemdataexplorer/chemdataexplorer).
