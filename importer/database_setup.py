@@ -220,12 +220,12 @@ def main(config, engine, CURRENT_PATH, FORCE):
             print(f"    Password: {APP_USER_PASSWORD}")
             print("")
             print("Launch the application with the following command:")
-            print(f"    docker run -e DB_USER=app_user -e DB_PASSWORD={APP_USER_PASSWORD} -e DB_HOST={config['drugdata']['host']} -e DB_PORT={config['drugdata']['port']} -e DB_NAME={config['drugdata']['database']} -p 5000:5000 chemdataexplorer/chemdataexplorer:latest")
+            print(f"    docker run -d --name chemdataexplorer -e DB_USER=app_user -e DB_PASSWORD={APP_USER_PASSWORD} -e DB_HOST={config['drugdata']['host']} -e DB_PORT={config['drugdata']['port']} -e DB_NAME={config['drugdata']['database']} -p 5000:5000 chemdataexplorer/chemdataexplorer:latest")
         except Exception:
             print("app_user account already exists.")
             print("")
             print("Launch the application with the following command:")
-            print(f"    docker run -e DB_USER=app_user -e DB_PASSWORD=<password> -e DB_HOST={config['drugdata']['host']} -e DB_PORT={config['drugdata']['port']} -e DB_NAME={config['drugdata']['database']} -p 5000:5000 chemdataexplorer/chemdataexplorer:latest")
+            print(f"    docker run -d --name chemdataexplorer -e DB_USER=app_user -e DB_PASSWORD=<password> -e DB_HOST={config['drugdata']['host']} -e DB_PORT={config['drugdata']['port']} -e DB_NAME={config['drugdata']['database']} -p 5000:5000 chemdataexplorer/chemdataexplorer:latest")
 
 
 # If called as a script, set up database connection and execute main()
