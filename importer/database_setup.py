@@ -189,8 +189,9 @@ def main(config, engine, CURRENT_PATH, FORCE):
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
         if filename.endswith(".sql"):
+            print(f"Importing {filename}...")
             # Build command to import a single view
-            command = f"{find_binary('psql')} -h {config['drugdata']['host']} " \
+            command = f"{find_binary('psql')} -q -h {config['drugdata']['host']} " \
                 f"-d {config['drugdata']['database']} " \
                 f"-p {config['drugdata']['port']} " \
                 f"-U {config['drugdata']['user']} " \

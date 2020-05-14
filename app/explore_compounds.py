@@ -144,8 +144,9 @@ def get_ba_dict(engine, compound_name):
             DISTINCT 
             bioavailability::bool as drugank_is_BA_truefalse, 
             bioavailability_percent as freetext_BA_lookup, 
-            bioavailability_percent as predicted_BA_percent_if_possible
-            FROM curated.compound 
+            "Prediction" as predicted_BA_boolean
+            FROM curated.compound compound
+            left join application."BA_predictions_HAN" pred on pred."Name" = compound.compound_name
             WHERE compound_name ILIKE :compound_name
             """
     params = {"compound_name": compound_name}
@@ -193,9 +194,18 @@ def get_compounds_data(engine):
 def get_compound_data(compound_name, engine):
     with engine.connect() as conn:
         compound_dataset = conn.execute(text("""
+        with thera_pop as (
+            select 
+            therapeutic_code,
+            count(distinct drug_id) as drugs_in_group
+            from curated.compounds
+            group by 1 
+        ) 
         select 
+            drugs_in_group, 
             smiles,
             substring(atc_code, 1, 1) as therapeutic_code, 
+            atc_level_4,
             compound_name, 
             bioavailability, 
             TRUNC(molecular_weight::numeric, 3) as molecular_weight, 
@@ -208,7 +218,9 @@ def get_compound_data(compound_name, engine):
             aromatic_rings,
             rotatable_bonds
         from curated.compounds
+        left join thera_pop using (therapeutic_code)
         where compound_name like :compound_name
+        order by drugs_in_group desc 
         """), {"compound_name": compound_name})
 
     compound_data = [dict(row) for row in compound_dataset]
@@ -220,6 +232,7 @@ def get_plot_png(compound_name, engine):
     if len(compound_data) == 0:
         return "Compound not found"
     compound_dict = compound_data[0]
+    group_name = compound_dict.get("atc_level_4", "none")
 
     data = get_compounds_data(engine)
     df = pd.DataFrame(data)
@@ -246,7 +259,7 @@ def get_plot_png(compound_name, engine):
     for obj in ther_objs:
         ther_code = obj.get("ther_code")
         if ther_code == compound_ther_code:
-            fig.suptitle(f"{compound_name}'s Therap Group {ther_code} Compound Descriptors", fontsize=15)
+            fig.suptitle(f"{compound_name}'s descriptors vs. other drugs in '{group_name}'", fontsize=15)
             ther_obj = obj
             break
         fig.suptitle("Compound Descriptors", fontsize=15)
@@ -275,7 +288,7 @@ def get_plot_png(compound_name, engine):
             dot_x = [float(compound_dict.get(descriptor))]
             dot_y = [-1]
             ax.scatter(dot_x, dot_y, color=compound_color)
-            ax.set_title(f"{descriptor} of thera code {ther_code}")
+            ax.set_title(f"{descriptor} of BA (blue) vs nonBA (red) compounds\n {compound_name}'s value is shown by {compound_color} dot")
         except TypeError as e:
             print(e)
         i += 1
