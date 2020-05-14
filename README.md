@@ -20,4 +20,4 @@ See detailed instructions [here](https://github.com/clinicaltrial-upr2540/clinic
 
 ## Running the Application
 
-After the database build is complete, it will print the command to start the application. For more detailed instructions, see the [ChemDataExplorer page on Docker Hub](whttps://hub.docker.com/repository/docker/chemdataexplorer/chemdataexplorer).
+After the database build is complete, it will print the command to start the application. For more detailed instructions, see the [ChemDataExplorer page on Docker Hub](https://hub.docker.com/repository/docker/chemdataexplorer/chemdataexplorer).
