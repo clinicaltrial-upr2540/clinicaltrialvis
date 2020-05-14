@@ -146,7 +146,7 @@ def get_ba_dict(engine, compound_name):
             bioavailability_percent as freetext_BA_lookup, 
             "Prediction" as predicted_BA_boolean
             FROM curated.compound compound
-            left join ml."BA_predictions_HAN" pred on pred."Name" = compound.compound_name
+            left join application."BA_predictions_HAN" pred on pred."Name" = compound.compound_name
             WHERE compound_name ILIKE :compound_name
             """
     params = {"compound_name": compound_name}
