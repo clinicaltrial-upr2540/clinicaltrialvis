@@ -32,6 +32,8 @@ If you are using MacOS, unfortunately there is a bug with Docker Desktop that wi
 `python3 -m pip install -r requirements.txt`\
 `Rscript modules/install_dependencies.R`
 
+6. To run the ChemDataExplorer application itself, you'll need to install [Docker Desktop](https://www.docker.com/products/docker-desktop).
+
 ### Set up a Postgres database
 
 ChemDataExplorer requires a PostgresSQL database instance in which to store the data. You can install a local instance using Homebrew or a Docker container, but we recommend setting up an instance in the cloud using [Amazon Web Services](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html) or [Heroku](https://devcenter.heroku.com/articles/heroku-postgresql), or working with your organization's IT department.
