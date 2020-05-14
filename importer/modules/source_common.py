@@ -5,6 +5,8 @@
 
 import requests
 import os
+import secrets
+import string
 
 from ftplib import FTP
 
@@ -81,3 +83,9 @@ def find_binary(binary_name):
             break
 
     return(result)
+
+
+# Function to generate a random string to use as a password
+def generatePassword(stringLength=10):
+    password_characters = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(password_characters) for i in range(stringLength))
