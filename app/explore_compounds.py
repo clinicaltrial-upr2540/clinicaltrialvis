@@ -193,7 +193,15 @@ def get_compounds_data(engine):
 def get_compound_data(compound_name, engine):
     with engine.connect() as conn:
         compound_dataset = conn.execute(text("""
+        with thera_pop as (
+            select 
+            therapeutic_code,
+            count(distinct drug_id) as drugs_in_group
+            from curated.compounds
+            group by 1 
+        ) 
         select 
+            drugs_in_group, 
             smiles,
             substring(atc_code, 1, 1) as therapeutic_code, 
             compound_name, 
@@ -208,7 +216,9 @@ def get_compound_data(compound_name, engine):
             aromatic_rings,
             rotatable_bonds
         from curated.compounds
+        left join thera_pop using (therapeutic_code)
         where compound_name like :compound_name
+        order by drugs_in_group desc 
         """), {"compound_name": compound_name})
 
     compound_data = [dict(row) for row in compound_dataset]
@@ -246,7 +256,7 @@ def get_plot_png(compound_name, engine):
     for obj in ther_objs:
         ther_code = obj.get("ther_code")
         if ther_code == compound_ther_code:
-            fig.suptitle(f"{compound_name}'s Therap Group {ther_code} Compound Descriptors", fontsize=15)
+            fig.suptitle(f"{compound_name}'s Therapuetic Group {ther_code} Descriptors", fontsize=15)
             ther_obj = obj
             break
         fig.suptitle("Compound Descriptors", fontsize=15)
